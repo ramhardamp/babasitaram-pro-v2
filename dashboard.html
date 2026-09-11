@@ -219,7 +219,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
   <div class="screen-container" id="screenContainer">
 
-    <!-- LOADING -->
     <div id="loadingScreen">
       <div class="loading-wrap">
         <div class="loading-spinner"></div>
@@ -227,7 +226,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div id="screen-dashboard" class="screen">
       <div class="dash-hero">
         <div class="dash-greeting" id="dGreet">नमस्ते 👋</div>
@@ -263,12 +261,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       <div class="customer-list" id="customerList"></div>
     </div>
 
-    <!-- CUSTOMER DETAIL -->
     <div id="screen-customer" class="screen">
       <div class="detail-wrap" id="customerDetail"></div>
     </div>
 
-    <!-- REPORTS -->
     <div id="screen-reports" class="screen">
       <div class="report-wrap">
         <div class="stat-grid">
@@ -293,7 +289,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       </div>
     </div>
 
-    <!-- SETTINGS -->
     <div id="screen-settings" class="screen">
       <div class="settings-wrap">
         <div class="settings-header" id="sH1">व्यवसाय</div>
@@ -361,6 +356,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 <script>
 /* ============================================================
    BABASITARAM PRO - Full Featured Dashboard with Firestore
+   Placeholder updated: Vikram Singh Rajput
 ============================================================ */
 
 let currentLang = localStorage.getItem('bsp_lang') || 'hi';
@@ -377,7 +373,6 @@ let unsubTransactions = null;
 
 const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings'];
 
-/* ============ FORMAT ============ */
 function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
 function fmtSigned(n){if(n===0)return '₹0';return (n<0?'-':'')+fmt(n)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -387,7 +382,6 @@ function dateStr(d){
   try{const date=d.toDate?d.toDate():new Date(d);return date.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return '-'}
 }
 
-/* ============ CALCULATIONS ============ */
 function monthsBetween(start,end){
   const s=new Date(start),e=new Date(end);
   let years=e.getFullYear()-s.getFullYear();
@@ -426,7 +420,6 @@ function getTotals(){
   return{udhaar:u,byaj:b,total:t2,paid:p};
 }
 
-/* ============ LANGUAGE ============ */
 function setLang(lang){
   currentLang=lang;
   localStorage.setItem('bsp_lang',lang);
@@ -474,7 +467,6 @@ function updateTexts(){
   set('btS',t('Settings','सेटिंग्स'));
 }
 
-/* ============ NAVIGATION ============ */
 function updateBackButton(){
   const btn=document.getElementById('backBtn');
   if(!btn)return;
@@ -514,7 +506,6 @@ function goBack(){
 }
 function switchTab(tab){screenHistory=[];currentScreen='';showScreen(tab,true)}
 
-/* ============ AUTH ============ */
 auth.onAuthStateChanged(async(user)=>{
   if(!user){window.location.href='index.html';return}
   currentUser=user;
@@ -556,7 +547,6 @@ function setupListeners(){
     },err=>console.error('Txn error:',err));
 }
 
-/* ============ DASHBOARD ============ */
 function renderDashboard(){
   if(!userData)return;
   const backBtn=document.getElementById('backBtn');if(backBtn)backBtn.classList.add('hidden');
@@ -596,7 +586,6 @@ function renderDashboard(){
 }
 function setFilter(f){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
 
-/* ============ CUSTOMER DETAIL ============ */
 function openCustomer(id){currentCustomerId=id;showScreen('customer')}
 function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);
@@ -672,7 +661,6 @@ function renderCustomerDetail(){
   `;
 }
 
-/* ============ MODALS ============ */
 function showModal(html){
   closeModal();
   const div=document.createElement('div');
@@ -683,12 +671,13 @@ function showModal(html){
 }
 function closeModal(){const m=document.getElementById('activeModal');if(m)m.remove()}
 
+/* ⭐ PLACEHOLDER UPDATED: Vikram Singh Rajput */
 function openAddCustomer(){
   showModal(`
     <div class="modal-handle"></div>
     <div class="modal-title">${t('New Customer','नया ग्राहक')}</div>
     <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
-      <input type="text" id="mName" class="text-input" placeholder="${t('Ramesh Kumar','रमेश कुमार')}"></div>
+      <input type="text" id="mName" class="text-input" placeholder="${t('Vikram Singh Rajput','विक्रम सिंह राजपूत')}"></div>
     <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
       <input type="tel" id="mPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric"></div>
     <div class="input-group"><label class="input-label">${t('Email','ईमेल')}</label>
@@ -698,7 +687,7 @@ function openAddCustomer(){
         <input type="number" id="mBal" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
-      <button class="btn btn-primary" onclick="saveCustomer()"><span class="btn-text">${t('Save','सेव')}</span></button>
+      <button class="btn btn-primary" onclick="saveCustomer()">${t('Save','सेव')}</button>
     </div>
   `);
   setTimeout(()=>document.getElementById('mName')?.focus(),300);
@@ -714,7 +703,7 @@ async function saveCustomer(){
       name,phone,email,balance:bal,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     closeModal();toast(t('Customer added','ग्राहक जोड़ा'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
 function openEditCustomer(){
@@ -905,7 +894,6 @@ async function saveIntPaid(){
   }catch(e){console.error(e);toast('Error','error')}
 }
 
-/* ============ REPORTS ============ */
 function renderReports(){
   if(!userData){showScreen('login',true);return}
   const totals=getTotals();
@@ -953,7 +941,6 @@ function renderReports(){
   }
 }
 
-/* ============ SETTINGS ============ */
 function renderSettings(){
   if(!userData){showScreen('login',true);return}
   document.getElementById('sShopName').textContent=userData.shopName||'-';
@@ -1010,7 +997,6 @@ function showLogoutConfirm(){
   auth.signOut().then(()=>window.location.href='index.html');
 }
 
-/* ============ HELPERS ============ */
 function toast(msg,type){
   const el=document.getElementById('toast');
   el.textContent=msg;
@@ -1019,7 +1005,6 @@ function toast(msg,type){
   el._t=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-/* ============ INIT ============ */
 window.addEventListener('load',()=>{
   setLang(currentLang);
   updateTexts();
