@@ -380,7 +380,16 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             </div>
             <div class="settings-arrow">›</div>
           </div>
-          
+          <div class="settings-item" onclick="backfillViewTokens()">
+            <div class="settings-left">
+              <div class="settings-icon">🔗</div>
+              <div>
+                <div class="settings-label" style="color:var(--primary)">Generate Portal Links</div>
+                <div class="settings-sublabel">Purane customers ke liye link banao</div>
+              </div>
+            </div>
+            <div class="settings-arrow">›</div>
+          </div>
           <div class="settings-item" onclick="exportData()">
             <div class="settings-left"><div class="settings-icon">📤</div><div class="settings-label" id="sExport">डेटा एक्सपोर्ट (JSON)</div></div>
             <div class="settings-arrow">›</div>
@@ -394,7 +403,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.5 (Fixed)</div></div></div>
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.6 (Fixed)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -425,19 +434,17 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
 <script>
 /* ============================================================
-   BABASITARAM PRO v6.5 - Final Fixed
-   - Correct EmailJS Template IDs
+   BABASITARAM PRO v6.6 - Final Fixed
+   - Correct template ID (template_459vjrt)
+   - backfillViewTokens() for old customers
    - DD/MM/YYYY date format
    - Fixed balance calculation
-   - Customer Portal
-   - Fix All Balances button
 ============================================================ */
 
-// ⭐ CORRECTED EMAILJS CONFIG
 const EMAILJS_PUBLIC_KEY = 'zVakeKYOCR5og-jon';
 const EMAILJS_SERVICE_ID = 'service_zyavovm';
-const EMAILJS_TEMPLATE_ID = 'template_xzxta5h';       // ⭐ Welcome Email
-const EMAILJS_TXN_TEMPLATE_ID = 'template_vhuakzs';   // ⭐ Transaction Notification
+const EMAILJS_TEMPLATE_ID = 'template_xzxta5h';
+const EMAILJS_TXN_TEMPLATE_ID = 'template_459vjrt';
 
 const CUSTOMER_VIEW_BASE_URL = 'https://ramhardamp.github.io/babasitaram-pro-v2/customer-view.html';
 
@@ -482,7 +489,6 @@ function dateStr(d){
   }catch(e){return '-'}
 }
 
-/* ============ FIXED: monthsBetween ============ */
 function monthsBetween(start, end) {
   const s = new Date(start);
   const e = new Date(end);
@@ -612,6 +618,8 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
     const fullCustomer=customers.find(x=>x.email===customer.email);
     const viewLink=fullCustomer&&fullCustomer.viewToken?getCustomerViewLink(fullCustomer.viewToken):'';
     
+    console.log('📧 Sending email with viewLink:', viewLink);
+    
     const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
       customer_name: customer.name || 'Customer',
       customer_email: customer.email,
@@ -675,6 +683,52 @@ async function fixAllBalances(){
     
   } catch(e) {
     console.error('❌ Fix error:', e);
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+/* ⭐ NEW: BACKFILL VIEW TOKENS ============ */
+async function backfillViewTokens(){
+  if(!confirm('Purane customers ke liye portal link generate karein?\n\nHar customer ko unique link milega.')) return;
+  
+  try {
+    toast('⏳ Links generate ho rahe hain...', 'success');
+    console.log('🔧 Starting viewToken backfill...');
+    
+    let fixed = 0;
+    let checked = 0;
+    let alreadyHad = 0;
+    
+    for(const c of customers){
+      checked++;
+      
+      if(!c.viewToken){
+        const viewToken = generateToken();
+        console.log(`🔧 ${c.name}: generating token ${viewToken}`);
+        
+        await db.collection('users').doc(currentUser.uid).collection('parties').doc(c.id).update({
+          viewToken: viewToken
+        });
+        
+        await updatePublicView(c.id, viewToken, {
+          name: c.name, phone: c.phone, balance: c.balance || 0
+        });
+        
+        fixed++;
+      } else {
+        // Token exists but ensure public view is up to date
+        await updatePublicView(c.id, c.viewToken, {
+          name: c.name, phone: c.phone, balance: c.balance || 0
+        });
+        alreadyHad++;
+      }
+    }
+    
+    console.log(`✅ Generated ${fixed} new tokens, ${alreadyHad} already had tokens`);
+    toast(`✅ ${fixed} naye links bane, ${alreadyHad} already the`, 'success');
+    
+  } catch(e) {
+    console.error('❌ backfillViewTokens error:', e);
     toast('Error: ' + e.message, 'error');
   }
 }
@@ -960,7 +1014,7 @@ function renderCustomerDetail(){
 
 function shareCustomerViewLink(id){
   const c=customers.find(x=>x.id===id);if(!c)return;
-  if(!c.viewToken)return toast('इस ग्राहक के लिए पोर्टल लिंक नहीं है','error');
+  if(!c.viewToken)return toast('इस ग्राहक के लिए पोर्टल लिंक नहीं है। Settings → Generate Portal Links चलाएं','error');
   const link=getCustomerViewLink(c.viewToken);
   showModal(`<div class="modal-handle"></div>
     <div class="modal-title">🔗 ग्राहक पोर्टल लिंक</div>
