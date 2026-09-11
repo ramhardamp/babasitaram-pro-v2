@@ -28,6 +28,9 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .error-title{font-size:20px;font-weight:900;margin-bottom:10px;color:var(--text)}
 .error-text{font-size:14px;color:var(--text-muted);line-height:1.6}
 
+/* ⭐ CRITICAL: Hidden class */
+.hidden{display:none!important}
+
 /* Customer Hero */
 .cust-hero{background:var(--gradient-dark);color:#fff;padding:22px 20px;border-radius:var(--radius-lg);margin-bottom:16px;box-shadow:0 12px 40px rgba(30,27,75,.3);position:relative;overflow:hidden}
 .cust-hero::before{content:'';position:absolute;top:-50%;right:-30%;width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
@@ -95,17 +98,20 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
   </div>
 
   <div class="screen-container" id="screenContainer">
+    <!-- LOADING SCREEN -->
     <div id="loadingScreen" class="loading-wrap">
       <div class="loading-spinner"></div>
       <div style="color:var(--text-muted);font-size:14px;font-weight:600">आपका खाता load हो रहा है...</div>
     </div>
 
+    <!-- ERROR SCREEN (hidden by default) -->
     <div id="errorScreen" class="error-screen hidden">
       <div class="error-icon">⚠️</div>
       <div class="error-title" id="errorTitle">लिंक काम नहीं कर रहा</div>
       <div class="error-text" id="errorText">यह लिंक expire हो गया है या गलत है।</div>
     </div>
 
+    <!-- CONTENT SCREEN (hidden by default) -->
     <div id="contentScreen" class="hidden"></div>
   </div>
 </div>
@@ -136,13 +142,33 @@ function dateStr(d){
   if(!d)return '-';
   try{
     const date = d.toDate ? d.toDate() : new Date(d);
-    return date.toLocaleDateString('hi-IN',{day:'2-digit',month:'short',year:'numeric'});
+    const dd = String(date.getDate()).padStart(2,'0');
+    const mm = String(date.getMonth()+1).padStart(2,'0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
   }catch(e){return '-'}
+}
+
+/* ⭐ FIXED: Show only ONE screen at a time */
+function showOnly(screenName){
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('errorScreen').classList.add('hidden');
+  document.getElementById('contentScreen').classList.add('hidden');
+  
+  if(screenName === 'loading'){
+    document.getElementById('loadingScreen').classList.remove('hidden');
+  } else if(screenName === 'error'){
+    document.getElementById('errorScreen').classList.remove('hidden');
+  } else if(screenName === 'content'){
+    document.getElementById('contentScreen').classList.remove('hidden');
+  }
 }
 
 async function loadCustomerView(){
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
+  
+  console.log('🔍 Token from URL:', token);
 
   if(!token){
     showError('लिंक गलत है', 'इस लिंक में आवश्यक जानकारी नहीं है। कृपया दुकानदार से नया लिंक मांगें।');
@@ -150,7 +176,9 @@ async function loadCustomerView(){
   }
 
   try {
+    console.log('🔍 Querying publicViews/' + token);
     const doc = await db.collection('publicViews').doc(token).get();
+    console.log('🔍 Doc exists?', doc.exists);
 
     if(!doc.exists){
       showError('लिंक expire हो गया', 'यह लिंक अब काम नहीं कर रहा। कृपया दुकानदार से नया लिंक मांगें।');
@@ -161,29 +189,26 @@ async function loadCustomerView(){
     renderView(data);
 
   } catch(e) {
-    console.error('Error:', e);
+    console.error('❌ Error:', e);
     showError('कुछ गड़बड़ हुई', 'डेटा load नहीं हो पाया। कृपया कुछ देर बाद कोशिश करें।');
   }
 }
 
 function showError(title, text){
-  document.getElementById('loadingScreen').classList.add('hidden');
-  document.getElementById('errorScreen').classList.remove('hidden');
+  showOnly('error');
   document.getElementById('errorTitle').textContent = title;
   document.getElementById('errorText').textContent = text;
 }
 
 function renderView(data){
-  document.getElementById('loadingScreen').classList.add('hidden');
+  showOnly('content');
   const content = document.getElementById('contentScreen');
-  content.classList.remove('hidden');
 
   const balance = data.balance || 0;
   const totalUdhaar = data.totalUdhaar || 0;
   const totalJama = data.totalJama || 0;
   const transactions = data.transactions || [];
 
-  // Determine balance label
   let balLabel = 'कुल बकाया';
   let balSub = '';
   if(balance > 0){
@@ -264,7 +289,6 @@ function renderView(data){
   `;
 }
 
-// Load on page load
 window.addEventListener('load', loadCustomerView);
 </script>
 </body>
