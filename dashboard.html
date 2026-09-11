@@ -21,6 +21,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .lang-toggle{display:flex;background:rgba(99,102,241,.1);border-radius:20px;padding:3px;gap:2px}
 .lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}
 .lang-btn.active{background:var(--primary);color:#fff}
+.lock-btn{background:rgba(99,102,241,.1);border:none;font-size:14px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}
 .screen-container{flex:1;overflow-y:auto;padding-bottom:20px}
 .screen-container::-webkit-scrollbar{width:0}
 .screen{display:none;min-height:100%}
@@ -28,6 +29,22 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* PIN SCREEN */
+.pin-screen{padding:40px 20px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pin-logo{width:100px;height:100px;margin:0 auto 20px;background:var(--gradient);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 12px 40px rgba(99,102,241,.4)}
+.pin-title{font-size:22px;font-weight:900;margin-bottom:8px}
+.pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:30px;line-height:1.5}
+.pin-dots{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--primary);background:transparent;transition:all .2s}
+.pin-dot.filled{background:var(--primary);transform:scale(1.1)}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;margin:0 auto;width:100%}
+.pin-key{aspect-ratio:1;border-radius:50%;border:2px solid var(--border);background:var(--white);font-size:22px;font-weight:800;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.pin-key:active{background:var(--primary-lighter);border-color:var(--primary);transform:scale(.95)}
+.pin-key.empty{border:none;background:transparent;pointer-events:none}
+.pin-error{color:var(--error);font-size:13px;margin-top:16px;font-weight:600;min-height:20px}
+
+/* DASH HERO */
 .dash-hero{background:var(--gradient-dark);color:#fff;padding:22px 20px 24px;border-radius:0 0 28px 28px;margin-bottom:16px;box-shadow:0 12px 40px rgba(30,27,75,.3);position:relative;overflow:hidden}
 .dash-hero::before{content:'';position:absolute;top:-50%;right:-30%;width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
 .dash-greeting{font-size:11px;opacity:.8;margin-bottom:4px;position:relative;letter-spacing:.5px;text-transform:uppercase;font-weight:700}
@@ -95,12 +112,14 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}
 .action-btn.edit{border-color:#e2e8f0}
 .section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}
-.loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px}
+.loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px;position:relative}
 .loan-card.closed{border-color:#e2e8f0;opacity:.7}
 .loan-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px}
 .loan-title{font-size:13px;font-weight:900}
 .loan-note{font-size:11px;color:var(--text-muted);margin-top:3px}
 .loan-rate{font-size:11px;color:var(--interest);font-weight:800;background:var(--interest-bg);padding:4px 9px;border-radius:12px;flex-shrink:0}
+.loan-menu-btn{position:absolute;top:10px;right:10px;background:var(--bg);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;z-index:2}
+.loan-menu-btn:active{background:var(--primary-lighter)}
 .loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .loan-item{padding:9px 10px;background:var(--bg);border-radius:8px}
 .loan-item-label{font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.3px}
@@ -114,7 +133,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}
 .loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}
 .loan-status.active{background:#dcfce7;color:#15803d}
-.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;position:relative}
 .txn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .txn-icon.udhaar{background:var(--credit-bg)}
 .txn-icon.jama{background:var(--debit-bg)}
@@ -124,12 +143,15 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .txn-info{flex:1;min-width:0}
 .txn-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .txn-date{font-size:11px;color:var(--text-muted);margin-top:2px}
-.txn-amt{font-size:14px;font-weight:900;flex-shrink:0;letter-spacing:-.3px}
+.txn-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.txn-amt{font-size:14px;font-weight:900;letter-spacing:-.3px}
 .txn-amt.udhaar{color:var(--credit)}
 .txn-amt.jama{color:var(--debit)}
 .txn-amt.byaj_loan{color:var(--interest)}
 .txn-amt.loan_repay{color:var(--info)}
 .txn-amt.interest_paid{color:var(--violet)}
+.txn-menu-btn{background:var(--bg);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--text-muted);display:flex;align-items:center;justify-content:center}
+.txn-menu-btn:active{background:var(--primary-lighter)}
 .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;backdrop-filter:blur(4px)}
 @media(min-width:500px){.modal-overlay{align-items:center}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -151,6 +173,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .btn-primary:disabled{background:#cbd5e1;cursor:not-allowed}
 .btn-secondary{background:var(--white);color:var(--text);border:2px solid var(--border);margin-top:8px}
 .btn-danger{background:var(--credit-bg);color:var(--credit);border:2px solid #fecaca;margin-top:8px}
+.btn-success{background:var(--debit-bg);color:var(--debit);border:2px solid #bbf7d0;margin-top:8px}
 .modal-actions{display:flex;gap:10px;margin-top:10px}
 .modal-actions .btn{flex:1;margin-top:0}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
@@ -211,6 +234,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       <div class="top-title" id="topTitle">📒 Loading...</div>
     </div>
+    <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
     <div class="lang-toggle">
       <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
       <button class="lang-btn active" data-lang="hi" onclick="setLang('hi')">हिं</button>
@@ -218,6 +242,36 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
   </div>
 
   <div class="screen-container" id="screenContainer">
+
+    <!-- PIN SCREEN -->
+    <div id="screen-pin" class="screen">
+      <div class="pin-screen">
+        <div class="pin-logo">🔐</div>
+        <div class="pin-title" id="pinTitle">PIN डालें</div>
+        <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
+        <div class="pin-dots" id="pinDots">
+          <div class="pin-dot" data-i="0"></div>
+          <div class="pin-dot" data-i="1"></div>
+          <div class="pin-dot" data-i="2"></div>
+          <div class="pin-dot" data-i="3"></div>
+        </div>
+        <div class="pin-keypad" id="pinKeypad">
+          <button class="pin-key" onclick="pinPress('1')">1</button>
+          <button class="pin-key" onclick="pinPress('2')">2</button>
+          <button class="pin-key" onclick="pinPress('3')">3</button>
+          <button class="pin-key" onclick="pinPress('4')">4</button>
+          <button class="pin-key" onclick="pinPress('5')">5</button>
+          <button class="pin-key" onclick="pinPress('6')">6</button>
+          <button class="pin-key" onclick="pinPress('7')">7</button>
+          <button class="pin-key" onclick="pinPress('8')">8</button>
+          <button class="pin-key" onclick="pinPress('9')">9</button>
+          <button class="pin-key empty"></button>
+          <button class="pin-key" onclick="pinPress('0')">0</button>
+          <button class="pin-key" onclick="pinPress('del')">⌫</button>
+        </div>
+        <div class="pin-error" id="pinError"></div>
+      </div>
+    </div>
 
     <div id="loadingScreen">
       <div class="loading-wrap">
@@ -310,6 +364,14 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </div>
         </div>
 
+        <div class="settings-header">सुरक्षा</div>
+        <div class="settings-section">
+          <div class="settings-item" onclick="changePIN()">
+            <div class="settings-left"><div class="settings-icon">🔐</div><div class="settings-label">PIN बदलें</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+
         <div class="settings-header" id="sH3">डेटा</div>
         <div class="settings-section">
           <div class="settings-item" onclick="exportData()">
@@ -325,7 +387,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 5.0 Cloud</div></div></div>
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.0 (PIN + Edit/Delete)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -355,8 +417,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
 <script>
 /* ============================================================
-   BABASITARAM PRO - Full Featured Dashboard with Firestore
-   Placeholder updated: Vikram Singh Rajput
+   BABASITARAM PRO v6.0 - PIN + Edit/Delete for all transactions
 ============================================================ */
 
 let currentLang = localStorage.getItem('bsp_lang') || 'hi';
@@ -371,10 +432,16 @@ let transactions = [];
 let unsubCustomers = null;
 let unsubTransactions = null;
 
-const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings'];
+// PIN state
+let storedPIN = null;
+let pendingPIN = '';
+let pinMode = 'verify'; // 'setup' | 'confirm' | 'verify' | 'change-old' | 'change-new' | 'change-confirm'
+let pinActionCallback = null;
+let pinSetupFirst = '';
+
+const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings', 'pin'];
 
 function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
-function fmtSigned(n){if(n===0)return '₹0';return (n<0?'-':'')+fmt(n)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function t(en,hi){return currentLang==='hi'?hi:en}
 function dateStr(d){
@@ -420,6 +487,127 @@ function getTotals(){
   return{udhaar:u,byaj:b,total:t2,paid:p};
 }
 
+/* ============ PIN MANAGEMENT ============ */
+function showPinScreen(mode,title,subtitle,callback){
+  pinMode=mode;
+  pendingPIN='';
+  pinActionCallback=callback||null;
+  document.getElementById('pinTitle').textContent=title;
+  document.getElementById('pinSubtitle').textContent=subtitle;
+  document.getElementById('pinError').textContent='';
+  updatePinDots();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-pin').classList.add('active');
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('bottomTabs').classList.add('hidden');
+  document.getElementById('fab').classList.add('hidden');
+  document.getElementById('topTitle').textContent='🔐 PIN';
+  document.getElementById('backBtn').classList.add('hidden');
+}
+function updatePinDots(){
+  document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pendingPIN.length));
+}
+function pinPress(digit){
+  const err=document.getElementById('pinError');
+  err.textContent='';
+  if(digit==='del'){
+    pendingPIN=pendingPIN.slice(0,-1);
+    updatePinDots();
+    return;
+  }
+  if(pendingPIN.length>=4)return;
+  pendingPIN+=digit;
+  updatePinDots();
+  if(pendingPIN.length===4){
+    setTimeout(()=>handlePinComplete(),200);
+  }
+}
+function handlePinComplete(){
+  const pin=pendingPIN;
+  pendingPIN='';
+  updatePinDots();
+  
+  if(pinMode==='setup'){
+    pinSetupFirst=pin;
+    showPinScreen('confirm','PIN दोबारा डालें','पुष्टि के लिए वही PIN डालें');
+    return;
+  }
+  if(pinMode==='confirm'){
+    if(pin===pinSetupFirst){
+      savePIN(pin);
+    }else{
+      pinSetupFirst='';
+      document.getElementById('pinError').textContent='PIN मेल नहीं खाते। दोबारा कोशिश करें।';
+      showPinScreen('setup','नया PIN बनाएं','4-अंकों का PIN सेट करें');
+    }
+    return;
+  }
+  if(pinMode==='verify'){
+    if(pin===storedPIN){
+      const cb=pinActionCallback;
+      pinActionCallback=null;
+      if(cb)cb();
+    }else{
+      document.getElementById('pinError').textContent='गलत PIN। दोबारा कोशिश करें।';
+    }
+    return;
+  }
+  if(pinMode==='change-old'){
+    if(pin===storedPIN){
+      showPinScreen('change-new','नया PIN डालें','4-अंकों का नया PIN');
+    }else{
+      document.getElementById('pinError').textContent='गलत PIN।';
+    }
+    return;
+  }
+  if(pinMode==='change-new'){
+    pinSetupFirst=pin;
+    showPinScreen('change-confirm','नया PIN दोबारा','पुष्टि के लिए वही PIN');
+    return;
+  }
+  if(pinMode==='change-confirm'){
+    if(pin===pinSetupFirst){
+      savePIN(pin);
+    }else{
+      pinSetupFirst='';
+      document.getElementById('pinError').textContent='PIN मेल नहीं खाते।';
+      showPinScreen('change-new','नया PIN डालें','4-अंकों का नया PIN');
+    }
+    return;
+  }
+}
+async function savePIN(pin){
+  try{
+    await db.collection('users').doc(currentUser.uid).update({pin:pin});
+    storedPIN=pin;
+    pinSetupFirst='';
+    toast('✅ PIN सेव हो गया','success');
+    if(currentScreen==='pin'||document.getElementById('screen-pin').classList.contains('active')){
+      showScreen('dashboard',true);
+    }
+  }catch(e){
+    console.error(e);
+    document.getElementById('pinError').textContent='PIN सेव नहीं हुआ। दोबारा कोशिश करें।';
+  }
+}
+function requirePIN(callback){
+  if(!storedPIN){
+    showPinScreen('setup','नया PIN बनाएं','4-अंकों का PIN सेट करें');
+    return;
+  }
+  showPinScreen('verify','PIN डालें','कार्य करने के लिए PIN डालें',callback);
+}
+function lockApp(){
+  if(!storedPIN)return;
+  showPinScreen('verify','PIN डालें','ऐप लॉक है',()=>{showScreen('dashboard',true)});
+}
+function changePIN(){
+  requirePIN(()=>{
+    showPinScreen('change-old','वर्तमान PIN','पुराना PIN डालें');
+  });
+}
+
+/* ============ LANGUAGE ============ */
 function setLang(lang){
   currentLang=lang;
   localStorage.setItem('bsp_lang',lang);
@@ -484,12 +672,14 @@ function showScreen(name,noPush){
   const showTabs=['dashboard','reports','settings'].includes(name);
   document.getElementById('bottomTabs').classList.toggle('hidden',!showTabs);
   document.getElementById('fab').classList.toggle('hidden',name!=='dashboard');
+  document.getElementById('lockBtn').style.display=(name==='pin')?'none':'flex';
   document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
   const titles={
     dashboard:'📒 '+(userData?.shopName||'BABASITARAM PRO'),
     customer:'← '+(customers.find(c=>c.id===currentCustomerId)?.name||''),
     reports:'📊 '+t('Reports','रिपोर्ट'),
-    settings:'⚙️ '+t('Settings','सेटिंग्स')
+    settings:'⚙️ '+t('Settings','सेटिंग्स'),
+    pin:'🔐 PIN'
   };
   document.getElementById('topTitle').textContent=titles[name]||'BABASITARAM PRO';
   document.getElementById('screenContainer').scrollTop=0;
@@ -518,6 +708,14 @@ async function loadUserData(){
     if(!doc.exists){window.location.href='signup.html';return}
     userData=doc.data();
     if(!userData.shopName){window.location.href='signup.html';return}
+    
+    // PIN check
+    storedPIN=userData.pin||null;
+    if(!storedPIN){
+      showPinScreen('setup','नया PIN बनाएं','सुरक्षा के लिए 4-अंकों का PIN सेट करें');
+      return;
+    }
+    
     document.getElementById('dShop').textContent=userData.shopName;
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
     showScreen('dashboard',true);
@@ -601,6 +799,7 @@ function renderCustomerDetail(){
       const m=calcLoan(loan);
       const notePart=loan.note&&loan.note.trim()?esc(loan.note)+' • ':'';
       loansHtml+=`<div class="loan-card">
+        <button class="loan-menu-btn" onclick="event.stopPropagation();showLoanMenu('${loan.id}')">⋮</button>
         <div class="loan-header">
           <div><div class="loan-title">${t('Loan','लोन')} #${i+1} • ${fmt(loan.principal)}</div>
           <div class="loan-note">${notePart}${dateStr(loan.startDate)}</div></div>
@@ -630,7 +829,10 @@ function renderCustomerDetail(){
         <div class="txn-icon ${m.cls}">${m.icon}</div>
         <div class="txn-info"><div class="txn-title">${m.label}${txn.note?' • '+esc(txn.note):''}</div>
         <div class="txn-date">${dateStr(txn.date)}</div></div>
-        <div class="txn-amt ${m.cls}">${m.sign}${fmt(txn.amount)}</div>
+        <div class="txn-right">
+          <div class="txn-amt ${m.cls}">${m.sign}${fmt(txn.amount)}</div>
+          <button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button>
+        </div>
       </div>`;
     });
   }
@@ -661,6 +863,249 @@ function renderCustomerDetail(){
   `;
 }
 
+/* ============ TXN MENU (Edit/Delete with PIN) ============ */
+function showTxnMenu(id){
+  const txn=transactions.find(t=>t.id===id);
+  if(!txn)return;
+  const isLoanRepay=txn.type==='loan_repay';
+  const isInterestPaid=txn.type==='interest_paid';
+  
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
+    <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
+      <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
+      <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div>
+    </div>
+    <button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">
+      ✏️ ${t('Edit','एडिट')}
+    </button>
+    <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">
+      🗑️ ${t('Delete','डिलीट')}
+    </button>
+    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">
+      ${t('Cancel','रद्द')}
+    </button>
+  `);
+}
+
+function editTxnConfirm(id){
+  requirePIN(()=>{
+    const txn=transactions.find(t=>t.id===id);
+    if(!txn)return;
+    openEditTxnModal(txn);
+  });
+}
+
+function deleteTxnConfirm(id){
+  requirePIN(()=>{
+    if(!confirm(t('Delete this transaction?','यह लेन-देन डिलीट करें?')))return;
+    deleteTxn(id);
+  });
+}
+
+function openEditTxnModal(txn){
+  const isU=txn.type==='udhaar';
+  const titleMap={
+    udhaar:t('Edit Udhaar','उधार एडिट'),
+    jama:t('Edit Payment','जमा एडिट'),
+    loan_repay:t('Edit Loan Repayment','लोन वसूली एडिट'),
+    interest_paid:t('Edit Interest Paid','ब्याज एडिट')
+  };
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${titleMap[txn.type]||t('Edit','एडिट')}</div>
+    <div class="input-group"><label class="input-label">${t('Amount','रकम')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mAmt" class="text-input" value="${txn.amount||0}" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
+      <input type="text" id="mNote" class="text-input" value="${esc(txn.note||'')}" placeholder="${t('Optional','वैकल्पिक')}"></div>
+    <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
+      <input type="date" id="mDate" class="text-input" value="${(txn.date||new Date().toISOString().split('T')[0]).slice(0,10)}"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveEditedTxn('${txn.id}')">${t('Save','सेव')}</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mAmt')?.focus(),300);
+}
+
+async function saveEditedTxn(id){
+  const txn=transactions.find(t=>t.id===id);
+  if(!txn)return;
+  const newAmt=parseFloat(document.getElementById('mAmt').value);
+  const newNote=document.getElementById('mNote').value.trim();
+  const newDate=document.getElementById('mDate').value;
+  if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  
+  try{
+    const c=customers.find(x=>x.id===txn.partyId);
+    if(!c)return;
+    const oldAmt=txn.amount||0;
+    
+    // Update transaction
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({
+      amount:newAmt,note:newNote,date:newDate
+    });
+    
+    // Adjust balance
+    let balanceDelta=0;
+    const creditTypes=['udhaar'];
+    const debitTypes=['jama','loan_repay','interest_paid'];
+    if(creditTypes.includes(txn.type)){
+      balanceDelta=newAmt-oldAmt;
+    }else if(debitTypes.includes(txn.type)){
+      balanceDelta=-(newAmt-oldAmt);
+    }
+    if(balanceDelta!==0){
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({
+        balance:(c.balance||0)+balanceDelta
+      });
+    }
+    
+    closeModal();
+    toast(t('Updated','अपडेट हो गया'),'success');
+  }catch(e){console.error(e);toast('Error: '+e.message,'error')}
+}
+
+async function deleteTxn(id){
+  const txn=transactions.find(t=>t.id===id);
+  if(!txn)return;
+  try{
+    const c=customers.find(x=>x.id===txn.partyId);
+    const oldAmt=txn.amount||0;
+    
+    // Reverse balance
+    let balanceDelta=0;
+    if(txn.type==='udhaar')balanceDelta=-oldAmt;
+    else if(txn.type==='jama'||txn.type==='loan_repay'||txn.type==='interest_paid')balanceDelta=oldAmt;
+    
+    // Delete transaction
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
+    
+    if(balanceDelta!==0&&c){
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({
+        balance:(c.balance||0)+balanceDelta
+      });
+    }
+    
+    toast(t('Deleted','डिलीट हो गया'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
+}
+
+/* ============ LOAN MENU ============ */
+function showLoanMenu(id){
+  const loan=transactions.find(t=>t.id===id);
+  if(!loan)return;
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${t('Loan Actions','लोन विकल्प')}</div>
+    <div style="padding:12px;background:var(--interest-bg);border-radius:12px;margin-bottom:14px;text-align:center">
+      <div style="font-size:11px;color:#92400e;font-weight:700;text-transform:uppercase">${t('Principal','मूलधन')}</div>
+      <div style="font-size:22px;font-weight:900;color:var(--interest);margin-top:4px">₹${loan.principal}</div>
+      <div style="font-size:12px;color:#92400e;margin-top:4px">${loan.rate}% / ${t('mo','माह')} • ${dateStr(loan.startDate)}</div>
+    </div>
+    <button class="btn btn-secondary" onclick="closeModal();editLoanConfirm('${id}')" style="margin-bottom:8px">
+      ✏️ ${t('Edit Loan','लोन एडिट')}
+    </button>
+    <button class="btn btn-danger" onclick="closeModal();deleteLoanConfirm('${id}')">
+      🗑️ ${t('Delete Loan','लोन डिलीट')}
+    </button>
+    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">
+      ${t('Cancel','रद्द')}
+    </button>
+  `);
+}
+
+function editLoanConfirm(id){
+  requirePIN(()=>{
+    const loan=transactions.find(t=>t.id===id);
+    if(!loan)return;
+    openEditLoanModal(loan);
+  });
+}
+
+function deleteLoanConfirm(id){
+  requirePIN(()=>{
+    if(!confirm(t('Delete this loan and related transactions?','यह लोन और इसके सारे लेन-देन डिलीट करें?')))return;
+    deleteLoan(id);
+  });
+}
+
+function openEditLoanModal(loan){
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${t('Edit Loan','लोन एडिट')}</div>
+    <div class="input-group"><label class="input-label">${t('Principal','मूलधन')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mPrincipal" class="text-input" value="${loan.principal}" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Rate (% per month)','दर (% प्रति माह)')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">%</span>
+        <input type="number" id="mRate" class="text-input" value="${loan.rate}" step="0.1" inputmode="decimal"></div></div>
+    <div class="input-group"><label class="input-label">${t('Start Date','शुरुआत तारीख')}</label>
+      <input type="date" id="mStart" class="text-input" value="${(loan.startDate||'').slice(0,10)}"></div>
+    <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
+      <input type="text" id="mNote" class="text-input" value="${esc(loan.note||'')}"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveEditedLoan('${loan.id}')">${t('Save','सेव')}</button>
+    </div>
+  `);
+}
+
+async function saveEditedLoan(id){
+  const loan=transactions.find(t=>t.id===id);
+  if(!loan)return;
+  const newP=parseFloat(document.getElementById('mPrincipal').value);
+  const newR=parseFloat(document.getElementById('mRate').value);
+  const newStart=document.getElementById('mStart').value;
+  const newNote=document.getElementById('mNote').value.trim();
+  if(!newP||newP<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
+  if(!newR||newR<=0)return toast(t('Enter rate','दर डालें'),'error');
+  
+  try{
+    const c=customers.find(x=>x.id===loan.partyId);
+    const oldP=loan.principal||0;
+    
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({
+      principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart
+    });
+    
+    // Adjust balance
+    if(c){
+      const delta=newP-oldP;
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({
+        balance:(c.balance||0)+delta
+      });
+    }
+    
+    closeModal();
+    toast(t('Updated','अपडेट हो गया'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
+}
+
+async function deleteLoan(id){
+  const loan=transactions.find(t=>t.id===id);
+  if(!loan)return;
+  try{
+    const c=customers.find(x=>x.id===loan.partyId);
+    const oldP=loan.principal||0;
+    
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
+    
+    // Reverse balance
+    if(c){
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({
+        balance:(c.balance||0)-oldP
+      });
+    }
+    
+    toast(t('Loan deleted','लोन डिलीट हो गया'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
+}
+
+/* ============ MODAL HELPERS ============ */
 function showModal(html){
   closeModal();
   const div=document.createElement('div');
@@ -671,7 +1116,7 @@ function showModal(html){
 }
 function closeModal(){const m=document.getElementById('activeModal');if(m)m.remove()}
 
-/* ⭐ PLACEHOLDER UPDATED: Vikram Singh Rajput */
+/* ============ ADD CUSTOMER ============ */
 function openAddCustomer(){
   showModal(`
     <div class="modal-handle"></div>
@@ -707,25 +1152,27 @@ async function saveCustomer(){
 }
 
 function openEditCustomer(){
-  const c=customers.find(x=>x.id===currentCustomerId);
-  if(!c)return;
-  showModal(`
-    <div class="modal-handle"></div>
-    <div class="modal-title">${t('Edit Customer','ग्राहक एडिट')}</div>
-    <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
-      <input type="text" id="mName" class="text-input" value="${esc(c.name)}"></div>
-    <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
-      <input type="tel" id="mPhone" class="text-input" value="${esc(c.phone||'')}" maxlength="10" inputmode="numeric"></div>
-    <div class="input-group"><label class="input-label">${t('Email','ईमेल')}</label>
-      <input type="email" id="mEmail" class="text-input" value="${esc(c.email||'')}" inputmode="email"></div>
-    <div class="input-group"><label class="input-label">${t('Udhaar Balance','उधार बकाया')}</label>
-      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
-        <input type="number" id="mBal" class="text-input" value="${c.balance||0}" inputmode="numeric"></div></div>
-    <div class="modal-actions">
-      <button class="btn btn-danger" onclick="deleteCustomer()">${t('Delete','डिलीट')}</button>
-      <button class="btn btn-primary" onclick="updateCustomer()">${t('Save','सेव')}</button>
-    </div>
-  `);
+  requirePIN(()=>{
+    const c=customers.find(x=>x.id===currentCustomerId);
+    if(!c)return;
+    showModal(`
+      <div class="modal-handle"></div>
+      <div class="modal-title">${t('Edit Customer','ग्राहक एडिट')}</div>
+      <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
+        <input type="text" id="mName" class="text-input" value="${esc(c.name)}"></div>
+      <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
+        <input type="tel" id="mPhone" class="text-input" value="${esc(c.phone||'')}" maxlength="10" inputmode="numeric"></div>
+      <div class="input-group"><label class="input-label">${t('Email','ईमेल')}</label>
+        <input type="email" id="mEmail" class="text-input" value="${esc(c.email||'')}" inputmode="email"></div>
+      <div class="input-group"><label class="input-label">${t('Udhaar Balance','उधार बकाया')}</label>
+        <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+          <input type="number" id="mBal" class="text-input" value="${c.balance||0}" inputmode="numeric"></div></div>
+      <div class="modal-actions">
+        <button class="btn btn-danger" onclick="deleteCustomer()">${t('Delete','डिलीट')}</button>
+        <button class="btn btn-primary" onclick="updateCustomer()">${t('Save','सेव')}</button>
+      </div>
+    `);
+  });
 }
 async function updateCustomer(){
   const name=document.getElementById('mName').value.trim();
@@ -750,6 +1197,7 @@ async function deleteCustomer(){
   }catch(e){console.error(e);toast('Error','error')}
 }
 
+/* ============ TXN MODALS ============ */
 function openTxnModal(type){
   const isU=type==='udhaar';
   showModal(`
@@ -837,6 +1285,8 @@ function openRepayModal(){
     <div class="input-group"><label class="input-label">${t('Amount','रकम')} *</label>
       <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
         <input type="number" id="mRepay" class="text-input" placeholder="0" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
+      <input type="date" id="mRepayDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveRepay()">${t('Save','सेव')}</button>
@@ -846,17 +1296,18 @@ function openRepayModal(){
 async function saveRepay(){
   const id=document.getElementById('mLoanSel').value;
   const amt=parseFloat(document.getElementById('mRepay').value);
+  const rdate=document.getElementById('mRepayDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   const loan=transactions.find(t2=>t2.id===id);
   if(!loan)return;
   const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
   if(amt>loan.principal-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
   try{
-    const newRepayments=[...(loan.repayments||[]),{date:new Date().toISOString().split('T')[0],amount:amt}];
+    const newRepayments=[...(loan.repayments||[]),{date:rdate,amount:amt}];
     const newStatus=repaid+amt>=loan.principal?'closed':'active';
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({repayments:newRepayments,status:newStatus});
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-      partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     closeModal();toast(t('Recorded','दर्ज'),'success');
   }catch(e){console.error(e);toast('Error','error')}
@@ -873,6 +1324,8 @@ function openIntPaidModal(){
     <div class="input-group"><label class="input-label">${t('Interest Amount','ब्याज रकम')} *</label>
       <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
         <input type="number" id="mIntAmt" class="text-input" placeholder="0" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
+      <input type="date" id="mIntDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveIntPaid()">${t('Save','सेव')}</button>
@@ -882,20 +1335,22 @@ function openIntPaidModal(){
 async function saveIntPaid(){
   const id=document.getElementById('mLoanSel2').value;
   const amt=parseFloat(document.getElementById('mIntAmt').value);
+  const idate=document.getElementById('mIntDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   const loan=transactions.find(t2=>t2.id===id);
   if(!loan)return;
   try{
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({interestPaid:(loan.interestPaid||0)+amt});
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-      partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     closeModal();toast(t('Recorded','दर्ज'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
 
+/* ============ REPORTS ============ */
 function renderReports(){
-  if(!userData){showScreen('login',true);return}
+  if(!userData){showScreen('dashboard',true);return}
   const totals=getTotals();
   document.getElementById('repU').textContent=fmt(totals.udhaar);
   document.getElementById('repB').textContent=fmt(totals.byaj);
@@ -942,7 +1397,7 @@ function renderReports(){
 }
 
 function renderSettings(){
-  if(!userData){showScreen('login',true);return}
+  if(!userData){showScreen('dashboard',true);return}
   document.getElementById('sShopName').textContent=userData.shopName||'-';
   document.getElementById('sPhone').textContent=userData.phone||'-';
   document.getElementById('sDefaultRate').value=userData.defaultRate||2;
