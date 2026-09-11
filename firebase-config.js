@@ -3,7 +3,7 @@
 // ============================================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC77zcxlzK8ISBZwXwQhANmPLq5kkBpns",
+  apiKey: "AIzaSyC77zcxIzK8ISBZwxwQhANmPlq5skkBpns",
   authDomain: "baba-sitaram-pro.firebaseapp.com",
   projectId: "baba-sitaram-pro",
   storageBucket: "baba-sitaram-pro.firebasestorage.app",
