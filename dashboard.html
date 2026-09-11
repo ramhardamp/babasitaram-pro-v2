@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
-<title>Dashboard - BABASITARAM PRO</title>
+<title>BABASITARAM PRO - Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -13,19 +13,21 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
 .app-shell{width:100%;max-width:480px;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 80px rgba(0,0,0,.3);overflow:hidden;display:flex;flex-direction:column}
 @media(min-width:500px){body{padding:24px 0}.app-shell{min-height:calc(100vh - 48px);border-radius:32px;max-height:940px}}
-
-/* TOP BAR */
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.3);position:sticky;top:0;z-index:50;flex-shrink:0}
+.top-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .top-title{font-size:15px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}
-.icon-btn:active{background:rgba(99,102,241,.2)}
-.screen-container{flex:1;overflow-y:auto;padding-bottom:90px}
+.back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.back-btn:active{background:rgba(99,102,241,.2)}
+.lang-toggle{display:flex;background:rgba(99,102,241,.1);border-radius:20px;padding:3px;gap:2px}
+.lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}
+.lang-btn.active{background:var(--primary);color:#fff}
+.screen-container{flex:1;overflow-y:auto;padding-bottom:20px}
 .screen-container::-webkit-scrollbar{width:0}
-.screen{display:none;animation:fadeSlide .3s}
+.screen{display:none;min-height:100%}
 .screen.active{display:block}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* DASH HERO */
+.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
+.loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .dash-hero{background:var(--gradient-dark);color:#fff;padding:22px 20px 24px;border-radius:0 0 28px 28px;margin-bottom:16px;box-shadow:0 12px 40px rgba(30,27,75,.3);position:relative;overflow:hidden}
 .dash-hero::before{content:'';position:absolute;top:-50%;right:-30%;width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
 .dash-greeting{font-size:11px;opacity:.8;margin-bottom:4px;position:relative;letter-spacing:.5px;text-transform:uppercase;font-weight:700}
@@ -38,66 +40,100 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .dash-split-value{font-size:15px;font-weight:900;margin-top:3px}
 .dash-split-value.red{color:#fca5a5}
 .dash-split-value.amber{color:#fcd34d}
-
-/* QUICK ACTIONS */
-.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 14px}
-.quick-btn{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;transition:all .2s}
-.quick-btn:active{transform:scale(.96);border-color:var(--primary);background:var(--primary-lighter)}
-.quick-icon{font-size:20px}
-.quick-lbl{font-size:9px;font-weight:800;color:var(--text);text-align:center;line-height:1.15}
-
-/* TABS */
+.dash-split-value.green{color:#86efac}
 .tabs{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 14px;border-radius:var(--radius-full);background:var(--white);border:2px solid var(--border);font-size:12px;font-weight:800;color:var(--text-muted);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
 .tab.active{background:var(--primary-lighter);color:var(--primary);border-color:var(--primary)}
-
-/* CUSTOMER CARD */
-.party-list{padding:0 16px}
-.party-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-.party-card:active{border-color:var(--primary);transform:scale(.99)}
-.party-card.customer{border-left:4px solid var(--info)}
-.party-card.supplier{border-left:4px solid var(--violet)}
-.pc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.pc-avatar{width:42px;height:42px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.3)}
-.pc-avatar.customer{background:linear-gradient(135deg,#3b82f6 0%,#6366f1 100%)}
-.pc-avatar.supplier{background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%)}
-.pc-info{flex:1;min-width:0}
-.pc-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pc-phone{font-size:11px;color:var(--text-muted);margin-top:2px}
-.pc-badge{font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;display:inline-block;margin-left:4px}
-.pc-badge.customer{background:var(--info-bg);color:var(--info)}
-.pc-badge.supplier{background:var(--violet-bg);color:var(--violet)}
-.pc-balance{text-align:right;flex-shrink:0}
-.pc-balance-amt{font-size:16px;font-weight:900;letter-spacing:-.3px}
-.pc-balance-amt.credit{color:var(--credit)}
-.pc-balance-amt.debit{color:var(--debit)}
-.pc-balance-amt.zero{color:var(--text-muted)}
-.pc-balance-lbl{font-size:9px;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-top:2px}
-
-/* EMPTY */
-.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted)}
-.empty-icon{font-size:60px;margin-bottom:14px;opacity:.4}
-.empty-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
-.empty-text{font-size:13px;line-height:1.5}
-
-/* BOTTOM TABS */
-.bottom-tabs{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:6px 4px 10px;z-index:40;box-shadow:0 -8px 32px rgba(31,38,135,.1)}
-.btab{flex:1;background:none;border:none;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-muted);font-family:inherit;position:relative}
-.btab.active{color:var(--primary)}
-.btab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:3px;background:var(--gradient);border-radius:0 0 4px 4px}
-.btab-icon{font-size:20px}
-.btab-lbl{font-size:10px;font-weight:800}
-
-/* FAB */
-.fab{position:absolute;bottom:90px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--gradient);color:#fff;border:none;font-size:28px;cursor:pointer;z-index:30;box-shadow:0 8px 24px rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center}
-.fab:active{transform:scale(.92)}
-
-/* MODAL */
+.customer-list{padding:0 16px}
+.customer-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.customer-card:active{border-color:var(--primary);transform:scale(.99)}
+.cc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cc-avatar{width:42px;height:42px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.3)}
+.cc-info{flex:1;min-width:0}
+.cc-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-phone{font-size:11px;color:var(--text-muted);margin-top:2px}
+.cc-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.cc-box{padding:8px 6px;border-radius:var(--radius-sm);text-align:center;border:1.5px solid}
+.cc-box.udhaar{background:var(--credit-bg);border-color:#fecaca}
+.cc-box.byaj{background:var(--interest-bg);border-color:#fde68a}
+.cc-box.total{background:var(--primary-lighter);border-color:var(--primary-light)}
+.cc-box-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.cc-box.udhaar .cc-box-label{color:#991b1b}
+.cc-box.byaj .cc-box-label{color:#92400e}
+.cc-box.total .cc-box-label{color:var(--primary-dark)}
+.cc-box-value{font-size:13px;font-weight:900;letter-spacing:-.3px}
+.cc-box.udhaar .cc-box-value{color:var(--credit)}
+.cc-box.byaj .cc-box-value{color:var(--interest)}
+.cc-box.total .cc-box-value{color:var(--primary-dark)}
+.detail-wrap{padding:16px}
+.customer-hero{background:var(--gradient-dark);color:#fff;padding:20px;border-radius:var(--radius-lg);margin-bottom:14px;position:relative;overflow:hidden}
+.customer-hero::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
+.ch-header{display:flex;align-items:center;gap:12px;position:relative;margin-bottom:16px}
+.ch-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0}
+.ch-name{font-size:18px;font-weight:900}
+.ch-meta{font-size:12px;opacity:.85;margin-top:2px}
+.ch-total-label{font-size:11px;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;position:relative}
+.ch-total-amount{font-size:34px;font-weight:900;margin-top:4px;position:relative;letter-spacing:-1px;line-height:1}
+.ch-split{display:flex;gap:8px;margin-top:14px;position:relative}
+.ch-split-item{flex:1;background:rgba(255,255,255,.12);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.15)}
+.ch-split-label{font-size:9px;opacity:.8;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.ch-split-value{font-size:15px;font-weight:900;margin-top:3px}
+.ch-split-value.red{color:#fca5a5}
+.ch-split-value.amber{color:#fcd34d}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.action-btn{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:12px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:left}
+.action-btn:active{transform:scale(.97)}
+.action-btn.wide{grid-column:1/-1}
+.action-icon{font-size:22px;flex-shrink:0}
+.action-title{font-size:13px;font-weight:800;color:var(--text)}
+.action-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.action-btn.udhaar{border-color:#fecaca;background:var(--credit-bg)}
+.action-btn.jama{border-color:#bbf7d0;background:var(--debit-bg)}
+.action-btn.loan{border-color:#fde68a;background:var(--interest-bg)}
+.action-btn.repay{border-color:#bfdbfe;background:var(--info-bg)}
+.action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}
+.action-btn.edit{border-color:#e2e8f0}
+.section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}
+.loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px}
+.loan-card.closed{border-color:#e2e8f0;opacity:.7}
+.loan-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px}
+.loan-title{font-size:13px;font-weight:900}
+.loan-note{font-size:11px;color:var(--text-muted);margin-top:3px}
+.loan-rate{font-size:11px;color:var(--interest);font-weight:800;background:var(--interest-bg);padding:4px 9px;border-radius:12px;flex-shrink:0}
+.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loan-item{padding:9px 10px;background:var(--bg);border-radius:8px}
+.loan-item-label{font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+.loan-item-value{font-size:14px;font-weight:900;margin-top:3px;letter-spacing:-.3px}
+.loan-item-value.amber{color:var(--interest)}
+.loan-item-value.red{color:var(--credit)}
+.loan-item-value.green{color:var(--debit)}
+.loan-item-value.blue{color:var(--info)}
+.loan-progress{margin-top:10px;background:var(--bg);border-radius:6px;height:6px;overflow:hidden}
+.loan-progress-bar{height:100%;background:var(--gradient);transition:width .4s}
+.loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}
+.loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}
+.loan-status.active{background:#dcfce7;color:#15803d}
+.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.txn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.txn-icon.udhaar{background:var(--credit-bg)}
+.txn-icon.jama{background:var(--debit-bg)}
+.txn-icon.byaj_loan{background:var(--interest-bg)}
+.txn-icon.loan_repay{background:var(--info-bg)}
+.txn-icon.interest_paid{background:var(--violet-bg)}
+.txn-info{flex:1;min-width:0}
+.txn-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txn-date{font-size:11px;color:var(--text-muted);margin-top:2px}
+.txn-amt{font-size:14px;font-weight:900;flex-shrink:0;letter-spacing:-.3px}
+.txn-amt.udhaar{color:var(--credit)}
+.txn-amt.jama{color:var(--debit)}
+.txn-amt.byaj_loan{color:var(--interest)}
+.txn-amt.loan_repay{color:var(--info)}
+.txn-amt.interest_paid{color:var(--violet)}
 .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;backdrop-filter:blur(4px)}
 @media(min-width:500px){.modal-overlay{align-items:center}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:var(--white);width:100%;max-width:480px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:20px;max-height:92vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
+.modal{background:var(--white);width:100%;max-width:480px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:20px;max-height:92vh;overflow-y:auto;animation:slideUp .3s}
 @media(min-width:500px){.modal{border-radius:var(--radius-xl);max-height:88vh}}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
@@ -117,74 +153,68 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .btn-danger{background:var(--credit-bg);color:var(--credit);border:2px solid #fecaca;margin-top:8px}
 .modal-actions{display:flex;gap:10px;margin-top:10px}
 .modal-actions .btn{flex:1;margin-top:0}
-.error-text{color:var(--error);font-size:12px;margin-top:10px;text-align:center;padding:10px 14px;background:var(--error-bg);border-radius:var(--radius-sm);font-weight:600;border:1px solid #fecaca}
-.hidden{display:none!important}
-.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-icon{font-size:56px;margin-bottom:12px;opacity:.4}
+.empty-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
+.empty-text{font-size:12px}
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:13px 24px;border-radius:var(--radius-full);font-size:13px;font-weight:700;z-index:999;opacity:0;transition:all .3s;pointer-events:none;max-width:90%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
-
-/* PARTY DETAIL */
-.detail-wrap{padding:16px}
-.party-hero{background:var(--gradient-dark);color:#fff;padding:20px;border-radius:var(--radius-lg);margin-bottom:14px;position:relative;overflow:hidden}
-.party-hero::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
-.ph-header{display:flex;align-items:center;gap:12px;position:relative;margin-bottom:16px}
-.ph-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0}
-.ph-name{font-size:18px;font-weight:900}
-.ph-meta{font-size:12px;opacity:.85;margin-top:2px}
-.ph-bal-label{font-size:11px;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;position:relative}
-.ph-bal-amount{font-size:34px;font-weight:900;margin-top:4px;position:relative;letter-spacing:-1px;line-height:1}
-.ph-split{display:flex;gap:8px;margin-top:14px;position:relative}
-.ph-split-item{flex:1;background:rgba(255,255,255,.12);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.15)}
-.ph-split-label{font-size:9px;opacity:.8;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
-.ph-split-value{font-size:15px;font-weight:900;margin-top:3px}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.action-btn{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:12px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:left}
-.action-btn:active{transform:scale(.97)}
-.action-btn.wide{grid-column:1/-1}
-.action-icon{font-size:22px;flex-shrink:0}
-.action-title{font-size:13px;font-weight:800}
-.action-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
-.action-btn.udhaar{border-color:#fecaca;background:var(--credit-bg)}
-.action-btn.jama{border-color:#bbf7d0;background:var(--debit-bg)}
-.action-btn.loan{border-color:#fde68a;background:var(--interest-bg)}
-.action-btn.edit{border-color:#e2e8f0}
-.section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}
-.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
-.txn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.txn-icon.udhaar{background:var(--credit-bg)}
-.txn-icon.jama{background:var(--debit-bg)}
-.txn-icon.byaj_loan{background:var(--interest-bg)}
-.txn-icon.loan_repay{background:var(--info-bg)}
-.txn-icon.interest_paid{background:var(--violet-bg)}
-.txn-info{flex:1;min-width:0}
-.txn-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.txn-date{font-size:11px;color:var(--text-muted);margin-top:2px}
-.txn-amt{font-size:14px;font-weight:900;flex-shrink:0}
-.txn-amt.udhaar{color:var(--credit)}
-.txn-amt.jama{color:var(--debit)}
-.txn-amt.byaj_loan{color:var(--interest)}
-.txn-amt.loan_repay{color:var(--info)}
-.txn-amt.interest_paid{color:var(--violet)}
-
-/* LOADING */
-.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
-.loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
-.loading-text{font-size:14px;color:var(--text-muted);font-weight:600}
-
-@media(max-width:360px){.dash-total-amount{font-size:30px}.quick-grid{grid-template-columns:repeat(2,1fr)}}
-@media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text);background:var(--white)}.bottom-tabs,.top-bar{background:rgba(30,27,75,.95)}}
+.fab{position:absolute;bottom:90px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--gradient);color:#fff;border:none;font-size:28px;cursor:pointer;z-index:30;box-shadow:0 8px 24px rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.92)}
+.bottom-tabs{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:6px 4px 10px;z-index:40;box-shadow:0 -8px 32px rgba(31,38,135,.1)}
+.btab{flex:1;background:none;border:none;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-muted);font-family:inherit;position:relative}
+.btab.active{color:var(--primary)}
+.btab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:3px;background:var(--gradient);border-radius:0 0 4px 4px}
+.btab-icon{font-size:20px}
+.btab-label{font-size:10px;font-weight:800}
+.report-wrap{padding:16px}
+.report-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:12px}
+.report-title{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;color:var(--text)}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:130px;padding-bottom:24px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.bar-group{display:flex;gap:2px;width:100%;height:100%;align-items:flex-end}
+.bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height .4s}
+.bar.udhaar{background:linear-gradient(180deg,#f87171 0%,#dc2626 100%)}
+.bar.byaj{background:linear-gradient(180deg,#fbbf24 0%,#d97706 100%)}
+.bar.jama{background:linear-gradient(180deg,#4ade80 0%,#16a34a 100%)}
+.bar-label{position:absolute;bottom:-20px;font-size:10px;color:var(--text-muted);font-weight:700}
+.legend{display:flex;gap:12px;margin-top:12px;justify-content:center;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);font-weight:700}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px}
+.stat-label{font-size:10px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.stat-value{font-size:20px;font-weight:900;margin-top:4px;letter-spacing:-.5px}
+.settings-wrap{padding:16px}
+.settings-section{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);margin-bottom:14px;overflow:hidden}
+.settings-item{display:flex;justify-content:space-between;align-items:center;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.settings-item:last-child{border-bottom:none}
+.settings-item:active{background:var(--bg)}
+.settings-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.settings-icon{font-size:20px;width:26px;text-align:center}
+.settings-label{font-size:14px;font-weight:700}
+.settings-sublabel{font-size:11px;color:var(--text-muted);margin-top:2px}
+.settings-arrow{color:var(--text-light);font-size:18px;margin-left:8px}
+.settings-header{font-size:11px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;padding:16px 4px 8px}
+.hidden{display:none!important}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 </style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
 
   <div class="top-bar">
-    <div class="top-title" id="topTitle">📒 Loading...</div>
-    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
-    <button class="icon-btn" onclick="handleLogout()" title="Logout">🚪</button>
+    <div class="top-left">
+      <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
+      <div class="top-title" id="topTitle">📒 Loading...</div>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn active" data-lang="hi" onclick="setLang('hi')">हिं</button>
+    </div>
   </div>
 
   <div class="screen-container" id="screenContainer">
@@ -193,1022 +223,806 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div id="loadingScreen">
       <div class="loading-wrap">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Data load ho raha hai...</div>
+        <div style="color:var(--text-muted);font-size:14px;font-weight:600">Data load ho raha hai...</div>
       </div>
     </div>
 
     <!-- DASHBOARD -->
     <div id="screen-dashboard" class="screen">
       <div class="dash-hero">
-        <div class="dash-greeting">नमस्ते 👋</div>
-        <div class="dash-shop" id="dashShop">मेरा व्यवसाय</div>
-        <div class="dash-total-label">कुल बकाया (ग्राहकों से)</div>
-        <div class="dash-total-amount" id="dashTotal">₹0</div>
+        <div class="dash-greeting" id="dGreet">नमस्ते 👋</div>
+        <div class="dash-shop" id="dShop">मेरा व्यवसाय</div>
+        <div class="dash-total-label" id="dTotalLbl">कुल बकाया</div>
+        <div class="dash-total-amount" id="dTotal">₹0</div>
         <div class="dash-split">
           <div class="dash-split-item">
-            <div class="dash-split-label">📤 उधार</div>
-            <div class="dash-split-value red" id="dashUdhaar">₹0</div>
+            <div class="dash-split-label">📤 <span id="dLblU">उधार</span></div>
+            <div class="dash-split-value red" id="dUdhaar">₹0</div>
           </div>
           <div class="dash-split-item">
-            <div class="dash-split-label">📈 ब्याज</div>
-            <div class="dash-split-value amber" id="dashByaj">₹0</div>
+            <div class="dash-split-label">📈 <span id="dLblB">ब्याज</span></div>
+            <div class="dash-split-value amber" id="dByaj">₹0</div>
+          </div>
+          <div class="dash-split-item">
+            <div class="dash-split-label">✅ <span id="dLblP">जमा</span></div>
+            <div class="dash-split-value green" id="dPaid">₹0</div>
           </div>
         </div>
       </div>
-
-      <div class="quick-grid">
-        <button class="quick-btn" onclick="openAddParty('customer')">
-          <div class="quick-icon">👤</div>
-          <div class="quick-lbl">ग्राहक</div>
-        </button>
-        <button class="quick-btn" onclick="openAddParty('supplier')">
-          <div class="quick-icon">🏭</div>
-          <div class="quick-lbl">सप्लायर</div>
-        </button>
-        <button class="quick-btn" onclick="switchTab('reports')">
-          <div class="quick-icon">📊</div>
-          <div class="quick-lbl">रिपोर्ट</div>
-        </button>
-        <button class="quick-btn" onclick="openSettings()">
-          <div class="quick-icon">⚙️</div>
-          <div class="quick-lbl">सेटिंग</div>
+      <div style="padding:0 16px 12px;">
+        <button class="btn btn-primary" onclick="openAddCustomer()" style="font-size:14px;min-height:48px;">
+          ➕ <span id="btnAddC">नया ग्राहक जोड़ें</span>
         </button>
       </div>
-
       <div class="tabs">
-        <div class="tab active" data-filter="all" onclick="setFilter('all')">सभी</div>
-        <div class="tab" data-filter="customer" onclick="setFilter('customer')">👤 ग्राहक</div>
-        <div class="tab" data-filter="supplier" onclick="setFilter('supplier')">🏭 सप्लायर</div>
-        <div class="tab" data-filter="udhaar" onclick="setFilter('udhaar')">📤 उधार वाले</div>
+        <div class="tab active" data-filter="all" onclick="setFilter('all')"><span id="fAll">सभी</span></div>
+        <div class="tab" data-filter="udhaar" onclick="setFilter('udhaar')">📤 <span id="fU">उधार</span></div>
+        <div class="tab" data-filter="byaj" onclick="setFilter('byaj')">📈 <span id="fB">ब्याज</span></div>
+        <div class="tab" data-filter="clear" onclick="setFilter('clear')">✅ <span id="fC">साफ</span></div>
       </div>
-
-      <div class="party-list" id="partyList"></div>
+      <div class="customer-list" id="customerList"></div>
     </div>
 
-    <!-- PARTY DETAIL -->
-    <div id="screen-party" class="screen">
-      <div class="detail-wrap" id="partyDetail"></div>
+    <!-- CUSTOMER DETAIL -->
+    <div id="screen-customer" class="screen">
+      <div class="detail-wrap" id="customerDetail"></div>
     </div>
 
     <!-- REPORTS -->
     <div id="screen-reports" class="screen">
-      <div style="padding:16px">
-        <div style="font-size:18px;font-weight:900;margin-bottom:14px">📊 रिपोर्ट</div>
-        <div id="reportsContent"></div>
+      <div class="report-wrap">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label" id="rLbl1">कुल उधार</div><div class="stat-value" id="repU" style="color:var(--credit)">₹0</div></div>
+          <div class="stat-card"><div class="stat-label" id="rLbl2">कुल ब्याज</div><div class="stat-value" id="repB" style="color:var(--interest)">₹0</div></div>
+          <div class="stat-card"><div class="stat-label" id="rLbl3">कुल जमा</div><div class="stat-value" id="repJ" style="color:var(--debit)">₹0</div></div>
+          <div class="stat-card"><div class="stat-label" id="rLbl4">कुल बकाया</div><div class="stat-value" id="repD" style="color:var(--primary)">₹0</div></div>
+        </div>
+        <div class="report-card">
+          <div class="report-title" id="rT1">पिछले 7 दिन का लेन-देन</div>
+          <div class="bar-chart" id="reportChart"></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div><span id="rL1">उधार</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div><span id="rL2">ब्याज</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div><span id="rL3">जमा</span></div>
+          </div>
+        </div>
+        <div class="report-card">
+          <div class="report-title" id="rT2">टॉप ग्राहक (बकाया द्वारा)</div>
+          <div id="topCustomers"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="screen-settings" class="screen">
+      <div class="settings-wrap">
+        <div class="settings-header" id="sH1">व्यवसाय</div>
+        <div class="settings-section">
+          <div class="settings-item" onclick="editShop()">
+            <div class="settings-left"><div class="settings-icon">🏪</div><div><div class="settings-label" id="sShopLbl">व्यवसाय का नाम</div><div class="settings-sublabel" id="sShopName">-</div></div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-left"><div class="settings-icon">📱</div><div><div class="settings-label" id="sPhoneLbl">मोबाइल</div><div class="settings-sublabel" id="sPhone">-</div></div></div>
+          </div>
+        </div>
+
+        <div class="settings-header" id="sH2">ब्याज सेटिंग्स</div>
+        <div class="settings-section">
+          <div class="settings-item">
+            <div class="settings-left"><div class="settings-icon">📈</div><div><div class="settings-label" id="sRateLbl">डिफ़ॉल्ट ब्याज दर</div><div class="settings-sublabel" id="sRateSub">प्रति माह (%)</div></div></div>
+            <input type="number" id="sDefaultRate" value="2" step="0.1" style="width:70px;height:36px;padding:6px;border:2px solid var(--border);border-radius:8px;text-align:center;font-weight:800;font-size:14px;font-family:inherit;background:var(--white);color:var(--text)" onchange="saveSettings()">
+          </div>
+        </div>
+
+        <div class="settings-header" id="sH3">डेटा</div>
+        <div class="settings-section">
+          <div class="settings-item" onclick="exportData()">
+            <div class="settings-left"><div class="settings-icon">📤</div><div class="settings-label" id="sExport">डेटा एक्सपोर्ट (JSON)</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="showLogoutConfirm()">
+            <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label" id="sLogout" style="color:var(--credit)">लॉगआउट</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+
+        <div class="settings-header" id="sH4">ऐप के बारे में</div>
+        <div class="settings-section">
+          <div class="settings-item">
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 5.0 Cloud</div></div></div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <button class="fab" id="fab" onclick="openQuickAdd()">+</button>
+  <button class="fab hidden" id="fab" onclick="openAddCustomer()">+</button>
 
-  <div class="bottom-tabs">
-    <button class="btab active" data-view="dashboard" onclick="switchTab('dashboard')">
-      <div class="btab-icon">🏠</div>
-      <div class="btab-lbl">होम</div>
-    </button>
-    <button class="btab" data-view="reports" onclick="switchTab('reports')">
-      <div class="btab-icon">📊</div>
-      <div class="btab-lbl">रिपोर्ट</div>
-    </button>
-    <button class="btab" data-view="settings" onclick="switchTab('settings')">
-      <div class="btab-icon">⚙️</div>
-      <div class="btab-lbl">सेटिंग</div>
-    </button>
+  <div class="bottom-tabs hidden" id="bottomTabs">
+    <button class="btab active" data-view="dashboard" onclick="switchTab('dashboard')"><div class="btab-icon">🏠</div><div class="btab-label" id="btH">होम</div></button>
+    <button class="btab" data-view="reports" onclick="switchTab('reports')"><div class="btab-icon">📊</div><div class="btab-label" id="btR">रिपोर्ट</div></button>
+    <button class="btab" data-view="settings" onclick="switchTab('settings')"><div class="btab-icon">⚙️</div><div class="btab-label" id="btS">सेटिंग्स</div></button>
   </div>
 
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<!-- FIREBASE CONFIG -->
 <script src="firebase-config.js"></script>
 
 <script>
 /* ============================================================
-   BABASITARAM PRO - REAL DASHBOARD with FIRESTORE
+   BABASITARAM PRO - Full Featured Dashboard with Firestore
 ============================================================ */
 
+let currentLang = localStorage.getItem('bsp_lang') || 'hi';
+let currentScreen = 'loading';
+let screenHistory = [];
+let currentCustomerId = null;
+let currentFilter = 'all';
 let currentUser = null;
 let userData = null;
-let parties = [];        // Customers + Suppliers
-let transactions = [];   // All transactions
-let currentFilter = 'all';
-let currentPartyId = null;
-let unsubParties = null;
+let customers = [];
+let transactions = [];
+let unsubCustomers = null;
 let unsubTransactions = null;
 
-/* ============ INIT ============ */
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = 'index.html';
-    return;
-  }
-  currentUser = user;
-  console.log('✅ User:', user.email);
+const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings'];
+
+/* ============ FORMAT ============ */
+function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
+function fmtSigned(n){if(n===0)return '₹0';return (n<0?'-':'')+fmt(n)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function t(en,hi){return currentLang==='hi'?hi:en}
+function dateStr(d){
+  if(!d)return '-';
+  try{const date=d.toDate?d.toDate():new Date(d);return date.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return '-'}
+}
+
+/* ============ CALCULATIONS ============ */
+function monthsBetween(start,end){
+  const s=new Date(start),e=new Date(end);
+  let years=e.getFullYear()-s.getFullYear();
+  let months=e.getMonth()-s.getMonth();
+  let days=e.getDate()-s.getDate();
+  if(days<0){months-=1;const prevMonth=new Date(e.getFullYear(),e.getMonth(),0).getDate();days+=prevMonth}
+  return Math.max(0,years*12+months+days/30);
+}
+function calcLoan(loan){
+  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
+  const currentP=Math.max(0,loan.principal-repaid);
+  const months=monthsBetween(loan.startDate,new Date());
+  const interestAccr=Math.round((currentP*loan.rate*months)/100);
+  const intPaid=loan.interestPaid||0;
+  const intOut=Math.max(0,interestAccr-intPaid);
+  return{repaidPrincipal:repaid,currentPrincipal:Math.round(currentP),months:Math.round(months*10)/10,interestAccrued:interestAccr,interestPaid:Math.round(intPaid),interestOutstanding:Math.round(intOut),loanTotal:Math.round(currentP+intOut),progress:loan.principal>0?Math.round((repaid/loan.principal)*100):0};
+}
+function getLoans(cid){return transactions.filter(t=>t.partyId===cid&&t.type==='byaj_loan'&&t.status==='active')}
+function getSummary(cid){
+  const c=customers.find(x=>x.id===cid);
+  if(!c)return null;
+  const u=c.balance||0;
+  const loans=getLoans(cid);
+  let byajBalance=0;
+  loans.forEach(l=>{const m=calcLoan(l);byajBalance+=m.loanTotal});
+  return{udhaarBalance:u,byajBalance,grandTotal:u+byajBalance,loans};
+}
+function getAllSummaries(){return customers.map(c=>({...c,...getSummary(c.id)}))}
+function getTotals(){
+  let u=0,b=0,t2=0,p=0;
+  customers.forEach(c=>{
+    const s=getSummary(c.id);
+    if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}
+  });
+  transactions.forEach(x=>{if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(x.amount||0)});
+  return{udhaar:u,byaj:b,total:t2,paid:p};
+}
+
+/* ============ LANGUAGE ============ */
+function setLang(lang){
+  currentLang=lang;
+  localStorage.setItem('bsp_lang',lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  updateTexts();
+  if(currentScreen==='dashboard')renderDashboard();
+  else if(currentScreen==='reports')renderReports();
+  else if(currentScreen==='settings')renderSettings();
+  else if(currentScreen==='customer')renderCustomerDetail();
+}
+function updateTexts(){
+  const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt};
+  set('dGreet',t('Welcome 👋','नमस्ते 👋'));
+  set('dTotalLbl',t('TOTAL DUE','कुल बकाया'));
+  set('dLblU',t('Udhaar','उधार'));
+  set('dLblB',t('Byaj','ब्याज'));
+  set('dLblP',t('Paid','जमा'));
+  set('btnAddC',t('Add New Customer','नया ग्राहक जोड़ें'));
+  set('fAll',t('All','सभी'));
+  set('fU',t('Udhaar','उधार'));
+  set('fB',t('Byaj','ब्याज'));
+  set('fC',t('Clear','साफ'));
+  set('rLbl1',t('Total Udhaar','कुल उधार'));
+  set('rLbl2',t('Total Byaj','कुल ब्याज'));
+  set('rLbl3',t('Total Paid','कुल जमा'));
+  set('rLbl4',t('Total Due','कुल बकाया'));
+  set('rT1',t('Last 7 Days','पिछले 7 दिन का लेन-देन'));
+  set('rT2',t('Top Customers','टॉप ग्राहक (बकाया द्वारा)'));
+  set('rL1',t('Udhaar','उधार'));
+  set('rL2',t('Byaj','ब्याज'));
+  set('rL3',t('Paid','जमा'));
+  set('sH1',t('Business','व्यवसाय'));
+  set('sH2',t('Interest Settings','ब्याज सेटिंग्स'));
+  set('sH3',t('Data','डेटा'));
+  set('sH4',t('About','ऐप के बारे में'));
+  set('sShopLbl',t('Business Name','व्यवसाय का नाम'));
+  set('sPhoneLbl',t('Phone','मोबाइल'));
+  set('sRateLbl',t('Default Interest Rate','डिफ़ॉल्ट ब्याज दर'));
+  set('sRateSub',t('Per month (%)','प्रति माह (%)'));
+  set('sExport',t('Export Data (JSON)','डेटा एक्सपोर्ट (JSON)'));
+  set('sLogout',t('Logout','लॉगआउट'));
+  set('sSupport',t('Support','सहायता'));
+  set('btH',t('Home','होम'));
+  set('btR',t('Reports','रिपोर्ट'));
+  set('btS',t('Settings','सेटिंग्स'));
+}
+
+/* ============ NAVIGATION ============ */
+function updateBackButton(){
+  const btn=document.getElementById('backBtn');
+  if(!btn)return;
+  const shouldHide=NO_BACK_SCREENS.includes(currentScreen)||screenHistory.length===0;
+  btn.classList.toggle('hidden',shouldHide);
+}
+function showScreen(name,noPush){
+  if(!noPush&&currentScreen!==name)screenHistory.push(currentScreen);
+  currentScreen=name;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('screen-'+name);
+  if(el)el.classList.add('active');
+  document.getElementById('loadingScreen').style.display='none';
+  updateBackButton();
+  const showTabs=['dashboard','reports','settings'].includes(name);
+  document.getElementById('bottomTabs').classList.toggle('hidden',!showTabs);
+  document.getElementById('fab').classList.toggle('hidden',name!=='dashboard');
+  document.querySelectorAll('.btab').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
+  const titles={
+    dashboard:'📒 '+(userData?.shopName||'BABASITARAM PRO'),
+    customer:'← '+(customers.find(c=>c.id===currentCustomerId)?.name||''),
+    reports:'📊 '+t('Reports','रिपोर्ट'),
+    settings:'⚙️ '+t('Settings','सेटिंग्स')
+  };
+  document.getElementById('topTitle').textContent=titles[name]||'BABASITARAM PRO';
+  document.getElementById('screenContainer').scrollTop=0;
+  if(name==='dashboard')renderDashboard();
+  else if(name==='reports')renderReports();
+  else if(name==='settings')renderSettings();
+  else if(name==='customer')renderCustomerDetail();
+}
+function goBack(){
+  if(screenHistory.length===0){screenHistory=[];showScreen('dashboard',true);return}
+  const prev=screenHistory.pop();
+  if(NO_BACK_SCREENS.includes(prev))screenHistory=[];
+  showScreen(prev,true);
+}
+function switchTab(tab){screenHistory=[];currentScreen='';showScreen(tab,true)}
+
+/* ============ AUTH ============ */
+auth.onAuthStateChanged(async(user)=>{
+  if(!user){window.location.href='index.html';return}
+  currentUser=user;
   await loadUserData();
 });
 
-/* ============ LOAD USER DATA ============ */
-async function loadUserData() {
-  try {
-    const doc = await db.collection('users').doc(currentUser.uid).get();
-    if (!doc.exists) {
-      window.location.href = 'signup.html';
-      return;
-    }
-    userData = doc.data();
-    
-    // Check setup complete
-    if (!userData.shopName) {
-      window.location.href = 'signup.html';
-      return;
-    }
-
-    document.getElementById('dashShop').textContent = userData.shopName || 'मेरा व्यवसाय';
-    document.getElementById('topTitle').textContent = '📒 ' + (userData.shopName || 'BABASITARAM PRO');
-
-    // Hide loading, show dashboard
-    document.getElementById('loadingScreen').style.display = 'none';
-    switchTab('dashboard');
-
-    // Setup real-time listeners
-    setupRealtimeListeners();
-
-  } catch (error) {
-    console.error('Load user error:', error);
-    showToast('Data load nahi hua', 'error');
-  }
+async function loadUserData(){
+  try{
+    const doc=await db.collection('users').doc(currentUser.uid).get();
+    if(!doc.exists){window.location.href='signup.html';return}
+    userData=doc.data();
+    if(!userData.shopName){window.location.href='signup.html';return}
+    document.getElementById('dShop').textContent=userData.shopName;
+    document.getElementById('sDefaultRate').value=userData.defaultRate||2;
+    showScreen('dashboard',true);
+    setupListeners();
+  }catch(e){console.error(e);toast('Data load nahi hua','error')}
 }
 
-/* ============ REAL-TIME LISTENERS ============ */
-function setupRealtimeListeners() {
-  // Parties (Customers + Suppliers)
-  unsubParties = db.collection('users').doc(currentUser.uid)
-    .collection('parties')
-    .onSnapshot(snapshot => {
-      parties = [];
-      snapshot.forEach(doc => {
-        parties.push({ id: doc.id, ...doc.data() });
-      });
-      console.log('📋 Parties loaded:', parties.length);
-      if (document.getElementById('screen-dashboard').classList.contains('active')) {
-        renderDashboard();
-      }
-    }, err => console.error('Parties error:', err));
-
-  // Transactions
-  unsubTransactions = db.collection('users').doc(currentUser.uid)
-    .collection('transactions')
-    .orderBy('date', 'desc')
-    .onSnapshot(snapshot => {
-      transactions = [];
-      snapshot.forEach(doc => {
-        transactions.push({ id: doc.id, ...doc.data() });
-      });
-      console.log('📝 Transactions loaded:', transactions.length);
-      if (document.getElementById('screen-dashboard').classList.contains('active')) {
-        renderDashboard();
-      }
-    }, err => console.error('Transactions error:', err));
+function setupListeners(){
+  if(unsubCustomers)unsubCustomers();
+  if(unsubTransactions)unsubTransactions();
+  unsubCustomers=db.collection('users').doc(currentUser.uid).collection('parties')
+    .onSnapshot(snap=>{
+      customers=[];
+      snap.forEach(d=>customers.push({id:d.id,...d.data()}));
+      customers.sort((a,b)=>(b.balance||0)-(a.balance||0));
+      if(currentScreen==='dashboard')renderDashboard();
+      else if(currentScreen==='customer')renderCustomerDetail();
+    },err=>console.error('Customer error:',err));
+  unsubTransactions=db.collection('users').doc(currentUser.uid).collection('transactions')
+    .orderBy('date','desc')
+    .onSnapshot(snap=>{
+      transactions=[];
+      snap.forEach(d=>transactions.push({id:d.id,...d.data()}));
+      if(currentScreen==='dashboard')renderDashboard();
+      else if(currentScreen==='customer')renderCustomerDetail();
+      else if(currentScreen==='reports')renderReports();
+    },err=>console.error('Txn error:',err));
 }
 
-/* ============ RENDER DASHBOARD ============ */
-function renderDashboard() {
-  // Calculate totals
-  let totalUdhaar = 0;
-  let totalByaj = 0;
-  
-  parties.forEach(p => {
-    if (p.type === 'customer' && p.balance > 0) {
-      totalUdhaar += p.balance;
-    }
-  });
-
-  document.getElementById('dashTotal').textContent = fmt(totalUdhaar + totalByaj);
-  document.getElementById('dashUdhaar').textContent = fmt(totalUdhaar);
-  document.getElementById('dashByaj').textContent = fmt(totalByaj);
-
-  // Filter parties
-  let filtered = parties;
-  if (currentFilter === 'customer') filtered = parties.filter(p => p.type === 'customer');
-  else if (currentFilter === 'supplier') filtered = parties.filter(p => p.type === 'supplier');
-  else if (currentFilter === 'udhaar') filtered = parties.filter(p => p.balance > 0);
-
-  const list = document.getElementById('partyList');
-  
-  if (filtered.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">👥</div>
-        <div class="empty-title">कोई ग्राहक नहीं</div>
-        <div class="empty-text">नीचे + बटन दबाकर पहला ग्राहक जोड़ें</div>
-      </div>
-    `;
+/* ============ DASHBOARD ============ */
+function renderDashboard(){
+  if(!userData)return;
+  const backBtn=document.getElementById('backBtn');if(backBtn)backBtn.classList.add('hidden');
+  const totals=getTotals();
+  document.getElementById('dTotal').textContent=fmt(totals.total);
+  document.getElementById('dUdhaar').textContent=fmt(totals.udhaar);
+  document.getElementById('dByaj').textContent=fmt(totals.byaj);
+  document.getElementById('dPaid').textContent=fmt(totals.paid);
+  document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
+  let filtered=getAllSummaries();
+  if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
+  else if(currentFilter==='byaj')filtered=filtered.filter(s=>s.byajBalance>0);
+  else if(currentFilter==='clear')filtered=filtered.filter(s=>s.grandTotal===0&&s.udhaarBalance===0);
+  const list=document.getElementById('customerList');
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">${t('No customers','कोई ग्राहक नहीं')}</div><div class="empty-text">${t('Add first customer','पहला ग्राहक जोड़ें')}</div></div>`;
     return;
   }
-
-  list.innerHTML = filtered.map(p => renderPartyCard(p)).join('');
-}
-
-function renderPartyCard(p) {
-  const init = (p.name || '?').charAt(0).toUpperCase();
-  const balance = p.balance || 0;
-  const isSupplier = p.type === 'supplier';
-  
-  const balCls = isSupplier 
-    ? (balance > 0 ? 'credit' : balance < 0 ? 'debit' : 'zero')
-    : (balance > 0 ? 'credit' : balance < 0 ? 'debit' : 'zero');
-  
-  const balLabel = isSupplier 
-    ? (balance > 0 ? 'देना है' : balance < 0 ? 'एडवांस' : 'साफ')
-    : (balance > 0 ? 'लेना है' : balance < 0 ? 'एडवांस' : 'साफ');
-
-  return `
-    <div class="party-card ${isSupplier ? 'supplier' : 'customer'}" onclick="openParty('${p.id}')">
-      <div class="pc-header">
-        <div class="pc-avatar ${isSupplier ? 'supplier' : 'customer'}">${esc(init)}</div>
-        <div class="pc-info">
-          <div class="pc-name">
-            ${esc(p.name)} 
-            <span class="pc-badge ${isSupplier ? 'supplier' : 'customer'}">${isSupplier ? 'सप्लायर' : 'ग्राहक'}</span>
-          </div>
-          <div class="pc-phone">${esc(p.phone || '-')}</div>
-        </div>
-        <div class="pc-balance">
-          <div class="pc-balance-amt ${balCls}">₹${Math.abs(balance).toLocaleString('en-IN')}</div>
-          <div class="pc-balance-lbl">${balLabel}</div>
-        </div>
+  list.innerHTML=filtered.map(s=>{
+    const init=(s.name||'?').charAt(0).toUpperCase();
+    const total=s.grandTotal;
+    const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
+    return`<div class="customer-card" onclick="openCustomer('${s.id}')">
+      <div class="cc-header">
+        <div class="cc-avatar">${esc(init)}</div>
+        <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
+        <div style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
+        <div style="font-size:16px;font-weight:900;${totalColor}">${fmt(total)}</div></div>
       </div>
-    </div>
-  `;
-}
-
-/* ============ ADD PARTY ============ */
-function openAddParty(type) {
-  const isSupplier = type === 'supplier';
-  showModal(`
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isSupplier ? '🏭 नया सप्लायर' : '👤 नया ग्राहक'}</div>
-    <div class="input-group">
-      <label class="input-label">नाम *</label>
-      <input type="text" id="mName" class="text-input" placeholder="नाम" autocomplete="name">
-    </div>
-    <div class="input-group">
-      <label class="input-label">मोबाइल</label>
-      <input type="tel" id="mPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric">
-    </div>
-    <div class="input-group">
-      <label class="input-label">शुरुआती बकाया (वैकल्पिक)</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">₹</span>
-        <input type="number" id="mBalance" class="text-input" placeholder="0" inputmode="numeric">
+      <div class="cc-breakdown">
+        <div class="cc-box udhaar"><div class="cc-box-label">📤 ${t('Udhaar','उधार')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
+        <div class="cc-box byaj"><div class="cc-box-label">📈 ${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
+        <div class="cc-box total"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
       </div>
-      <div class="helper-text">${isSupplier ? 'जो आपको देना है' : 'जो उन्हें देना है'}</div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">रद्द</button>
-      <button class="btn btn-primary" onclick="saveParty('${type}')">
-        <span class="btn-text">सेव करें</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
-    </div>
-  `);
-  setTimeout(() => document.getElementById('mName')?.focus(), 300);
+    </div>`;
+  }).join('');
 }
+function setFilter(f){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
 
-async function saveParty(type) {
-  const name = document.getElementById('mName').value.trim();
-  const phone = document.getElementById('mPhone').value.replace(/\D/g, '').slice(0, 10);
-  const balance = parseFloat(document.getElementById('mBalance').value) || 0;
-  const btn = document.querySelector('#activeModal .btn-primary');
-
-  if (!name) return showToast('नाम डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    await db.collection('users').doc(currentUser.uid).collection('parties').add({
-      type: type,
-      name: name,
-      phone: phone,
-      balance: balance,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+/* ============ CUSTOMER DETAIL ============ */
+function openCustomer(id){currentCustomerId=id;showScreen('customer')}
+function renderCustomerDetail(){
+  const s=getSummary(currentCustomerId);
+  if(!s){goBack();return}
+  const c=customers.find(x=>x.id===currentCustomerId);
+  if(!c){goBack();return}
+  const init=(c.name||'?').charAt(0).toUpperCase();
+  document.getElementById('topTitle').textContent='← '+c.name;
+  let loansHtml='';
+  if(s.loans.length>0){
+    loansHtml=`<div class="section-title">📈 ${t('Active Loans','सक्रिय लोन')} (${s.loans.length})</div>`;
+    s.loans.forEach((loan,i)=>{
+      const m=calcLoan(loan);
+      const notePart=loan.note&&loan.note.trim()?esc(loan.note)+' • ':'';
+      loansHtml+=`<div class="loan-card">
+        <div class="loan-header">
+          <div><div class="loan-title">${t('Loan','लोन')} #${i+1} • ${fmt(loan.principal)}</div>
+          <div class="loan-note">${notePart}${dateStr(loan.startDate)}</div></div>
+          <div class="loan-rate">${loan.rate}% / ${t('mo','माह')}</div>
+        </div>
+        <div class="loan-grid">
+          <div class="loan-item"><div class="loan-item-label">${t('Principal','मूलधन')}</div><div class="loan-item-value blue">${fmt(m.currentPrincipal)}</div></div>
+          <div class="loan-item"><div class="loan-item-label">${t('Interest','ब्याज')} (${m.months} ${t('mo','माह')})</div><div class="loan-item-value amber">${fmt(m.interestAccrued)}</div></div>
+          <div class="loan-item"><div class="loan-item-label">${t('Int. Paid','ब्याज भुगतान')}</div><div class="loan-item-value green">-${fmt(m.interestPaid)}</div></div>
+          <div class="loan-item"><div class="loan-item-label">${t('Total','कुल')}</div><div class="loan-item-value red">${fmt(m.loanTotal)}</div></div>
+        </div>
+        <div class="loan-progress"><div class="loan-progress-bar" style="width:${m.progress}%"></div></div>
+        <div class="loan-progress-text">${t('Repaid','वापस')}: ${fmt(m.repaidPrincipal)} / ${fmt(loan.principal)} (${m.progress}%)</div>
+        <div class="loan-status active">● ${t('ACTIVE','सक्रिय')}</div>
+      </div>`;
     });
-
-    closeModal();
-    showToast('✅ जोड़ दिया!', 'success');
-  } catch (error) {
-    console.error('Save party error:', error);
-    showToast('सेव नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
   }
-}
-
-/* ============ OPEN PARTY DETAIL ============ */
-function openParty(id) {
-  currentPartyId = id;
-  const p = parties.find(x => x.id === id);
-  if (!p) return;
-  renderPartyDetail(p);
-  switchTab('party');
-}
-
-function renderPartyDetail(p) {
-  const init = (p.name || '?').charAt(0).toUpperCase();
-  const balance = p.balance || 0;
-  const isSupplier = p.type === 'supplier';
-  const partyTxns = transactions.filter(t => t.partyId === p.id);
-
-  const balLabel = isSupplier 
-    ? (balance > 0 ? 'आपको देना है' : balance < 0 ? 'एडवांस' : 'साफ')
-    : (balance > 0 ? 'कुल बकाया' : balance < 0 ? 'एडवांस' : 'साफ');
-
-  // Actions
-  let actionsHtml = '';
-  if (isSupplier) {
-    actionsHtml = `
-      <div class="action-grid">
-        <button class="action-btn loan" onclick="openSupplierTxn('supplier_give')">
-          <div class="action-icon">🏭</div>
-          <div><div class="action-title">सामान मिला</div><div class="action-sub">देना बढ़ा</div></div>
-        </button>
-        <button class="action-btn jama" onclick="openSupplierTxn('supplier_pay')">
-          <div class="action-icon">💸</div>
-          <div><div class="action-title">भुगतान किया</div><div class="action-sub">देना घटा</div></div>
-        </button>
-        <button class="action-btn edit wide" onclick="editParty()">
-          <div class="action-icon">✏️</div>
-          <div><div class="action-title">एडिट करें</div><div class="action-sub">नाम, फोन, बकाया</div></div>
-        </button>
-      </div>
-    `;
-  } else {
-    actionsHtml = `
-      <div class="action-grid">
-        <button class="action-btn udhaar" onclick="openTxn('udhaar')">
-          <div class="action-icon">📤</div>
-          <div><div class="action-title">उधार दें</div><div class="action-sub">बिना ब्याज</div></div>
-        </button>
-        <button class="action-btn jama" onclick="openTxn('jama')">
-          <div class="action-icon">📥</div>
-          <div><div class="action-title">भुगतान लें</div><div class="action-sub">उधार का पैसा</div></div>
-        </button>
-        <button class="action-btn loan wide" onclick="openLoan()">
-          <div class="action-icon">📈</div>
-          <div><div class="action-title">ब्याज पर लोन</div><div class="action-sub">दर तय करें</div></div>
-        </button>
-        <button class="action-btn edit wide" onclick="editParty()">
-          <div class="action-icon">✏️</div>
-          <div><div class="action-title">एडिट करें</div><div class="action-sub">नाम, फोन, बकाया</div></div>
-        </button>
-      </div>
-    `;
+  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&t.type!=='byaj_loan');
+  let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div>`;
+  if(txns.length===0){
+    txnHtml+=`<div class="empty-state" style="padding:20px"><div class="empty-title">${t('No transactions','कोई लेन-देन नहीं')}</div></div>`;
+  }else{
+    const map={udhaar:{icon:'📤',cls:'udhaar',label:t('Udhaar','उधार'),sign:'+'},jama:{icon:'📥',cls:'jama',label:t('Payment','जमा'),sign:'-'},loan_repay:{icon:'💵',cls:'loan_repay',label:t('Loan Repayment','लोन वापसी'),sign:'-'},interest_paid:{icon:'💰',cls:'interest_paid',label:t('Interest Paid','ब्याज भुगतान'),sign:'-'}};
+    txns.forEach(txn=>{
+      const m=map[txn.type]||map.udhaar;
+      txnHtml+=`<div class="txn-item">
+        <div class="txn-icon ${m.cls}">${m.icon}</div>
+        <div class="txn-info"><div class="txn-title">${m.label}${txn.note?' • '+esc(txn.note):''}</div>
+        <div class="txn-date">${dateStr(txn.date)}</div></div>
+        <div class="txn-amt ${m.cls}">${m.sign}${fmt(txn.amount)}</div>
+      </div>`;
+    });
   }
-
-  // Transactions HTML
-  let txnHtml = '';
-  if (partyTxns.length === 0) {
-    txnHtml = `<div class="empty-state" style="padding:20px"><div class="empty-text">अभी कोई लेन-देन नहीं</div></div>`;
-  } else {
-    txnHtml = partyTxns.map(txn => {
-      const map = {
-        udhaar: { icon: '📤', cls: 'udhaar', label: 'उधार', sign: '+' },
-        jama: { icon: '📥', cls: 'jama', label: 'जमा', sign: '-' },
-        byaj_loan: { icon: '📈', cls: 'byaj_loan', label: 'लोन', sign: '+' },
-        loan_repay: { icon: '💵', cls: 'loan_repay', label: 'लोन वापसी', sign: '-' },
-        interest_paid: { icon: '💰', cls: 'interest_paid', label: 'ब्याज', sign: '-' },
-        supplier_give: { icon: '🏭', cls: 'udhaar', label: 'खरीद', sign: '+' },
-        supplier_pay: { icon: '💸', cls: 'jama', label: 'भुगतान', sign: '-' }
-      };
-      const m = map[txn.type] || map.udhaar;
-      const amt = txn.amount || txn.principal || 0;
-      return `
-        <div class="txn-item">
-          <div class="txn-icon ${m.cls}">${m.icon}</div>
-          <div class="txn-info">
-            <div class="txn-title">${m.label}${txn.note ? ' • ' + esc(txn.note) : ''}</div>
-            <div class="txn-date">${dateStr(txn.date)}</div>
-          </div>
-          <div class="txn-amt ${m.cls}">${m.sign}${fmt(amt)}</div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  document.getElementById('partyDetail').innerHTML = `
-    <div class="party-hero">
-      <div class="ph-header">
-        <div class="ph-avatar">${esc(init)}</div>
-        <div style="flex:1;min-width:0">
-          <div class="ph-name">${esc(p.name)}</div>
-          <div class="ph-meta">${esc(p.phone || '-')} • ${isSupplier ? 'सप्लायर' : 'ग्राहक'}</div>
-        </div>
+  document.getElementById('customerDetail').innerHTML=`
+    <div class="customer-hero">
+      <div class="ch-header">
+        <div class="ch-avatar">${esc(init)}</div>
+        <div style="flex:1;min-width:0"><div class="ch-name">${esc(c.name)}</div>
+        <div class="ch-meta">${esc(c.phone||'-')}${c.email?' • '+esc(c.email):''}</div></div>
       </div>
-      <div class="ph-bal-label">${balLabel}</div>
-      <div class="ph-bal-amount">₹${Math.abs(balance).toLocaleString('en-IN')}</div>
+      <div class="ch-total-label">${t('TOTAL DUE','कुल बकाया')}</div>
+      <div class="ch-total-amount">${fmt(s.grandTotal)}</div>
+      <div class="ch-split">
+        <div class="ch-split-item"><div class="ch-split-label">📤 ${t('Udhaar','उधार')}</div><div class="ch-split-value red">${fmt(s.udhaarBalance)}</div></div>
+        <div class="ch-split-item"><div class="ch-split-label">📈 ${t('Byaj','ब्याज')}</div><div class="ch-split-value amber">${fmt(s.byajBalance)}</div></div>
+      </div>
     </div>
-    ${actionsHtml}
-    <div class="section-title">📋 लेन-देन (${partyTxns.length})</div>
+    <div class="action-grid">
+      <button class="action-btn udhaar" onclick="openTxnModal('udhaar')"><div class="action-icon">📤</div><div><div class="action-title">${t('Give Udhaar','उधार दें')}</div><div class="action-sub">${t('No interest','बिना ब्याज')}</div></div></button>
+      <button class="action-btn jama" onclick="openTxnModal('jama')"><div class="action-icon">📥</div><div><div class="action-title">${t('Take Payment','भुगतान लें')}</div><div class="action-sub">${t('Udhaar payment','उधार का पैसा')}</div></div></button>
+      <button class="action-btn loan wide" onclick="openLoanModal()"><div class="action-icon">📈</div><div><div class="action-title">${t('Give Loan with Interest','ब्याज पर लोन दें')}</div><div class="action-sub">${t('Set rate, auto-calculate','दर तय करें, ऑटो ब्याज')}</div></div></button>
+      <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
+      <button class="action-btn interest" onclick="openIntPaidModal()"><div class="action-icon">💰</div><div><div class="action-title">${t('Interest Paid','ब्याज भुगतान')}</div><div class="action-sub">${t('Byaj received','ब्याज मिला')}</div></div></button>
+      <button class="action-btn edit wide" onclick="openEditCustomer()"><div class="action-icon">✏️</div><div><div class="action-title">${t('Edit Customer','ग्राहक एडिट करें')}</div><div class="action-sub">${t('Name, phone, email','नाम, फोन, ईमेल')}</div></div></button>
+    </div>
+    ${loansHtml}
     ${txnHtml}
   `;
 }
 
-/* ============ TXN ENTRY ============ */
-function openTxn(type) {
-  const isUdhaar = type === 'udhaar';
+/* ============ MODALS ============ */
+function showModal(html){
+  closeModal();
+  const div=document.createElement('div');
+  div.id='activeModal';div.className='modal-overlay';
+  div.innerHTML=`<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
+  div.onclick=e=>{if(e.target===div)closeModal()};
+  document.body.appendChild(div);
+}
+function closeModal(){const m=document.getElementById('activeModal');if(m)m.remove()}
+
+function openAddCustomer(){
   showModal(`
     <div class="modal-handle"></div>
-    <div class="modal-title">${isUdhaar ? '📤 उधार दें' : '📥 भुगतान लें'}</div>
-    <div class="input-group">
-      <label class="input-label">रकम *</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">₹</span>
-        <input type="number" id="mAmt" class="text-input" placeholder="0" inputmode="numeric">
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">नोट (वैकल्पिक)</label>
-      <input type="text" id="mNote" class="text-input" placeholder="जैसे: चीनी 5kg">
-    </div>
-    <div class="input-group">
-      <label class="input-label">तारीख</label>
-      <input type="date" id="mDate" class="text-input" value="${new Date().toISOString().split('T')[0]}">
-    </div>
+    <div class="modal-title">${t('New Customer','नया ग्राहक')}</div>
+    <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
+      <input type="text" id="mName" class="text-input" placeholder="${t('Ramesh Kumar','रमेश कुमार')}"></div>
+    <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
+      <input type="tel" id="mPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric"></div>
+    <div class="input-group"><label class="input-label">${t('Email','ईमेल')}</label>
+      <input type="email" id="mEmail" class="text-input" placeholder="customer@email.com" inputmode="email"></div>
+    <div class="input-group"><label class="input-label">${t('Opening Udhaar','शुरुआती उधार')}</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mBal" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">रद्द</button>
-      <button class="btn btn-primary" onclick="saveTxn('${type}')">
-        <span class="btn-text">सेव करें</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveCustomer()"><span class="btn-text">${t('Save','सेव')}</span></button>
     </div>
   `);
-  setTimeout(() => document.getElementById('mAmt')?.focus(), 300);
+  setTimeout(()=>document.getElementById('mName')?.focus(),300);
+}
+async function saveCustomer(){
+  const name=document.getElementById('mName').value.trim();
+  const phone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
+  const email=document.getElementById('mEmail').value.trim();
+  const bal=parseFloat(document.getElementById('mBal').value)||0;
+  if(!name)return toast(t('Enter name','नाम डालें'),'error');
+  try{
+    await db.collection('users').doc(currentUser.uid).collection('parties').add({
+      name,phone,email,balance:bal,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    closeModal();toast(t('Customer added','ग्राहक जोड़ा'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
 
-async function saveTxn(type) {
-  const amt = parseFloat(document.getElementById('mAmt').value);
-  const note = document.getElementById('mNote').value.trim();
-  const date = document.getElementById('mDate').value;
-  const btn = document.querySelector('#activeModal .btn-primary');
+function openEditCustomer(){
+  const c=customers.find(x=>x.id===currentCustomerId);
+  if(!c)return;
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${t('Edit Customer','ग्राहक एडिट')}</div>
+    <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
+      <input type="text" id="mName" class="text-input" value="${esc(c.name)}"></div>
+    <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
+      <input type="tel" id="mPhone" class="text-input" value="${esc(c.phone||'')}" maxlength="10" inputmode="numeric"></div>
+    <div class="input-group"><label class="input-label">${t('Email','ईमेल')}</label>
+      <input type="email" id="mEmail" class="text-input" value="${esc(c.email||'')}" inputmode="email"></div>
+    <div class="input-group"><label class="input-label">${t('Udhaar Balance','उधार बकाया')}</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mBal" class="text-input" value="${c.balance||0}" inputmode="numeric"></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="deleteCustomer()">${t('Delete','डिलीट')}</button>
+      <button class="btn btn-primary" onclick="updateCustomer()">${t('Save','सेव')}</button>
+    </div>
+  `);
+}
+async function updateCustomer(){
+  const name=document.getElementById('mName').value.trim();
+  if(!name)return toast(t('Enter name','नाम डालें'),'error');
+  try{
+    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({
+      name,phone:document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10),
+      email:document.getElementById('mEmail').value.trim(),
+      balance:parseFloat(document.getElementById('mBal').value)||0
+    });
+    closeModal();toast(t('Updated','अपडेट'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
+}
+async function deleteCustomer(){
+  if(!confirm(t('Delete customer and all transactions?','ग्राहक और सारे लेन-देन हटाएं?')))return;
+  try{
+    const txns=transactions.filter(t=>t.partyId===currentCustomerId);
+    for(const t2 of txns){await db.collection('users').doc(currentUser.uid).collection('transactions').doc(t2.id).delete()}
+    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).delete();
+    closeModal();currentCustomerId=null;screenHistory=[];showScreen('dashboard',true);
+    toast(t('Deleted','डिलीट'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
+}
 
-  if (!amt || amt <= 0) return showToast('रकम डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    const p = parties.find(x => x.id === currentPartyId);
-    if (!p) throw new Error('Party not found');
-
-    // Add transaction
+function openTxnModal(type){
+  const isU=type==='udhaar';
+  showModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">${isU?'📤 '+t('Give Udhaar','उधार दें'):'📥 '+t('Take Payment','भुगतान लें')}</div>
+    <div class="input-group"><label class="input-label">${t('Amount','रकम')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mAmt" class="text-input" placeholder="0" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
+      <input type="text" id="mNote" class="text-input" placeholder="${t('Optional','वैकल्पिक')}"></div>
+    <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
+      <input type="date" id="mDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveTxn('${type}')">${t('Save','सेव')}</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mAmt')?.focus(),300);
+}
+async function saveTxn(type){
+  const amt=parseFloat(document.getElementById('mAmt').value);
+  const note=document.getElementById('mNote').value.trim();
+  const date=document.getElementById('mDate').value;
+  if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  const c=customers.find(x=>x.id===currentCustomerId);
+  if(!c)return;
+  try{
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-      partyId: currentPartyId,
-      type: type,
-      amount: amt,
-      note: note,
-      date: date,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-
-    // Update party balance
-    const newBalance = (p.balance || 0) + (type === 'udhaar' ? amt : -amt);
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentPartyId).update({
-      balance: newBalance,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    closeModal();
-    showToast('✅ सेव हो गया!', 'success');
-  } catch (error) {
-    console.error('Save txn error:', error);
-    showToast('सेव नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
+    const newBal=(c.balance||0)+(type==='udhaar'?amt:-amt);
+    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({balance:newBal});
+    closeModal();toast(t('Saved','सेव हो गया'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
 
-/* ============ SUPPLIER TXN ============ */
-function openSupplierTxn(type) {
-  const isPay = type === 'supplier_pay';
+function openLoanModal(){
   showModal(`
     <div class="modal-handle"></div>
-    <div class="modal-title">${isPay ? '💸 भुगतान किया' : '🏭 सामान मिला'}</div>
-    <div class="input-group">
-      <label class="input-label">रकम *</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">₹</span>
-        <input type="number" id="mAmt" class="text-input" placeholder="0" inputmode="numeric">
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">नोट</label>
-      <input type="text" id="mNote" class="text-input" placeholder="वैकल्पिक">
-    </div>
-    <div class="input-group">
-      <label class="input-label">तारीख</label>
-      <input type="date" id="mDate" class="text-input" value="${new Date().toISOString().split('T')[0]}">
-    </div>
+    <div class="modal-title">📈 ${t('New Loan','नया लोन')}</div>
+    <div class="input-group"><label class="input-label">${t('Principal','मूलधन')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mPrincipal" class="text-input" placeholder="10000" inputmode="numeric"></div></div>
+    <div class="input-group"><label class="input-label">${t('Rate (% per month)','दर (% प्रति माह)')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">%</span>
+        <input type="number" id="mRate" class="text-input" value="${userData?.defaultRate||2}" step="0.1" inputmode="decimal"></div></div>
+    <div class="input-group"><label class="input-label">${t('Start Date','शुरुआत तारीख')}</label>
+      <input type="date" id="mStart" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
+      <input type="text" id="mNote" class="text-input" placeholder="${t('Optional','वैकल्पिक')}"></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">रद्द</button>
-      <button class="btn btn-primary" onclick="saveSupplierTxn('${type}')">
-        <span class="btn-text">सेव करें</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveLoan()">${t('Create','बनाएं')}</button>
     </div>
   `);
-  setTimeout(() => document.getElementById('mAmt')?.focus(), 300);
+  setTimeout(()=>document.getElementById('mPrincipal')?.focus(),300);
 }
-
-async function saveSupplierTxn(type) {
-  const amt = parseFloat(document.getElementById('mAmt').value);
-  const note = document.getElementById('mNote').value.trim();
-  const date = document.getElementById('mDate').value;
-  const btn = document.querySelector('#activeModal .btn-primary');
-
-  if (!amt || amt <= 0) return showToast('रकम डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    const p = parties.find(x => x.id === currentPartyId);
-    if (!p) throw new Error('Party not found');
-
+async function saveLoan(){
+  const p=parseFloat(document.getElementById('mPrincipal').value);
+  const r=parseFloat(document.getElementById('mRate').value);
+  const sd=document.getElementById('mStart').value;
+  const note=document.getElementById('mNote').value.trim();
+  if(!p||p<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
+  if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
+  const c=customers.find(x=>x.id===currentCustomerId);
+  if(!c)return;
+  try{
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-      partyId: currentPartyId,
-      type: type,
-      amount: amt,
-      note: note,
-      date: date,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note,status:'active',interestPaid:0,repayments:[],date:sd,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-
-    const newBalance = (p.balance || 0) + (type === 'supplier_give' ? amt : -amt);
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentPartyId).update({
-      balance: newBalance,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    closeModal();
-    showToast('✅ सेव हो गया!', 'success');
-  } catch (error) {
-    console.error('Save supplier txn error:', error);
-    showToast('सेव नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
+    const newBal=(c.balance||0)+p;
+    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({balance:newBal});
+    closeModal();toast(t('Loan created','लोन बनाया'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
 
-/* ============ LOAN ============ */
-function openLoan() {
+function openRepayModal(){
+  const loans=getLoans(currentCustomerId);
+  if(loans.length===0)return toast(t('No active loans','कोई सक्रिय लोन नहीं'),'error');
   showModal(`
     <div class="modal-handle"></div>
-    <div class="modal-title">📈 नया लोन (ब्याज के साथ)</div>
-    <div class="input-group">
-      <label class="input-label">मूलधन *</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">₹</span>
-        <input type="number" id="mPrincipal" class="text-input" placeholder="10000" inputmode="numeric">
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">ब्याज दर (% प्रति माह) *</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">%</span>
-        <input type="number" id="mRate" class="text-input" value="${userData?.defaultRate || 2}" step="0.1" inputmode="decimal">
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">शुरुआत तारीख</label>
-      <input type="date" id="mStart" class="text-input" value="${new Date().toISOString().split('T')[0]}">
-    </div>
-    <div class="input-group">
-      <label class="input-label">नोट</label>
-      <input type="text" id="mNote" class="text-input" placeholder="वैकल्पिक">
-    </div>
+    <div class="modal-title">💵 ${t('Loan Repayment','लोन वापसी')}</div>
+    <div class="input-group"><label class="input-label">${t('Select Loan','लोन चुनें')}</label>
+      <select id="mLoanSel" class="select-input">${loans.map((l,i)=>{const m=calcLoan(l);return `<option value="${l.id}">${t('Loan','लोन')} #${i+1} • ${fmt(m.currentPrincipal)} @ ${l.rate}%</option>`}).join('')}</select></div>
+    <div class="input-group"><label class="input-label">${t('Amount','रकम')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mRepay" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">रद्द</button>
-      <button class="btn btn-primary" onclick="saveLoan()">
-        <span class="btn-text">लोन बनाएं</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveRepay()">${t('Save','सेव')}</button>
     </div>
   `);
-  setTimeout(() => document.getElementById('mPrincipal')?.focus(), 300);
 }
-
-async function saveLoan() {
-  const principal = parseFloat(document.getElementById('mPrincipal').value);
-  const rate = parseFloat(document.getElementById('mRate').value);
-  const startDate = document.getElementById('mStart').value;
-  const note = document.getElementById('mNote').value.trim();
-  const btn = document.querySelector('#activeModal .btn-primary');
-
-  if (!principal || principal <= 0) return showToast('मूलधन डालें', 'error');
-  if (!rate || rate <= 0) return showToast('दर डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    const p = parties.find(x => x.id === currentPartyId);
-    if (!p) throw new Error('Party not found');
-
+async function saveRepay(){
+  const id=document.getElementById('mLoanSel').value;
+  const amt=parseFloat(document.getElementById('mRepay').value);
+  if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  const loan=transactions.find(t2=>t2.id===id);
+  if(!loan)return;
+  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
+  if(amt>loan.principal-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
+  try{
+    const newRepayments=[...(loan.repayments||[]),{date:new Date().toISOString().split('T')[0],amount:amt}];
+    const newStatus=repaid+amt>=loan.principal?'closed':'active';
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({repayments:newRepayments,status:newStatus});
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-      partyId: currentPartyId,
-      type: 'byaj_loan',
-      principal: principal,
-      rate: rate,
-      startDate: startDate,
-      note: note,
-      status: 'active',
-      interestPaid: 0,
-      date: startDate,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-
-    const newBalance = (p.balance || 0) + principal;
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentPartyId).update({
-      balance: newBalance,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    closeModal();
-    showToast('✅ लोन बनाया!', 'success');
-  } catch (error) {
-    console.error('Save loan error:', error);
-    showToast('सेव नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
+    closeModal();toast(t('Recorded','दर्ज'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
 
-/* ============ EDIT PARTY ============ */
-function editParty() {
-  const p = parties.find(x => x.id === currentPartyId);
-  if (!p) return;
-
+function openIntPaidModal(){
+  const loans=getLoans(currentCustomerId);
+  if(loans.length===0)return toast(t('No active loans','कोई सक्रिय लोन नहीं'),'error');
   showModal(`
     <div class="modal-handle"></div>
-    <div class="modal-title">✏️ एडिट करें</div>
-    <div class="input-group">
-      <label class="input-label">नाम *</label>
-      <input type="text" id="mName" class="text-input" value="${esc(p.name)}">
-    </div>
-    <div class="input-group">
-      <label class="input-label">मोबाइल</label>
-      <input type="tel" id="mPhone" class="text-input" value="${esc(p.phone || '')}" maxlength="10" inputmode="numeric">
-    </div>
-    <div class="input-group">
-      <label class="input-label">बकाया</label>
-      <div class="input-prefix-wrap">
-        <span class="input-prefix">₹</span>
-        <input type="number" id="mBalance" class="text-input" value="${p.balance || 0}" inputmode="numeric">
-      </div>
-    </div>
+    <div class="modal-title">💰 ${t('Interest Payment','ब्याज भुगतान')}</div>
+    <div class="input-group"><label class="input-label">${t('Select Loan','लोन चुनें')}</label>
+      <select id="mLoanSel2" class="select-input">${loans.map((l,i)=>{const m=calcLoan(l);return `<option value="${l.id}">${t('Loan','लोन')} #${i+1} • ${t('Int','ब्याज')}: ${fmt(m.interestOutstanding)}</option>`}).join('')}</select></div>
+    <div class="input-group"><label class="input-label">${t('Interest Amount','ब्याज रकम')} *</label>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
+        <input type="number" id="mIntAmt" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="modal-actions">
-      <button class="btn btn-danger" onclick="deleteParty()">🗑️</button>
-      <button class="btn btn-primary" onclick="updateParty()">
-        <span class="btn-text">सेव करें</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveIntPaid()">${t('Save','सेव')}</button>
     </div>
   `);
 }
-
-async function updateParty() {
-  const name = document.getElementById('mName').value.trim();
-  const phone = document.getElementById('mPhone').value.replace(/\D/g, '').slice(0, 10);
-  const balance = parseFloat(document.getElementById('mBalance').value) || 0;
-  const btn = document.querySelector('#activeModal .btn-primary');
-
-  if (!name) return showToast('नाम डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentPartyId).update({
-      name: name,
-      phone: phone,
-      balance: balance,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+async function saveIntPaid(){
+  const id=document.getElementById('mLoanSel2').value;
+  const amt=parseFloat(document.getElementById('mIntAmt').value);
+  if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  const loan=transactions.find(t2=>t2.id===id);
+  if(!loan)return;
+  try{
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({interestPaid:(loan.interestPaid||0)+amt});
+    await db.collection('users').doc(currentUser.uid).collection('transactions').add({
+      partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    closeModal();
-    showToast('✅ अपडेट हो गया!', 'success');
-  } catch (error) {
-    console.error('Update error:', error);
-    showToast('अपडेट नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
-}
-
-async function deleteParty() {
-  if (!confirm('पक्का? इसके सारे लेन-देन भी हट जाएंगे।')) return;
-  const btn = document.querySelector('#activeModal .btn-danger');
-  setBtnLoading(btn, true);
-
-  try {
-    // Delete all transactions of this party
-    const txns = transactions.filter(t => t.partyId === currentPartyId);
-    for (const t of txns) {
-      await db.collection('users').doc(currentUser.uid).collection('transactions').doc(t.id).delete();
-    }
-    
-    // Delete party
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentPartyId).delete();
-
-    closeModal();
-    currentPartyId = null;
-    switchTab('dashboard');
-    showToast('✅ डिलीट हो गया', 'success');
-  } catch (error) {
-    console.error('Delete error:', error);
-    showToast('डिलीट नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
-}
-
-/* ============ QUICK ADD ============ */
-function openQuickAdd() {
-  showModal(`
-    <div class="modal-handle"></div>
-    <div class="modal-title">➕ जल्दी जोड़ें</div>
-    <div class="action-grid">
-      <button class="action-btn udhaar" onclick="closeModal();openAddParty('customer')">
-        <div class="action-icon">👤</div>
-        <div><div class="action-title">नया ग्राहक</div></div>
-      </button>
-      <button class="action-btn loan" onclick="closeModal();openAddParty('supplier')">
-        <div class="action-icon">🏭</div>
-        <div><div class="action-title">नया सप्लायर</div></div>
-      </button>
-    </div>
-    <div class="modal-actions" style="margin-top:14px">
-      <button class="btn btn-secondary" onclick="closeModal()">बंद करें</button>
-    </div>
-  `);
-}
-
-/* ============ SETTINGS ============ */
-function openSettings() {
-  switchTab('settings');
+    closeModal();toast(t('Recorded','दर्ज'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
 
 /* ============ REPORTS ============ */
-function renderReports() {
-  let totalUdhaar = 0, totalJama = 0, totalByaj = 0;
-  
-  transactions.forEach(t => {
-    if (t.type === 'udhaar' || t.type === 'supplier_give') totalUdhaar += t.amount || 0;
-    else if (t.type === 'jama' || t.type === 'supplier_pay' || t.type === 'loan_repay' || t.type === 'interest_paid') totalJama += t.amount || 0;
-    else if (t.type === 'byaj_loan') totalByaj += t.principal || 0;
+function renderReports(){
+  if(!userData){showScreen('login',true);return}
+  const totals=getTotals();
+  document.getElementById('repU').textContent=fmt(totals.udhaar);
+  document.getElementById('repB').textContent=fmt(totals.byaj);
+  document.getElementById('repJ').textContent=fmt(totals.paid);
+  document.getElementById('repD').textContent=fmt(totals.total);
+  document.getElementById('topTitle').textContent='📊 '+t('Reports','रिपोर्ट');
+  const buckets=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*86400000);
+    const key=d.toISOString().split('T')[0];
+    buckets.push({key,label:d.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit'}),udhaar:0,byaj:0,jama:0});
+  }
+  transactions.forEach(t2=>{
+    const key=new Date(t2.date).toISOString().split('T')[0];
+    const b=buckets.find(x=>x.key===key);
+    if(!b)return;
+    if(t2.type==='udhaar')b.udhaar+=t2.amount||0;
+    else if(t2.type==='byaj_loan')b.byaj+=t2.principal||0;
+    else if(t2.type==='jama'||t2.type==='loan_repay'||t2.type==='interest_paid')b.jama+=t2.amount||0;
   });
-
-  document.getElementById('reportsContent').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-      <div style="background:var(--credit-bg);border:2px solid #fecaca;border-radius:14px;padding:14px">
-        <div style="font-size:10px;color:#991b1b;font-weight:800;text-transform:uppercase">कुल उधार</div>
-        <div style="font-size:22px;font-weight:900;color:var(--credit);margin-top:4px">${fmt(totalUdhaar)}</div>
+  const max=Math.max(1,...buckets.map(b=>Math.max(b.udhaar,b.byaj,b.jama)));
+  document.getElementById('reportChart').innerHTML=buckets.map(b=>`
+    <div class="bar-wrap">
+      <div class="bar-group">
+        <div class="bar udhaar" style="height:${(b.udhaar/max)*100}%"></div>
+        <div class="bar byaj" style="height:${(b.byaj/max)*100}%"></div>
+        <div class="bar jama" style="height:${(b.jama/max)*100}%"></div>
       </div>
-      <div style="background:var(--debit-bg);border:2px solid #bbf7d0;border-radius:14px;padding:14px">
-        <div style="font-size:10px;color:#065f46;font-weight:800;text-transform:uppercase">कुल जमा</div>
-        <div style="font-size:22px;font-weight:900;color:var(--debit);margin-top:4px">${fmt(totalJama)}</div>
-      </div>
-      <div style="background:var(--interest-bg);border:2px solid #fde68a;border-radius:14px;padding:14px">
-        <div style="font-size:10px;color:#92400e;font-weight:800;text-transform:uppercase">कुल ब्याज लोन</div>
-        <div style="font-size:22px;font-weight:900;color:var(--interest);margin-top:4px">${fmt(totalByaj)}</div>
-      </div>
-      <div style="background:var(--primary-lighter);border:2px solid var(--primary-light);border-radius:14px;padding:14px">
-        <div style="font-size:10px;color:var(--primary-dark);font-weight:800;text-transform:uppercase">कुल ग्राहक</div>
-        <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">${parties.length}</div>
-      </div>
-    </div>
-    
-    <div style="background:var(--white);border:2px solid var(--border);border-radius:14px;padding:16px;margin-top:14px">
-      <div style="font-size:13px;font-weight:900;margin-bottom:12px;text-transform:uppercase">टॉप ग्राहक (बकाया द्वारा)</div>
-      ${parties.filter(p => p.balance > 0).sort((a,b) => b.balance - a.balance).slice(0, 5).map(p => `
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:13px;font-weight:700">${esc(p.name)}</span>
-          <span style="font-size:14px;font-weight:900;color:var(--credit)">₹${p.balance.toLocaleString('en-IN')}</span>
-        </div>
-      `).join('') || '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">कोई बकाया नहीं</div>'}
-    </div>
-
-    <div style="background:var(--white);border:2px solid var(--border);border-radius:14px;padding:16px;margin-top:14px">
-      <div style="font-size:13px;font-weight:900;margin-bottom:12px;text-transform:uppercase">सारे लेन-देन</div>
-      ${transactions.slice(0, 20).map(t => {
-        const p = parties.find(x => x.id === t.partyId);
-        return `
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-            <div>
-              <div style="font-size:13px;font-weight:700">${esc(p?.name || 'Unknown')}</div>
-              <div style="font-size:11px;color:var(--text-muted)">${dateStr(t.date)} • ${t.type}</div>
-            </div>
-            <span style="font-size:13px;font-weight:900;color:var(--text)">₹${(t.amount || t.principal || 0).toLocaleString('en-IN')}</span>
-          </div>
-        `;
-      }).join('') || '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">कोई लेन-देन नहीं</div>'}
-    </div>
-  `;
-}
-
-/* ============ NAVIGATION ============ */
-function switchTab(tab) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.btab').forEach(b => b.classList.remove('active'));
-
-  if (tab === 'dashboard') {
-    document.getElementById('screen-dashboard').classList.add('active');
-    document.querySelector('.btab[data-view="dashboard"]').classList.add('active');
-    document.getElementById('fab').style.display = 'flex';
-    renderDashboard();
-  } else if (tab === 'party') {
-    document.getElementById('screen-party').classList.add('active');
-    document.getElementById('fab').style.display = 'none';
-  } else if (tab === 'reports') {
-    document.getElementById('screen-reports').classList.add('active');
-    document.querySelector('.btab[data-view="reports"]').classList.add('active');
-    document.getElementById('fab').style.display = 'none';
-    renderReports();
-  } else if (tab === 'settings') {
-    openSettingsModal();
+      <div class="bar-label">${b.label}</div>
+    </div>`).join('');
+  const top=getAllSummaries().sort((a,b)=>Math.abs(b.grandTotal)-Math.abs(a.grandTotal)).slice(0,5);
+  const tEl=document.getElementById('topCustomers');
+  if(top.length===0||top.every(x=>x.grandTotal===0)){
+    tEl.innerHTML=`<div class="empty-state" style="padding:20px"><div class="empty-text">${t('No data','डेटा नहीं')}</div></div>`;
+  }else{
+    tEl.innerHTML=top.map(s=>{
+      const cls=s.grandTotal>0?'var(--credit)':s.grandTotal<0?'var(--debit)':'var(--text-muted)';
+      return`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:13px;font-weight:700">${esc(s.name)}</span>
+        <span style="font-size:14px;font-weight:900;color:${cls}">${fmt(s.grandTotal)}</span>
+      </div>`;
+    }).join('');
   }
-  
-  document.getElementById('screenContainer').scrollTop = 0;
 }
 
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));
-  renderDashboard();
+/* ============ SETTINGS ============ */
+function renderSettings(){
+  if(!userData){showScreen('login',true);return}
+  document.getElementById('sShopName').textContent=userData.shopName||'-';
+  document.getElementById('sPhone').textContent=userData.phone||'-';
+  document.getElementById('sDefaultRate').value=userData.defaultRate||2;
+  document.getElementById('topTitle').textContent='⚙️ '+t('Settings','सेटिंग्स');
 }
-
-/* ============ SETTINGS MODAL ============ */
-function openSettingsModal() {
+function editShop(){
   showModal(`
     <div class="modal-handle"></div>
-    <div class="modal-title">⚙️ सेटिंग्स</div>
-    
-    <div style="background:var(--primary-lighter);border-radius:12px;padding:14px;margin-bottom:14px">
-      <div style="font-size:10px;color:var(--primary-dark);font-weight:800;text-transform:uppercase;margin-bottom:4px">दुकान</div>
-      <div style="font-size:16px;font-weight:900;color:var(--text)">${esc(userData?.shopName || '-')}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${esc(currentUser?.email || '')}</div>
-    </div>
-
-    <div class="action-grid">
-      <button class="action-btn loan" onclick="closeModal();openEditBusiness()">
-        <div class="action-icon">🏪</div>
-        <div><div class="action-title">दुकान एडिट</div><div class="action-sub">नाम, UPI</div></div>
-      </button>
-      <button class="action-btn udhaar" onclick="closeModal();exportData()">
-        <div class="action-icon">📤</div>
-        <div><div class="action-title">एक्सपोर्ट</div><div class="action-sub">JSON backup</div></div>
-      </button>
-    </div>
-
-    <button class="btn btn-danger" style="margin-top:14px" onclick="closeModal();handleLogout()">
-      🚪 लॉगआउट
-    </button>
-    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:8px">
-      बंद करें
-    </button>
-  `);
-}
-
-function openEditBusiness() {
-  showModal(`
-    <div class="modal-handle"></div>
-    <div class="modal-title">🏪 दुकान एडिट</div>
-    <div class="input-group">
-      <label class="input-label">व्यवसाय का नाम</label>
-      <input type="text" id="mShopName" class="text-input" value="${esc(userData?.shopName || '')}">
-    </div>
-    <div class="input-group">
-      <label class="input-label">UPI ID</label>
-      <input type="text" id="mUpi" class="text-input" value="${esc(userData?.upiId || '')}" placeholder="yourname@upi">
-    </div>
-    <div class="input-group">
-      <label class="input-label">डिफ़ॉल्ट ब्याज दर (%)</label>
-      <input type="number" id="mRate" class="text-input" value="${userData?.defaultRate || 2}" step="0.1">
-    </div>
+    <div class="modal-title">${t('Edit Business','व्यवसाय एडिट')}</div>
+    <div class="input-group"><label class="input-label">${t('Business Name','व्यवसाय का नाम')}</label>
+      <input type="text" id="mShopName" class="text-input" value="${esc(userData.shopName||'')}"></div>
+    <div class="input-group"><label class="input-label">${t('Phone','मोबाइल')}</label>
+      <input type="tel" id="mShopPhone" class="text-input" value="${esc(userData.phone||'')}"></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">रद्द</button>
-      <button class="btn btn-primary" onclick="updateBusiness()">
-        <span class="btn-text">सेव करें</span>
-        <span class="btn-loader hidden"><span class="spinner"></span></span>
-      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
+      <button class="btn btn-primary" onclick="saveShop()">${t('Save','सेव')}</button>
     </div>
   `);
 }
-
-async function updateBusiness() {
-  const shopName = document.getElementById('mShopName').value.trim();
-  const upiId = document.getElementById('mUpi').value.trim();
-  const defaultRate = parseFloat(document.getElementById('mRate').value) || 2;
-  const btn = document.querySelector('#activeModal .btn-primary');
-
-  if (!shopName) return showToast('दुकान का नाम डालें', 'error');
-
-  setBtnLoading(btn, true);
-
-  try {
-    await db.collection('users').doc(currentUser.uid).update({
-      shopName: shopName,
-      upiId: upiId,
-      defaultRate: defaultRate
-    });
-    userData.shopName = shopName;
-    userData.upiId = upiId;
-    userData.defaultRate = defaultRate;
-    
-    document.getElementById('dashShop').textContent = shopName;
-    document.getElementById('topTitle').textContent = '📒 ' + shopName;
-    
-    closeModal();
-    showToast('✅ सेव हो गया!', 'success');
-  } catch (error) {
-    console.error('Update error:', error);
-    showToast('सेव नहीं हुआ', 'error');
-    setBtnLoading(btn, false);
-  }
+async function saveShop(){
+  const shopName=document.getElementById('mShopName').value.trim();
+  const phone=document.getElementById('mShopPhone').value.trim();
+  if(!shopName)return toast('Name required','error');
+  try{
+    await db.collection('users').doc(currentUser.uid).update({shopName,phone});
+    userData.shopName=shopName;userData.phone=phone;
+    closeModal();renderSettings();
+    toast(t('Saved','सेव'),'success');
+  }catch(e){console.error(e);toast('Error','error')}
 }
-
-function exportData() {
-  const data = {
-    user: userData,
-    parties: parties,
-    transactions: transactions,
-    exportedAt: new Date().toISOString()
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `babasitaram_backup_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
+async function saveSettings(){
+  const rate=parseFloat(document.getElementById('sDefaultRate').value)||2;
+  try{
+    await db.collection('users').doc(currentUser.uid).update({defaultRate:rate});
+    userData.defaultRate=rate;
+    toast(t('Settings saved','सेटिंग सेव'),'success');
+  }catch(e){console.error(e)}
+}
+function exportData(){
+  const data={user:userData,customers,transactions,exportedAt:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`babasitaram_backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ एक्सपोर्ट हो गया!', 'success');
+  toast(t('Exported','एक्सपोर्ट'),'success');
 }
-
-/* ============ LOGOUT ============ */
-async function handleLogout() {
-  if (!confirm('लॉगआउट करें?')) return;
-  try {
-    if (unsubParties) unsubParties();
-    if (unsubTransactions) unsubTransactions();
-    await auth.signOut();
-    window.location.href = 'index.html';
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
+function showLogoutConfirm(){
+  if(!confirm(t('Logout? Data will be safe.','लॉगआउट करें? डेटा सुरक्षित रहेगा।')))return;
+  if(unsubCustomers)unsubCustomers();
+  if(unsubTransactions)unsubTransactions();
+  auth.signOut().then(()=>window.location.href='index.html');
 }
 
 /* ============ HELPERS ============ */
-function fmt(n) { return '₹' + Math.round(Math.abs(n) || 0).toLocaleString('en-IN'); }
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-function dateStr(d) {
-  if (!d) return '-';
-  try {
-    const date = d.toDate ? d.toDate() : new Date(d);
-    return date.toLocaleDateString('hi-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-  } catch (e) { return '-'; }
-}
-
-function showModal(html) {
-  closeModal();
-  const div = document.createElement('div');
-  div.id = 'activeModal';
-  div.className = 'modal-overlay';
-  div.innerHTML = `<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
-  div.onclick = e => { if (e.target === div) closeModal(); };
-  document.body.appendChild(div);
-}
-
-function closeModal() {
-  const m = document.getElementById('activeModal');
-  if (m) m.remove();
-}
-
-function setBtnLoading(btn, loading) {
-  if (!btn) return;
-  const txt = btn.querySelector('.btn-text');
-  const loader = btn.querySelector('.btn-loader');
-  btn.disabled = loading;
-  if (txt) txt.classList.toggle('hidden', loading);
-  if (loader) loader.classList.toggle('hidden', !loading);
-}
-
-function showToast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (type ? ' ' + type : '');
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast show'+(type?' '+type:'');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+  el._t=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
 /* ============ INIT ============ */
-window.addEventListener('load', () => {
-  console.log('🚀 Dashboard loaded');
+window.addEventListener('load',()=>{
+  setLang(currentLang);
+  updateTexts();
 });
 </script>
 
