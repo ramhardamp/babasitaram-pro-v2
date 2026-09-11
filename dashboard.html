@@ -370,7 +370,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
         <div class="settings-header" id="sH3">डेटा</div>
         <div class="settings-section">
-          <!-- ⭐ NEW: Fix All Balances -->
           <div class="settings-item" onclick="fixAllBalances()">
             <div class="settings-left">
               <div class="settings-icon">🔧</div>
@@ -395,7 +394,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.4 (Fixed Balance)</div></div></div>
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.5 (Fixed)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -426,20 +425,19 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
 <script>
 /* ============================================================
-   BABASITARAM PRO v6.4 - Fixed Balance Calculation
-   Changes:
-   1. monthsBetween - exact days/month formula
-   2. getSummary - udhaar from transactions (not customer.balance)
-   3. saveLoan - NO balance update (loans separate)
-   4. saveEditedLoan - NO balance update
-   5. deleteLoan - NO balance update
-   6. NEW: fixAllBalances() - recalculate all balances
+   BABASITARAM PRO v6.5 - Final Fixed
+   - Correct EmailJS Template IDs
+   - DD/MM/YYYY date format
+   - Fixed balance calculation
+   - Customer Portal
+   - Fix All Balances button
 ============================================================ */
 
+// ⭐ CORRECTED EMAILJS CONFIG
 const EMAILJS_PUBLIC_KEY = 'zVakeKYOCR5og-jon';
 const EMAILJS_SERVICE_ID = 'service_zyavovm';
-const EMAILJS_TEMPLATE_ID = 'template_w0qs21r';
-const EMAILJS_TXN_TEMPLATE_ID = 'template_459vjrt';
+const EMAILJS_TEMPLATE_ID = 'template_xzxta5h';       // ⭐ Welcome Email
+const EMAILJS_TXN_TEMPLATE_ID = 'template_vhuakzs';   // ⭐ Transaction Notification
 
 const CUSTOMER_VIEW_BASE_URL = 'https://ramhardamp.github.io/babasitaram-pro-v2/customer-view.html';
 
@@ -471,9 +469,20 @@ const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings', 'pin'];
 function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function t(en,hi){return currentLang==='hi'?hi:en}
-function dateStr(d){if(!d)return '-';try{const date=d.toDate?d.toDate():new Date(d);return date.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return '-'}}
 
-/* ============ FIXED: monthsBetween with exact days ============ */
+/* ⭐ FIXED: dateStr - DD/MM/YYYY format */
+function dateStr(d){
+  if(!d)return '-';
+  try{
+    const date = d.toDate ? d.toDate() : new Date(d);
+    const dd = String(date.getDate()).padStart(2,'0');
+    const mm = String(date.getMonth()+1).padStart(2,'0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }catch(e){return '-'}
+}
+
+/* ============ FIXED: monthsBetween ============ */
 function monthsBetween(start, end) {
   const s = new Date(start);
   const e = new Date(end);
@@ -507,21 +516,17 @@ function calcLoan(loan){
 }
 function getLoans(cid){return transactions.filter(t=>t.partyId===cid&&t.type==='byaj_loan'&&t.status==='active')}
 
-/* ============ FIXED: getSummary - udhaar from transactions ============ */
 function getSummary(cid){
   const c=customers.find(x=>x.id===cid);
   if(!c)return null;
   
-  // ⭐ Calculate udhaar from transactions (NOT from c.balance)
   let udhaarBalance = 0;
   transactions.forEach(t => {
     if(t.partyId !== cid) return;
     if(t.type === 'udhaar') udhaarBalance += (t.amount || 0);
     else if(t.type === 'jama') udhaarBalance -= (t.amount || 0);
-    // byaj_loan, loan_repay, interest_paid → NOT included in udhaar
   });
   
-  // Loans
   const loans = getLoans(cid);
   let byajBalance = 0;
   loans.forEach(l => {
@@ -545,7 +550,7 @@ function getTotals(){
   return{udhaar:u,byaj:b,total:t2,paid:p};
 }
 
-/* ============ PUBLIC VIEW HELPERS ============ */
+/* ============ PUBLIC VIEW ============ */
 function generateToken(){
   const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let token='';
@@ -615,7 +620,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       transaction_type: typeLabels[txnType] || txnType,
       amount: (amount || 0).toLocaleString('en-IN'),
       note: note || '-',
-      date: date,
+      date: dateStr(date),
       balance: Math.abs(newBalance).toLocaleString('en-IN'),
       view_link: viewLink
     });
@@ -639,7 +644,6 @@ async function fixAllBalances(){
     let checked = 0;
     
     for(const c of customers){
-      // Calculate correct balance from transactions
       let correctBalance = 0;
       
       transactions.forEach(t => {
@@ -651,7 +655,6 @@ async function fixAllBalances(){
       checked++;
       const oldBal = c.balance || 0;
       
-      // Update if changed
       if(oldBal !== correctBalance){
         console.log(`🔧 ${c.name}: ${oldBal} → ${correctBalance}`);
         await db.collection('users').doc(currentUser.uid).collection('parties').doc(c.id).update({
@@ -659,7 +662,6 @@ async function fixAllBalances(){
         });
         fixed++;
         
-        // Update public view
         if(c.viewToken){
           await updatePublicView(c.id, c.viewToken, {
             name: c.name, phone: c.phone, balance: correctBalance
@@ -1025,10 +1027,8 @@ async function saveEditedTxn(id){
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   try{
     const c=customers.find(x=>x.id===txn.partyId);if(!c)return;
-    const oldAmt=txn.amount||0;
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({amount:newAmt,note:newNote,date:newDate});
     
-    // ⭐ Recalculate balance from ALL transactions
     let newBal = 0;
     const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions')
       .where('partyId','==',txn.partyId).get();
@@ -1050,7 +1050,6 @@ async function deleteTxn(id){
     const c=customers.find(x=>x.id===txn.partyId);
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
     
-    // ⭐ Recalculate balance from ALL remaining transactions
     let newBal = 0;
     const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions')
       .where('partyId','==',txn.partyId).get();
@@ -1099,7 +1098,6 @@ function openEditLoanModal(loan){
       <button class="btn btn-primary" onclick="saveEditedLoan('${loan.id}')">${t('Save','सेव')}</button></div>`);
 }
 
-/* ⭐ FIXED: No balance update for loan edit */
 async function saveEditedLoan(id){
   const loan=transactions.find(t=>t.id===id);if(!loan)return;
   const newP=parseFloat(document.getElementById('mPrincipal').value);
@@ -1118,7 +1116,6 @@ async function saveEditedLoan(id){
   }catch(e){console.error(e);toast('Error','error')}
 }
 
-/* ⭐ FIXED: No balance update for loan delete */
 async function deleteLoan(id){
   const loan=transactions.find(t=>t.id===id);if(!loan)return;
   try{
@@ -1168,7 +1165,6 @@ async function saveCustomer(){
     const docRef=await db.collection('users').doc(currentUser.uid).collection('parties').add({
       name,phone,email,balance:bal,viewToken:viewToken,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    // ⭐ If opening balance, create a transaction so balance stays in sync
     if(bal !== 0){
       await db.collection('users').doc(currentUser.uid).collection('transactions').add({
         partyId:docRef.id,
@@ -1211,7 +1207,6 @@ async function updateCustomer(){
     const c=customers.find(x=>x.id===currentCustomerId);
     const newPhone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
     const newEmail=document.getElementById('mEmail').value.trim();
-    // ⭐ Don't update balance from form - use transactions
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({
       name,phone:newPhone,email:newEmail
     });
@@ -1256,7 +1251,6 @@ async function saveTxn(type){
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
       partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    // ⭐ Recalculate from all transactions
     let newBal=0;
     const allTxns=await db.collection('users').doc(currentUser.uid).collection('transactions')
       .where('partyId','==',currentCustomerId).get();
@@ -1285,7 +1279,6 @@ function openLoanModal(){
   setTimeout(()=>document.getElementById('mPrincipal')?.focus(),300);
 }
 
-/* ⭐ FIXED: No balance update for loan create */
 async function saveLoan(){
   const p=parseFloat(document.getElementById('mPrincipal').value);
   const r=parseFloat(document.getElementById('mRate').value);
@@ -1295,7 +1288,6 @@ async function saveLoan(){
   if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
-    // ⭐ NO balance update — loans are separate from udhaar
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
       partyId:currentCustomerId,
       type:'byaj_loan',
