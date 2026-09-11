@@ -107,6 +107,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .action-btn.repay{border-color:#bfdbfe;background:var(--info-bg)}
 .action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}
 .action-btn.edit{border-color:#e2e8f0}
+.action-btn.share{border-color:#bfdbfe;background:#eff6ff}
 .section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}
 .loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px;position:relative}
 .loan-card.closed{border-color:#e2e8f0;opacity:.7}
@@ -218,6 +219,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .settings-header{font-size:11px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;padding:16px 4px 8px}
 .hidden{display:none!important}
 .spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.link-box{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:var(--text-muted);font-family:monospace;margin:10px 0;max-height:80px;overflow-y:auto}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 </style>
 </head>
@@ -381,7 +383,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.1 (Email Notifications)</div></div></div>
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.3 (Customer Portal)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -412,14 +414,15 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
 <script>
 /* ============================================================
-   BABASITARAM PRO v6.1 - Transaction Email Notifications
+   BABASITARAM PRO v6.3 - Customer Portal Integration
 ============================================================ */
 
-// ⭐ EMAILJS CONFIG
 const EMAILJS_PUBLIC_KEY = '2WakeKYOcR5og_jon';
 const EMAILJS_SERVICE_ID = 'service_zyavovm';
-const EMAILJS_TEMPLATE_ID = 'template_w0qs21r';      // Welcome email
-const EMAILJS_TXN_TEMPLATE_ID = 'template_459vjrt';  // Transaction notification
+const EMAILJS_TEMPLATE_ID = 'template_w0qs21r';
+const EMAILJS_TXN_TEMPLATE_ID = 'template_459vjrt';
+
+const CUSTOMER_VIEW_BASE_URL = 'https://ramhardamp.github.io/babasitaram-pro-v2/customer-view.html';
 
 if (typeof emailjs !== 'undefined') {
   emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -470,8 +473,7 @@ function calcLoan(loan){
 }
 function getLoans(cid){return transactions.filter(t=>t.partyId===cid&&t.type==='byaj_loan'&&t.status==='active')}
 function getSummary(cid){
-  const c=customers.find(x=>x.id===cid);
-  if(!c)return null;
+  const c=customers.find(x=>x.id===cid);if(!c)return null;
   const u=c.balance||0;
   const loans=getLoans(cid);
   let byajBalance=0;
@@ -486,21 +488,67 @@ function getTotals(){
   return{udhaar:u,byaj:b,total:t2,paid:p};
 }
 
-/* ============ EMAIL FUNCTIONS ============ */
+/* ============ PUBLIC VIEW HELPERS ============ */
+function generateToken(){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token='';
+  for(let i=0;i<32;i++){token+=chars.charAt(Math.floor(Math.random()*chars.length))}
+  return token;
+}
+
+async function updatePublicView(partyId, viewToken, partyData){
+  try{
+    const txnSnap=await db.collection('users').doc(currentUser.uid)
+      .collection('transactions')
+      .where('partyId','==',partyId)
+      .get();
+    
+    let totalUdhaar=0,totalJama=0;
+    const transactions=[];
+    
+    txnSnap.forEach(doc=>{
+      const t=doc.data();
+      const amt=t.amount||t.principal||0;
+      transactions.push({type:t.type,amount:amt,date:t.date,note:t.note||''});
+      if(t.type==='udhaar'||t.type==='byaj_loan')totalUdhaar+=amt;
+      else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
+    });
+    
+    transactions.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    
+    await db.collection('publicViews').doc(viewToken).set({
+      businessUid:currentUser.uid,
+      partyId:partyId,
+      shopName:userData.shopName||'BABASITARAM PRO',
+      shopPhone:userData.phone||'',
+      shopEmail:currentUser.email||'',
+      customerName:partyData.name,
+      customerPhone:partyData.phone||'',
+      balance:partyData.balance||0,
+      totalUdhaar:totalUdhaar,
+      totalJama:totalJama,
+      transactions:transactions,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    console.log('✅ Public view updated:', viewToken);
+  }catch(e){console.error('❌ updatePublicView error:', e)}
+}
+
+function getCustomerViewLink(token){
+  return CUSTOMER_VIEW_BASE_URL + '?token=' + token;
+}
+
+/* ============ EMAIL ============ */
 async function sendTransactionEmail(customer, txnType, amount, note, date, newBalance) {
   try {
     if (!customer || !customer.email) {
-      console.log('ℹ️ No customer email, skipping notification');
-      return;
+      console.log('ℹ️ No customer email');
+      return false;
     }
+    const typeLabels = {udhaar:'उधार दिया गया',jama:'भुगतान प्राप्त हुआ',byaj_loan:'ब्याज पर लोन',loan_repay:'लोन वसूली',interest_paid:'ब्याज भुगतान'};
     
-    const typeLabels = {
-      udhaar: 'उधार दिया गया',
-      jama: 'भुगतान प्राप्त हुआ',
-      byaj_loan: 'ब्याज पर लोन',
-      loan_repay: 'लोन वसूली',
-      interest_paid: 'ब्याज भुगतान'
-    };
+    const fullCustomer=customers.find(x=>x.email===customer.email);
+    const viewLink=fullCustomer&&fullCustomer.viewToken?getCustomerViewLink(fullCustomer.viewToken):'';
     
     const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
       customer_name: customer.name || 'Customer',
@@ -511,13 +559,13 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       amount: (amount || 0).toLocaleString('en-IN'),
       note: note || '-',
       date: date,
-      balance: Math.abs(newBalance).toLocaleString('en-IN')
+      balance: Math.abs(newBalance).toLocaleString('en-IN'),
+      view_link: viewLink
     });
-    
-    console.log('✅ Transaction email sent to', customer.email, response);
+    console.log('✅ Email sent to', customer.email);
     return true;
   } catch (e) {
-    console.error('❌ Transaction email error:', e);
+    console.error('❌ Email error:', e);
     return false;
   }
 }
@@ -537,6 +585,7 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('topTitle').textContent='🔐 PIN';
   document.getElementById('backBtn').classList.add('hidden');
   document.getElementById('lockBtn').style.display='none';
+  console.log('🔐 PIN screen:', mode);
 }
 function updatePinDots(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pendingPIN.length))}
 function pinPress(digit){
@@ -547,20 +596,34 @@ function pinPress(digit){
   if(pendingPIN.length===4)setTimeout(()=>handlePinComplete(),200);
 }
 function handlePinComplete(){
-  const pin=pendingPIN;pendingPIN='';updatePinDots();
+  const pin = String(pendingPIN);
+  pendingPIN = '';
+  updatePinDots();
+  console.log('🔐 PIN entered:', pin, '| Mode:', pinMode);
+  
   if(pinMode==='setup'){pinSetupFirst=pin;showPinScreen('confirm','PIN दोबारा डालें','पुष्टि के लिए वही PIN डालें');return}
   if(pinMode==='confirm'){
-    if(pin===pinSetupFirst)savePIN(pin);
+    if(pin===pinSetupFirst){savePIN(pin)}
     else{pinSetupFirst='';document.getElementById('pinError').textContent='PIN मेल नहीं खाते।';showPinScreen('setup','नया PIN बनाएं','4-अंकों का PIN सेट करें')}
     return;
   }
   if(pinMode==='verify'){
-    if(pin===storedPIN){const cb=pinActionCallback;pinActionCallback=null;if(cb)cb()}
-    else document.getElementById('pinError').textContent='गलत PIN। दोबारा कोशिश करें।';
+    const stored = String(storedPIN || '');
+    console.log('🔍 Comparing:', pin, '===', stored, '?', pin===stored);
+    if(pin===stored){
+      console.log('✅ PIN correct!');
+      const cb=pinActionCallback;pinActionCallback=null;
+      if(typeof cb === 'function'){
+        setTimeout(()=>{try{cb()}catch(e){console.error('❌ Callback:',e);toast('Error: '+e.message,'error');showScreen('dashboard',true)}},150);
+      } else {showScreen('dashboard',true)}
+    } else {
+      console.log('❌ Wrong PIN');
+      document.getElementById('pinError').textContent='गलत PIN। दोबारा कोशिश करें।';
+    }
     return;
   }
   if(pinMode==='change-old'){
-    if(pin===storedPIN)showPinScreen('change-new','नया PIN डालें','4-अंकों का नया PIN');
+    if(pin===String(storedPIN||''))showPinScreen('change-new','नया PIN डालें','4-अंकों का नया PIN');
     else document.getElementById('pinError').textContent='गलत PIN।';
     return;
   }
@@ -573,14 +636,17 @@ function handlePinComplete(){
 }
 async function savePIN(pin){
   try{
+    pin=String(pin);
     await db.collection('users').doc(currentUser.uid).update({pin});
     storedPIN=pin;pinSetupFirst='';
     toast('✅ PIN सेव हो गया','success');
     if(document.getElementById('screen-pin').classList.contains('active')){
-      if(!userData){window.location.reload();return}
-      showScreen('dashboard',true);
+      const cb=pinActionCallback;pinActionCallback=null;
+      if(typeof cb === 'function'){
+        setTimeout(()=>{try{cb()}catch(e){console.error(e);showScreen('dashboard',true)}},150);
+      } else {showScreen('dashboard',true)}
     }
-  }catch(e){console.error(e);document.getElementById('pinError').textContent='PIN सेव नहीं हुआ।'}
+  }catch(e){console.error('❌ savePIN:',e);document.getElementById('pinError').textContent='PIN सेव नहीं हुआ।'}
 }
 function requirePIN(callback){
   if(!storedPIN){showPinScreen('setup','नया PIN बनाएं','4-अंकों का PIN सेट करें');return}
@@ -600,22 +666,20 @@ function setLang(lang){
 }
 function updateTexts(){
   const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt};
-  set('dGreet',t('Welcome 👋','नमस्ते 👋'));
-  set('dTotalLbl',t('TOTAL DUE','कुल बकाया'));
+  set('dGreet',t('Welcome 👋','नमस्ते 👋'));set('dTotalLbl',t('TOTAL DUE','कुल बकाया'));
   set('dLblU',t('Udhaar','उधार'));set('dLblB',t('Byaj','ब्याज'));set('dLblP',t('Paid','जमा'));
   set('btnAddC',t('Add New Customer','नया ग्राहक जोड़ें'));
   set('fAll',t('All','सभी'));set('fU',t('Udhaar','उधार'));set('fB',t('Byaj','ब्याज'));set('fC',t('Clear','साफ'));
   set('rLbl1',t('Total Udhaar','कुल उधार'));set('rLbl2',t('Total Byaj','कुल ब्याज'));
   set('rLbl3',t('Total Paid','कुल जमा'));set('rLbl4',t('Total Due','कुल बकाया'));
-  set('rT1',t('Last 7 Days','पिछले 7 दिन का लेन-देन'));set('rT2',t('Top Customers','टॉप ग्राहक (बकाया द्वारा)'));
+  set('rT1',t('Last 7 Days','पिछले 7 दिन का लेन-देन'));set('rT2',t('Top Customers','टॉप ग्राहक'));
   set('rL1',t('Udhaar','उधार'));set('rL2',t('Byaj','ब्याज'));set('rL3',t('Paid','जमा'));
   set('sH1',t('Business','व्यवसाय'));set('sH2',t('Interest Settings','ब्याज सेटिंग्स'));
   set('sH3',t('Data','डेटा'));set('sH4',t('About','ऐप के बारे में'));
   set('sShopLbl',t('Business Name','व्यवसाय का नाम'));set('sPhoneLbl',t('Phone','मोबाइल'));
   set('sRateLbl',t('Default Interest Rate','डिफ़ॉल्ट ब्याज दर'));set('sRateSub',t('Per month (%)','प्रति माह (%)'));
   set('sExport',t('Export Data (JSON)','डेटा एक्सपोर्ट (JSON)'));set('sLogout',t('Logout','लॉगआउट'));
-  set('sSupport',t('Support','सहायता'));
-  set('btH',t('Home','होम'));set('btR',t('Reports','रिपोर्ट'));set('btS',t('Settings','सेटिंग्स'));
+  set('sSupport',t('Support','सहायता'));set('btH',t('Home','होम'));set('btR',t('Reports','रिपोर्ट'));set('btS',t('Settings','सेटिंग्स'));
 }
 function updateBackButton(){
   const btn=document.getElementById('backBtn');if(!btn)return;
@@ -662,7 +726,8 @@ async function loadUserData(){
     if(!doc.exists){window.location.href='signup.html';return}
     userData=doc.data();
     if(!userData.shopName){window.location.href='signup.html';return}
-    storedPIN=userData.pin||null;
+    storedPIN = userData.pin ? String(userData.pin) : null;
+    console.log('🔐 Stored PIN:', storedPIN);
     if(!storedPIN){showPinScreen('setup','नया PIN बनाएं','सुरक्षा के लिए 4-अंकों का PIN सेट करें');return}
     document.getElementById('dShop').textContent=userData.shopName;
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
@@ -778,9 +843,45 @@ function renderCustomerDetail(){
       <button class="action-btn loan wide" onclick="openLoanModal()"><div class="action-icon">📈</div><div><div class="action-title">${t('Give Loan with Interest','ब्याज पर लोन दें')}</div><div class="action-sub">${t('Set rate, auto-calculate','दर तय करें, ऑटो ब्याज')}</div></div></button>
       <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
       <button class="action-btn interest" onclick="openIntPaidModal()"><div class="action-icon">💰</div><div><div class="action-title">${t('Interest Paid','ब्याज भुगतान')}</div><div class="action-sub">${t('Byaj received','ब्याज मिला')}</div></div></button>
+      <button class="action-btn share wide" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Customer Portal Link','ग्राहक को लिंक भेजें')}</div><div class="action-sub">${t('Customer can view their khata','ग्राहक अपना खाता देख सकेंगे')}</div></div></button>
       <button class="action-btn edit wide" onclick="openEditCustomer()"><div class="action-icon">✏️</div><div><div class="action-title">${t('Edit Customer','ग्राहक एडिट करें')}</div><div class="action-sub">${t('Name, phone, email','नाम, फोन, ईमेल')}</div></div></button>
     </div>
     ${loansHtml}${txnHtml}`;
+}
+
+/* ============ SHARE CUSTOMER VIEW LINK ============ */
+function shareCustomerViewLink(id){
+  const c=customers.find(x=>x.id===id);
+  if(!c)return;
+  if(!c.viewToken)return toast('इस ग्राहक के लिए पोर्टल लिंक नहीं है','error');
+  
+  const link=getCustomerViewLink(c.viewToken);
+  
+  showModal(`<div class="modal-handle"></div>
+    <div class="modal-title">🔗 ग्राहक पोर्टल लिंक</div>
+    <div class="info-box" style="text-align:left">
+      <span>📱 इस लिंक को ग्राहक को भेजें। वे अपना खाता देख सकेंगे — सिर्फ आपकी दुकान का।</span>
+    </div>
+    <div class="link-box">${esc(link)}</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">बंद</button>
+      <button class="btn btn-primary" onclick="copyCustomerLink('${link.replace(/'/g,"\\'")}')">📋 कॉपी</button>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn btn-secondary" onclick="shareCustomerLinkWhatsApp('${id}')" style="width:100%">💬 WhatsApp से भेजें</button>
+    </div>`);
+}
+function copyCustomerLink(link){
+  navigator.clipboard.writeText(link).then(()=>toast('✅ लिंक कॉपी हो गया!','success')).catch(()=>toast('कॉपी नहीं हुआ','error'));
+}
+function shareCustomerLinkWhatsApp(id){
+  const c=customers.find(x=>x.id===id);
+  if(!c||!c.phone)return toast('फोन नंबर नहीं है','error');
+  const link=getCustomerViewLink(c.viewToken);
+  const msg=`नमस्ते ${c.name},\n\nआपका खाता देखने के लिए यह लिंक खोलें:\n${link}\n\n— ${userData.shopName||'BABASITARAM PRO'}`;
+  const clean=(c.phone||'').replace(/\D/g,'');
+  const fullPhone=clean.length===10?'91'+clean:clean;
+  window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 function showTxnMenu(id){
@@ -795,7 +896,7 @@ function showTxnMenu(id){
     <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Cancel','रद्द')}</button>`);
 }
 
-function editTxnConfirm(id){requirePIN(()=>{const txn=transactions.find(t=>t.id===id);if(!txn)return;openEditTxnModal(txn)})}
+function editTxnConfirm(id){requirePIN(()=>{const txn=transactions.find(t=>t.id===id);if(!txn){toast('Transaction not found','error');return}openEditTxnModal(txn)})}
 function deleteTxnConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this transaction?','यह लेन-देन डिलीट करें?')))return;deleteTxn(id)})}
 
 function openEditTxnModal(txn){
@@ -826,7 +927,11 @@ async function saveEditedTxn(id){
     let balanceDelta=0;
     if(txn.type==='udhaar')balanceDelta=newAmt-oldAmt;
     else if(['jama','loan_repay','interest_paid'].includes(txn.type))balanceDelta=-(newAmt-oldAmt);
-    if(balanceDelta!==0){await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:(c.balance||0)+balanceDelta})}
+    if(balanceDelta!==0){
+      const newBal=(c.balance||0)+balanceDelta;
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
+      if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    }
     closeModal();toast(t('Updated','अपडेट हो गया'),'success');
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
@@ -840,7 +945,11 @@ async function deleteTxn(id){
     if(txn.type==='udhaar')balanceDelta=-oldAmt;
     else if(['jama','loan_repay','interest_paid'].includes(txn.type))balanceDelta=oldAmt;
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
-    if(balanceDelta!==0&&c){await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:(c.balance||0)+balanceDelta})}
+    if(balanceDelta!==0&&c){
+      const newBal=(c.balance||0)+balanceDelta;
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
+      if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    }
     toast(t('Deleted','डिलीट हो गया'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
@@ -857,7 +966,7 @@ function showLoanMenu(id){
     <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Cancel','रद्द')}</button>`);
 }
 
-function editLoanConfirm(id){requirePIN(()=>{const loan=transactions.find(t=>t.id===id);if(!loan)return;openEditLoanModal(loan)})}
+function editLoanConfirm(id){requirePIN(()=>{const loan=transactions.find(t=>t.id===id);if(!loan){toast('Loan not found','error');return}openEditLoanModal(loan)})}
 function deleteLoanConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this loan?','यह लोन डिलीट करें?')))return;deleteLoan(id)})}
 
 function openEditLoanModal(loan){
@@ -888,7 +997,11 @@ async function saveEditedLoan(id){
     const c=customers.find(x=>x.id===loan.partyId);
     const oldP=loan.principal||0;
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart});
-    if(c){const delta=newP-oldP;await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({balance:(c.balance||0)+delta})}
+    if(c){
+      const newBal=(c.balance||0)+(newP-oldP);
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({balance:newBal});
+      if(c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    }
     closeModal();toast(t('Updated','अपडेट हो गया'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
@@ -899,7 +1012,11 @@ async function deleteLoan(id){
     const c=customers.find(x=>x.id===loan.partyId);
     const oldP=loan.principal||0;
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
-    if(c){await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({balance:(c.balance||0)-oldP})}
+    if(c){
+      const newBal=(c.balance||0)-oldP;
+      await db.collection('users').doc(currentUser.uid).collection('parties').doc(loan.partyId).update({balance:newBal});
+      if(c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    }
     toast(t('Loan deleted','लोन डिलीट हो गया'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
@@ -914,6 +1031,7 @@ function showModal(html){
 }
 function closeModal(){const m=document.getElementById('activeModal');if(m)m.remove()}
 
+/* ============ CUSTOMER ADD/EDIT (with viewToken) ============ */
 function openAddCustomer(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('New Customer','नया ग्राहक')}</div>
     <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
@@ -922,7 +1040,7 @@ function openAddCustomer(){
       <input type="tel" id="mPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric"></div>
     <div class="input-group"><label class="input-label">${t('Email','ईमेल')} <span style="color:var(--credit);font-size:11px">*</span></label>
       <input type="email" id="mEmail" class="text-input" placeholder="customer@email.com" inputmode="email">
-      <div class="helper-text">📧 इस ईमेल पर transaction notification जाएगी</div></div>
+      <div class="helper-text">📧 इस ईमेल पर notification जाएगी</div></div>
     <div class="input-group"><label class="input-label">${t('Opening Udhaar','शुरुआती उधार')}</label>
       <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
         <input type="number" id="mBal" class="text-input" placeholder="0" inputmode="numeric"></div></div>
@@ -939,9 +1057,11 @@ async function saveCustomer(){
   if(!email)return toast(t('Email required for notifications','ईमेल ज़रूरी है'),'error');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast(t('Invalid email','ईमेल सही नहीं'),'error');
   try{
-    await db.collection('users').doc(currentUser.uid).collection('parties').add({
-      name,phone,email,balance:bal,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    const viewToken=generateToken();
+    const docRef=await db.collection('users').doc(currentUser.uid).collection('parties').add({
+      name,phone,email,balance:bal,viewToken:viewToken,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
+    await updatePublicView(docRef.id,viewToken,{name,phone,balance:bal});
     closeModal();
     if(bal>0){
       await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal);
@@ -952,7 +1072,7 @@ async function saveCustomer(){
 
 function openEditCustomer(){
   requirePIN(()=>{
-    const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
+    const c=customers.find(x=>x.id===currentCustomerId);if(!c){toast('Customer not found','error');return}
     showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Edit Customer','ग्राहक एडिट')}</div>
       <div class="input-group"><label class="input-label">${t('Name','नाम')} *</label>
         <input type="text" id="mName" class="text-input" value="${esc(c.name)}"></div>
@@ -971,25 +1091,31 @@ async function updateCustomer(){
   const name=document.getElementById('mName').value.trim();
   if(!name)return toast(t('Enter name','नाम डालें'),'error');
   try{
+    const c=customers.find(x=>x.id===currentCustomerId);
+    const newPhone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
+    const newEmail=document.getElementById('mEmail').value.trim();
+    const newBal=parseFloat(document.getElementById('mBal').value)||0;
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({
-      name,phone:document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10),
-      email:document.getElementById('mEmail').value.trim(),
-      balance:parseFloat(document.getElementById('mBal').value)||0
+      name,phone:newPhone,email:newEmail,balance:newBal
     });
+    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:newBal})}
     closeModal();toast(t('Updated','अपडेट'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
 async function deleteCustomer(){
   if(!confirm(t('Delete customer?','ग्राहक डिलीट करें?')))return;
   try{
+    const c=customers.find(x=>x.id===currentCustomerId);
     const txns=transactions.filter(t=>t.partyId===currentCustomerId);
     for(const t2 of txns){await db.collection('users').doc(currentUser.uid).collection('transactions').doc(t2.id).delete()}
+    if(c&&c.viewToken){try{await db.collection('publicViews').doc(c.viewToken).delete()}catch(e){}}
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).delete();
     closeModal();currentCustomerId=null;screenHistory=[];showScreen('dashboard',true);
     toast(t('Deleted','डिलीट'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
 
+/* ============ TXN MODALS ============ */
 function openTxnModal(type){
   const isU=type==='udhaar';
   showModal(`<div class="modal-handle"></div><div class="modal-title">${isU?'📤 '+t('Give Udhaar','उधार दें'):'📥 '+t('Take Payment','भुगतान लें')}</div>
@@ -1016,15 +1142,11 @@ async function saveTxn(type){
       partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({balance:newBal});
-    closeModal();
-    toast(t('Saved','सेव हो गया'),'success');
-    
-    // 📧 Send email to customer
+    if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    closeModal();toast(t('Saved','सेव हो गया'),'success');
     if(c.email){
       const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
       if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
-    }else{
-      setTimeout(()=>toast('ℹ️ Customer email नहीं है','error'),1200);
     }
   }catch(e){console.error(e);toast('Error','error')}
 }
@@ -1059,13 +1181,9 @@ async function saveLoan(){
       partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note,status:'active',interestPaid:0,repayments:[],date:sd,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({balance:newBal});
-    closeModal();
-    toast(t('Loan created','लोन बनाया'),'success');
-    
-    // 📧 Send email
-    if(c.email){
-      await sendTransactionEmail(c,'byaj_loan',p,note,sd,newBal);
-    }
+    if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    closeModal();toast(t('Loan created','लोन बनाया'),'success');
+    if(c.email){await sendTransactionEmail(c,'byaj_loan',p,note,sd,newBal)}
   }catch(e){console.error(e);toast('Error','error')}
 }
 
@@ -1098,14 +1216,10 @@ async function saveRepay(){
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
       partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    closeModal();
-    toast(t('Recorded','दर्ज'),'success');
-    
-    // 📧 Send email
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.email){
-      await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0);
-    }
+    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+    closeModal();toast(t('Recorded','दर्ज'),'success');
+    if(c&&c.email){await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0)}
   }catch(e){console.error(e);toast('Error','error')}
 }
 
@@ -1134,14 +1248,10 @@ async function saveIntPaid(){
     await db.collection('users').doc(currentUser.uid).collection('transactions').add({
       partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    closeModal();
-    toast(t('Recorded','दर्ज'),'success');
-    
-    // 📧 Send email
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.email){
-      await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0);
-    }
+    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+    closeModal();toast(t('Recorded','दर्ज'),'success');
+    if(c&&c.email){await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0)}
   }catch(e){console.error(e);toast('Error','error')}
 }
 
