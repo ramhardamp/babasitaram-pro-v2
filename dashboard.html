@@ -220,6 +220,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .hidden{display:none!important}
 .spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 .link-box{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:var(--text-muted);font-family:monospace;margin:10px 0;max-height:80px;overflow-y:auto}
+.dark-mode{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}.dark-mode body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.dark-mode .text-input,.dark-mode .select-input{color:var(--text)}.dark-mode .top-bar,.dark-mode .bottom-tabs{background:rgba(30,27,75,.95)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 </style>
 </head>
@@ -292,6 +293,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             <div class="dash-split-value amber" id="dByaj">₹0</div>
           </div>
           <div class="dash-split-item">
+            <div class="dash-split-label">💰 <span id="dLblI">Total Income</span></div>
+            <div class="dash-split-value green" id="dIncome">₹0</div>
+          </div>
+          <div class="dash-split-item">
             <div class="dash-split-label">✅ <span id="dLblP">जमा</span></div>
             <div class="dash-split-value green" id="dPaid">₹0</div>
           </div>
@@ -362,6 +367,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
         <div class="settings-header">सुरक्षा</div>
         <div class="settings-section">
+          <div class="settings-item" onclick="toggleDarkMode()">
+            <div class="settings-left"><div class="settings-icon">🌙</div><div><div class="settings-label" id="sDarkLbl">Dark Mode</div><div class="settings-sublabel" id="sDarkSub">पूरे ऐप का dark mode</div></div></div>
+            <div class="settings-arrow" id="darkModeState">OFF</div>
+          </div>
           <div class="settings-item" onclick="changePIN()">
             <div class="settings-left"><div class="settings-icon">🔐</div><div class="settings-label">PIN बदलें</div></div>
             <div class="settings-arrow">›</div>
@@ -530,10 +539,14 @@ function getSummary(cid){
 
 function getAllSummaries(){return customers.map(c=>({...c,...getSummary(c.id)}))}
 function getTotals(){
-  let u=0,b=0,t2=0,p=0;
+  let u=0,b=0,t2=0,p=0,income=0;
   customers.forEach(c=>{const s=getSummary(c.id);if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}});
-  transactions.forEach(x=>{if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(x.amount||0)});
-  return{udhaar:u,byaj:b,total:t2,paid:p};
+  transactions.forEach(x=>{
+    if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(x.amount||0);
+    // Total Income is interest received only. Loans/principal are not income.
+    if(x.type==='interest_paid')income+=(x.amount||0);
+  });
+  return{udhaar:u,byaj:b,total:t2,paid:p,income};
 }
 
 /* ============ PUBLIC VIEW ============ */
@@ -727,7 +740,7 @@ function setLang(lang){
 function updateTexts(){
   const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt};
   set('dGreet',t('Welcome 👋','नमस्ते 👋'));set('dTotalLbl',t('TOTAL DUE','कुल बकाया'));
-  set('dLblU',t('Udhaar','उधार'));set('dLblB',t('Byaj','ब्याज'));set('dLblP',t('Paid','जमा'));
+  set('dLblU',t('Udhaar','उधार'));set('dLblB',t('Byaj','ब्याज'));set('dLblP',t('Paid','जमा'));set('dLblI',t('Total Income','कुल आय'));
   set('btnAddC',t('Add New Customer','नया ग्राहक जोड़ें'));
   set('fAll',t('All','सभी'));set('fU',t('Udhaar','उधार'));set('fB',t('Byaj','ब्याज'));set('fC',t('Clear','साफ'));
   set('rLbl1',t('Total Udhaar','कुल उधार'));set('rLbl2',t('Total Byaj','कुल ब्याज'));
@@ -738,7 +751,7 @@ function updateTexts(){
   set('sH3',t('Data','डेटा'));set('sH4',t('About','ऐप के बारे में'));
   set('sShopLbl',t('Business Name','व्यवसाय का नाम'));set('sPhoneLbl',t('Phone','मोबाइल'));
   set('sRateLbl',t('Default Interest Rate','डिफ़ॉल्ट ब्याज दर'));set('sRateSub',t('Per month (%)','प्रति माह (%)'));
-  set('sExport',t('Export Data (JSON)','डेटा एक्सपोर्ट (JSON)'));set('sLogout',t('Logout','लॉगआउट'));
+  set('sExport',t('Export Data (JSON)','डेटा एक्सपोर्ट (JSON)'));set('sLogout',t('Logout','लॉगआउट'));set('sDarkLbl',t('Dark Mode','डार्क मोड'));set('sDarkSub',t('Full app dark mode','पूरे ऐप का डार्क मोड'));
   set('sSupport',t('Support','सहायता'));set('btH',t('Home','होम'));set('btR',t('Reports','रिपोर्ट'));set('btS',t('Settings','सेटिंग्स'));
 }
 
@@ -878,6 +891,7 @@ function renderDashboard(){
   document.getElementById('dUdhaar').textContent=fmt(totals.udhaar);
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
+  document.getElementById('dIncome').textContent=fmt(totals.income);
   document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
   let filtered=getAllSummaries();
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1405,6 +1419,19 @@ async function saveSettings(){
   const rate=parseFloat(document.getElementById('sDefaultRate').value)||2;
   try{await db.collection('users').doc(currentUser.uid).update({defaultRate:rate});userData.defaultRate=rate;toast(t('Settings saved','सेटिंग सेव'),'success')}catch(e){console.error(e)}
 }
+function applyDarkMode(){
+  const enabled=localStorage.getItem('bsp_dark_mode')==='1';
+  document.body.classList.toggle('dark-mode',enabled);
+  const state=document.getElementById('darkModeState');
+  if(state)state.textContent=enabled?'ON':'OFF';
+}
+function toggleDarkMode(){
+  const enabled=document.body.classList.toggle('dark-mode');
+  localStorage.setItem('bsp_dark_mode',enabled?'1':'0');
+  const state=document.getElementById('darkModeState');
+  if(state)state.textContent=enabled?'ON':'OFF';
+  toast(enabled?t('Dark mode enabled','डार्क मोड चालू'):t('Dark mode disabled','डार्क मोड बंद'),'success');
+}
 function exportData(){
   const data={user:userData,customers,transactions,exportedAt:new Date().toISOString()};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -1422,7 +1449,7 @@ function toast(msg,type){
   el.className='toast show'+(type?' '+type:'');
   clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2800);
 }
-window.addEventListener('load',()=>{setLang(currentLang);updateTexts()});
+window.addEventListener('load',()=>{applyDarkMode();setLang(currentLang);updateTexts()});
 </script>
 
 </body>
