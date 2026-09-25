@@ -1,8 +1,19 @@
 {
-  "name":"babasitaram-pro-v2",
-  "version":"6.7.1",
-  "private":true,
-  "scripts":{"verify:web":"node scripts/verify-web.mjs","prepare:web":"node scripts/prepare-web.mjs","android:sync":"npm run prepare:web && npx cap sync android","android:build":"npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace"},
-  "dependencies":{"@capacitor/android":"7.4.4","@capacitor/core":"7.4.4"},
-  "devDependencies":{"@capacitor/cli":"7.4.4"}
+  "name": "babasitaram-pro-v2",
+  "version": "6.8.0",
+  "private": true,
+  "scripts": {
+    "verify:web": "node scripts/verify-web.mjs",
+    "prepare:web": "node scripts/prepare-web.mjs",
+    "android:sync": "npm run prepare:web && npx cap sync android",
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace"
+  },
+  "dependencies": {
+    "@capacitor/android": "7.4.4",
+    "@capacitor/core": "7.4.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.4.4",
+    "@capacitor/assets": "3.0.5"
+  }
 }
