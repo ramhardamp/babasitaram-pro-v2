@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises';
 const dashboard=await readFile('dashboard.html','utf8');
 const index=await readFile('index.html','utf8');
+const prep=await readFile('scripts/prepare-web.mjs','utf8');
+const logo=await readFile('assets/logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
 ['Total Income is interest-only',dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
