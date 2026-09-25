@@ -468,6 +468,9 @@ let screenHistory = [];
 let currentCustomerId = null;
 let currentFilter = 'all';
 let customerSearchTerm = '';
+let customerRenderLimit = 100;
+let customerListObserver = null;
+const CUSTOMER_RENDER_CHUNK = 100;
 const txnIndex = new Map();
 let initialCustomersReady = false;
 let initialTransactionsReady = false;
@@ -549,7 +552,19 @@ function getSummary(cid){
 }
 
 function getAllSummaries(){return customers.map(c=>({...c,...getSummary(c.id)}))}
-function setCustomerSearch(value){customerSearchTerm=String(value||'').trim().toLowerCase();renderDashboard()}
+function setCustomerSearch(value){customerSearchTerm=String(value||'').trim().toLowerCase();customerRenderLimit=CUSTOMER_RENDER_CHUNK;renderDashboard()}
+function observeCustomerListTail(filteredLength){
+  if(customerListObserver){customerListObserver.disconnect();customerListObserver=null;}
+  const tail=document.getElementById('customerListTail');
+  if(!tail || filteredLength<=customerRenderLimit)return;
+  customerListObserver=new IntersectionObserver(entries=>{
+    if(entries.some(e=>e.isIntersecting)){
+      customerRenderLimit=Math.min(customerRenderLimit+CUSTOMER_RENDER_CHUNK,filteredLength);
+      renderDashboard();
+    }
+  },{root:document.getElementById('screenContainer'),rootMargin:'500px 0px',threshold:0});
+  customerListObserver.observe(tail);
+}
 function getTotals(){
   let u=0,b=0,t2=0,p=0,income=0;
   customers.forEach(c=>{const s=getSummary(c.id);if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}});
@@ -564,8 +579,16 @@ function getTotals(){
 /* ============ PUBLIC VIEW ============ */
 function generateToken(){
   const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const bytes=new Uint8Array(32);
+  if(window.crypto&&typeof window.crypto.getRandomValues==='function'){
+    window.crypto.getRandomValues(bytes);
+    let token='';
+    for(let i=0;i<bytes.length;i++)token+=chars[bytes[i]%chars.length];
+    return token;
+  }
+  // Legacy WebView fallback only; modern Android WebView uses Web Crypto above.
   let token='';
-  for(let i=0;i<32;i++){token+=chars.charAt(Math.floor(Math.random()*chars.length))}
+  for(let i=0;i<32;i++)token+=chars.charAt(Math.floor(Math.random()*chars.length));
   return token;
 }
 
@@ -911,12 +934,17 @@ function renderDashboard(){
   else if(currentFilter==='byaj')filtered=filtered.filter(s=>s.byajBalance>0);
   else if(currentFilter==='clear')filtered=filtered.filter(s=>s.grandTotal===0&&s.udhaarBalance===0);
   const list=document.getElementById('customerList');
-  if(filtered.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">${t('No customers','कोई ग्राहक नहीं')}</div><div class="empty-text">${t('Add first customer','पहला ग्राहक जोड़ें')}</div></div>`;return}
-  list.innerHTML=filtered.map(s=>{
+  if(customerListObserver){customerListObserver.disconnect();customerListObserver=null;}
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">${t('No customers','कोई ग्राहक नहीं')}</div><div class="empty-text">${t('Add first customer','पहला ग्राहक जोड़ें')}</div></div>`;
+    return;
+  }
+  const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
+  const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
     const total=s.grandTotal;
     const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
-    return`<div class="customer-card" onclick="openCustomer('${s.id}')">
+    return`<div class="customer-card" onclick="openCustomer('${esc(s.id)}')">
       <div class="cc-header"><div class="cc-avatar">${esc(init)}</div>
         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
         <div style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
@@ -927,8 +955,13 @@ function renderDashboard(){
         <div class="cc-box total"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
       </div></div>`;
   }).join('');
+  const more=filtered.length>visible.length
+    ? `<div id="customerListTail" class="empty-state" style="padding:18px 12px"><div class="empty-text">${t('Loading more customers…','और ग्राहक लोड हो रहे हैं…')}</div></div>`
+    : '';
+  list.innerHTML=cards+more;
+  observeCustomerListTail(filtered.length);
 }
-function setFilter(f){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
+function setFilter(f){currentFilter=f;customerRenderLimit=CUSTOMER_RENDER_CHUNK;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
 
 function openCustomer(id){
   currentCustomerId=id;
@@ -1238,13 +1271,18 @@ async function deleteCustomer(){
   try{
     const c=customers.find(x=>x.id===currentCustomerId);
     const txns=transactions.filter(t=>t.partyId===currentCustomerId);
-    for(const t2 of txns){await db.collection('users').doc(currentUser.uid).collection('transactions').doc(t2.id).delete()}
-    if(c&&c.viewToken){try{await db.collection('publicViews').doc(c.viewToken).delete()}catch(e){}}
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    for(let i=0;i<txns.length;i+=450){
+      const batch=db.batch();
+      txns.slice(i,i+450).forEach(t2=>batch.delete(txCol.doc(t2.id)));
+      await batch.commit();
+    }
+    if(c&&c.viewToken){try{await db.collection('publicViews').doc(c.viewToken).delete()}catch(e){console.warn('Public view cleanup failed',e)}}
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).delete();
     closeModal();currentCustomerId=null;screenHistory=[];
     showScreen('dashboard',true);
     toast(t('Deleted','डिलीट'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){console.error(e);toast(t('Delete failed — data was not partially committed. Please retry.','डिलीट विफल — डेटा आंशिक रूप से सेव नहीं किया गया। फिर कोशिश करें।'),'error')}
 }
 
 function openTxnModal(type){
@@ -1344,15 +1382,27 @@ async function saveRepay(){
   const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
   if(amt>loan.principal-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
   try{
-    const newRepayments=[...(loan.repayments||[]),{date:rdate,amount:amt}];
-    const newStatus=repaid+amt>=loan.principal?'closed':'active';
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({repayments:newRepayments,status:newStatus});
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    const loanRef=txCol.doc(id);
+    const result=await db.runTransaction(async transaction=>{
+      const loanSnap=await transaction.get(loanRef);
+      if(!loanSnap.exists)throw new Error('Loan not found');
+      const fresh=loanSnap.data();
+      const freshRepaid=(fresh.repayments||[]).reduce((sum,r)=>sum+(Number(r.amount)||0),0);
+      if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
+      const newRepayments=[...(fresh.repayments||[]),{date:rdate,amount:amt}];
+      const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
+      const txnRef=txCol.doc();
+      transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
+      transaction.set(txnRef,{partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      return true;
+    });
+    if(!result)return;
     const c=customers.find(x=>x.id===currentCustomerId);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Recorded','दर्ज'),'success');
     if(c&&c.email){await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0)}
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){console.error(e);toast(e.message==='Exceeds principal'?t('Exceeds principal','मूलधन से ज्यादा'):t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
 }
 
 function openIntPaidModal(){
@@ -1376,13 +1426,21 @@ async function saveIntPaid(){
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
   try{
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({interestPaid:(loan.interestPaid||0)+amt});
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    const loanRef=txCol.doc(id);
+    await db.runTransaction(async transaction=>{
+      const loanSnap=await transaction.get(loanRef);
+      if(!loanSnap.exists)throw new Error('Loan not found');
+      const fresh=loanSnap.data();
+      const txnRef=txCol.doc();
+      transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
+      transaction.set(txnRef,{partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    });
     const c=customers.find(x=>x.id===currentCustomerId);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Recorded','दर्ज'),'success');
     if(c&&c.email){await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0)}
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){console.error(e);toast(t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
 }
 
 function renderReports(){
