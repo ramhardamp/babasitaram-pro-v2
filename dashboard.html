@@ -1187,11 +1187,15 @@ async function saveCustomer(){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast(t('Invalid email','ईमेल सही नहीं'),'error');
   try{
     const viewToken=generateToken();
-    const docRef=await db.collection('users').doc(currentUser.uid).collection('parties').add({name,phone,email,balance:bal,viewToken,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
+    const batch=db.batch();
+    batch.set(partyRef,{name,phone,email,balance:bal,viewToken,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     if(bal !== 0){
-      await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:docRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
+      batch.set(txnRef,{partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     }
-    await updatePublicView(docRef.id,viewToken,{name,phone,balance:bal});
+    await batch.commit();
+    await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal});
     closeModal();
     if(bal>0){await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
@@ -1263,11 +1267,21 @@ async function saveTxn(type){
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-    let newBal=0;
-    const allTxns=await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',currentCustomerId).get();
-    allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0)});
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({balance:newBal});
+    const result=await db.runTransaction(async transaction=>{
+      const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId);
+      const partySnap=await transaction.get(partyRef);
+      if(!partySnap.exists)throw new Error('Customer not found');
+      const txnQuery=db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',currentCustomerId);
+      const txnSnap=await transaction.get(txnQuery);
+      let newBal=0;
+      txnSnap.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0)});
+      if(type==='udhaar')newBal+=amt; else if(type==='jama')newBal-=amt;
+      const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
+      transaction.set(txnRef,{partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      transaction.update(partyRef,{balance:newBal});
+      return newBal;
+    });
+    const newBal=result;
     if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
     closeModal();toast(t('Saved','सेव हो गया'),'success');
     if(c.email){const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200)}
