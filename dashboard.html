@@ -11,9 +11,9 @@
 :root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:var(--text);font-size:16px;line-height:1.5;overflow-x:hidden}
 body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
-.app-shell{width:100%;max-width:480px;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 80px rgba(0,0,0,.3);overflow:hidden;display:flex;flex-direction:column}
-@media(min-width:500px){body{padding:24px 0}.app-shell{min-height:calc(100vh - 48px);border-radius:32px;max-height:940px}}
-.top-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.3);position:sticky;top:0;z-index:50;flex-shrink:0}
+.app-shell{width:100%;max-width:480px;height:100dvh;min-height:100dvh;max-height:100dvh;background:var(--bg);position:relative;box-shadow:0 0 80px rgba(0,0,0,.3);overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:500px){body{padding:24px 0}.app-shell{height:calc(100vh - 48px);min-height:0;max-height:940px;border-radius:32px}}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.3);position:sticky;top:0;z-index:50;flex-shrink:0}
 .top-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .top-title{font-size:15px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -22,9 +22,9 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}
 .lang-btn.active{background:var(--primary);color:#fff}
 .lock-btn{background:rgba(99,102,241,.1);border:none;font-size:14px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}
-.screen-container{flex:1;overflow-y:auto;padding-bottom:20px}
+.screen-container{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable}
 .screen-container::-webkit-scrollbar{width:0}
-.screen{display:none;min-height:100%}
+.screen{display:none;min-height:0}
 .screen.active{display:block}
 .loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
@@ -180,9 +180,9 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
-.fab{position:absolute;bottom:90px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--gradient);color:#fff;border:none;font-size:28px;cursor:pointer;z-index:30;box-shadow:0 8px 24px rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center}
+.fab{position:absolute;bottom:calc(92px + env(safe-area-inset-bottom, 0px));right:20px;width:56px;height:56px;border-radius:50%;background:var(--gradient);color:#fff;border:none;font-size:28px;cursor:pointer;z-index:30;box-shadow:0 8px 24px rgba(99,102,241,.5);display:flex;align-items:center;justify-content:center}
 .fab:active{transform:scale(.92)}
-.bottom-tabs{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:6px 4px 10px;z-index:40;box-shadow:0 -8px 32px rgba(31,38,135,.1)}
+.bottom-tabs{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:6px 4px calc(10px + env(safe-area-inset-bottom, 0px));z-index:40;box-shadow:0 -8px 32px rgba(31,38,135,.1)}
 .btab{flex:1;background:none;border:none;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-muted);font-family:inherit;position:relative}
 .btab.active{color:var(--primary)}
 .btab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:3px;background:var(--gradient);border-radius:0 0 4px 4px}
@@ -222,6 +222,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .link-box{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:var(--text-muted);font-family:monospace;margin:10px 0;max-height:80px;overflow-y:auto}
 .dark-mode{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}.dark-mode body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.dark-mode .text-input,.dark-mode .select-input{color:var(--text)}.dark-mode .top-bar,.dark-mode .bottom-tabs{background:rgba(30,27,75,.95)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
+.customer-search-wrap{padding:0 16px 10px}.customer-search{width:100%;height:46px;border:2px solid var(--border);border-radius:14px;background:var(--white);color:var(--text);font:700 14px/1.2 inherit;padding:0 14px;outline:none}.customer-search:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
 </style>
 </head>
 <body>
@@ -243,7 +244,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo">🔐</div>
+        <div class="pin-logo"><img src="assets/logo.png" alt="Guru Shree" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots">
@@ -307,6 +308,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           ➕ <span id="btnAddC">नया ग्राहक जोड़ें</span>
         </button>
       </div>
+      <div class="customer-search-wrap"><input id="customerSearch" class="customer-search" type="search" autocomplete="off" placeholder="🔎 ग्राहक खोजें..." oninput="setCustomerSearch(this.value)"></div>
       <div class="tabs">
         <div class="tab active" data-filter="all" onclick="setFilter('all')"><span id="fAll">सभी</span></div>
         <div class="tab" data-filter="udhaar" onclick="setFilter('udhaar')">📤 <span id="fU">उधार</span></div>
@@ -379,6 +381,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
         <div class="settings-header" id="sH3">डेटा</div>
         <div class="settings-section">
+          <div class="settings-item" onclick="verifyDataIntegrity()"><div class="settings-left"><div class="settings-icon">🛡️</div><div><div class="settings-label">Data Integrity Check</div><div class="settings-sublabel">बिना data बदले customer/transaction consistency check</div></div></div><div class="settings-arrow">›</div></div>
           <div class="settings-item" onclick="fixAllBalances()">
             <div class="settings-left">
               <div class="settings-icon">🔧</div>
@@ -412,7 +415,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.7 (Back Fixed)</div></div></div>
+            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -463,6 +466,12 @@ let currentScreen = 'loading';
 let screenHistory = [];
 let currentCustomerId = null;
 let currentFilter = 'all';
+let customerSearchTerm = '';
+const txnIndex = new Map();
+let initialCustomersReady = false;
+let initialTransactionsReady = false;
+let dataReadyResolve;
+const dataReady = new Promise(resolve => { dataReadyResolve = resolve; });
 let currentUser = null;
 let userData = null;
 let customers = [];
@@ -520,14 +529,15 @@ function calcLoan(loan){
   const intOut=Math.max(0,interestAccr-intPaid);
   return{repaidPrincipal:repaid,currentPrincipal:Math.round(currentP),months:Math.round(months*10)/10,interestAccrued:interestAccr,interestPaid:Math.round(intPaid),interestOutstanding:Math.round(intOut),loanTotal:Math.round(currentP+intOut),progress:loan.principal>0?Math.round((repaid/loan.principal)*100):0};
 }
-function getLoans(cid){return transactions.filter(t=>t.partyId===cid&&t.type==='byaj_loan'&&t.status==='active')}
+function getPartyTransactions(cid){return txnIndex.get(cid)||[]}
+function rebuildTxnIndex(){txnIndex.clear();for(const tx of transactions){if(!tx.partyId)continue;const list=txnIndex.get(tx.partyId)||[];list.push(tx);txnIndex.set(tx.partyId,list)}}
+function getLoans(cid){return getPartyTransactions(cid).filter(t=>t.type==='byaj_loan'&&t.status==='active')}
 
 function getSummary(cid){
   const c=customers.find(x=>x.id===cid);
   if(!c)return null;
   let udhaarBalance = 0;
-  transactions.forEach(t => {
-    if(t.partyId !== cid) return;
+  getPartyTransactions(cid).forEach(t => {
     if(t.type === 'udhaar') udhaarBalance += (t.amount || 0);
     else if(t.type === 'jama') udhaarBalance -= (t.amount || 0);
   });
@@ -538,6 +548,7 @@ function getSummary(cid){
 }
 
 function getAllSummaries(){return customers.map(c=>({...c,...getSummary(c.id)}))}
+function setCustomerSearch(value){customerSearchTerm=String(value||'').trim().toLowerCase();renderDashboard()}
 function getTotals(){
   let u=0,b=0,t2=0,p=0,income=0;
   customers.forEach(c=>{const s=getSummary(c.id);if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}});
@@ -874,12 +885,12 @@ function setupListeners(){
   if(unsubCustomers)unsubCustomers();
   if(unsubTransactions)unsubTransactions();
   unsubCustomers=db.collection('users').doc(currentUser.uid).collection('parties')
-    .onSnapshot(snap=>{customers=[];snap.forEach(d=>customers.push({id:d.id,...d.data()}));customers.sort((a,b)=>(b.balance||0)-(a.balance||0));
+    .onSnapshot(snap=>{customers=[];snap.forEach(d=>customers.push({id:d.id,...d.data()}));customers.sort((a,b)=>(b.balance||0)-(a.balance||0));initialCustomersReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();
     },err=>console.error('Customer error:',err));
   unsubTransactions=db.collection('users').doc(currentUser.uid).collection('transactions')
     .orderBy('date','desc')
-    .onSnapshot(snap=>{transactions=[];snap.forEach(d=>transactions.push({id:d.id,...d.data()}));
+    .onSnapshot(snap=>{transactions=[];snap.forEach(d=>transactions.push({id:d.id,...d.data()}));rebuildTxnIndex();initialTransactionsReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();else if(currentScreen==='reports')renderReports();
     },err=>console.error('Txn error:',err));
 }
@@ -894,6 +905,7 @@ function renderDashboard(){
   document.getElementById('dIncome').textContent=fmt(totals.income);
   document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
   let filtered=getAllSummaries();
+  if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
   else if(currentFilter==='byaj')filtered=filtered.filter(s=>s.byajBalance>0);
   else if(currentFilter==='clear')filtered=filtered.filter(s=>s.grandTotal===0&&s.udhaarBalance===0);
@@ -1432,12 +1444,21 @@ function toggleDarkMode(){
   if(state)state.textContent=enabled?'ON':'OFF';
   toast(enabled?t('Dark mode enabled','डार्क मोड चालू'):t('Dark mode disabled','डार्क मोड बंद'),'success');
 }
-function exportData(){
-  const data={user:userData,customers,transactions,exportedAt:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
-  URL.revokeObjectURL(url);toast(t('Exported','एक्सपोर्ट'),'success');
+async function buildBackupPayload(){
+  await dataReady;
+  const normalized={user:userData,customers,transactions};
+  const canonical=JSON.stringify(normalized);
+  let checksum='unavailable';
+  try{const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical));checksum=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('')}catch(e){console.warn('Checksum unavailable',e)}
+  const orphanTransactions=transactions.filter(x=>!customers.some(cc=>cc.id===x.partyId)).length;
+  const balanceMismatches=customers.reduce((n,cc)=>{const txBal=getPartyTransactions(cc.id).reduce((sum,x)=>sum+(x.type==='udhaar'?(x.amount||0):x.type==='jama'?-(x.amount||0):0),0);return n+((cc.balance||0)!==txBal?1:0)},0);
+  return {schemaVersion:2,appVersion:'6.8.0',exportedAt:new Date().toISOString(),counts:{customers:customers.length,transactions:transactions.length},integrity:{orphanTransactions,balanceMismatches,checksumSha256:checksum},data:normalized};
+}
+async function exportData(){
+  try{toast(t('Preparing backup…','Backup तैयार हो रहा है…'),'success');const data=await buildBackupPayload();const json=JSON.stringify(data,null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_v2_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(t('Verified backup exported','Verified backup export हो गया'),'success')}catch(e){console.error(e);toast(t('Backup failed','Backup विफल'),'error')}
+}
+async function verifyDataIntegrity(showResult=true){
+  try{await dataReady;const orphanTransactions=transactions.filter(x=>!customers.some(cc=>cc.id===x.partyId));const balanceMismatches=[];for(const cc of customers){const expected=getPartyTransactions(cc.id).reduce((sum,x)=>sum+(x.type==='udhaar'?(x.amount||0):x.type==='jama'?-(x.amount||0):0),0);if((cc.balance||0)!==expected)balanceMismatches.push(cc.name||cc.id)}const ok=orphanTransactions.length===0&&balanceMismatches.length===0;console.log('DATA_INTEGRITY',{ok,customers:customers.length,transactions:transactions.length,orphanTransactions:orphanTransactions.length,balanceMismatches:balanceMismatches.length});if(showResult)toast(ok?t(`Integrity PASS: ${customers.length} customers / ${transactions.length} transactions`,`Integrity PASS: ${customers.length} ग्राहक / ${transactions.length} transactions`):t(`Integrity warning: ${orphanTransactions.length} orphan, ${balanceMismatches.length} balance mismatch`,`Integrity warning: ${orphanTransactions.length} orphan, ${balanceMismatches.length} balance mismatch`),ok?'success':'error');return {ok,orphanTransactions:orphanTransactions.length,balanceMismatches:balanceMismatches.length}}catch(e){console.error(e);if(showResult)toast('Integrity check failed','error');return {ok:false,error:e.message}}
 }
 function showLogoutConfirm(){
   if(!confirm(t('Logout? Data will be safe.','लॉगआउट करें? डेटा सुरक्षित रहेगा।')))return;
