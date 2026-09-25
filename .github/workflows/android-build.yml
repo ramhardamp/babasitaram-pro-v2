@@ -36,6 +36,8 @@ jobs:
         run: npm run prepare:web
       - name: Add Android platform
         run: npx cap add android
+      - name: Generate branded Android icon and splash
+        run: npx @capacitor/assets generate --android
       - name: Sync Android
         run: npx cap sync android
       - name: Build debug-signed APK
@@ -64,6 +66,7 @@ jobs:
           grep -q "package: name='com.babasitaram.pro'" apk-badging.txt
       - name: Verify APK archive
         run: unzip -t "${{ steps.apk.outputs.path }}"
+          unzip -l "${{ steps.apk.outputs.path }}" | grep -Eq "mipmap|launcher"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -86,7 +89,7 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: adb install -r "${{ steps.apk.outputs.path }}" && adb shell am force-stop com.babasitaram.pro && adb shell monkey -p com.babasitaram.pro 1 && sleep 8 && adb shell dumpsys activity activities | grep -q "com.babasitaram.pro" && adb shell pidof com.babasitaram.pro && ! adb logcat -d -t 300 | grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL"
+          script: install -r "${{ steps.apk.outputs.path }}" && adb shell am force-stop com.babasitaram.pro && adb shell monkey -p com.babasitaram.pro 1 && sleep 8 && adb shell dumpsys activity activities | grep -q "com.babasitaram.pro" && adb shell pidof com.babasitaram.pro && ! adb logcat -d -t 300 | grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL"
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
