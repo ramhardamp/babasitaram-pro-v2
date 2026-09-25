@@ -88,31 +88,17 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            APK="${{ steps.apk.outputs.path }}"
             adb wait-for-device
-            for i in $(seq 1 30); do
-              STATE="$(adb get-state 2>/dev/null || true)"
-              [ "$STATE" = "device" ] && break
-              sleep 2
-            done
-            test "$(adb get-state)" = "device"
-            adb install -r "$APK"
+            sleep 5
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
             adb shell am force-stop com.babasitaram.pro
             adb logcat -c
-            ACTIVITY="$(adb shell cmd package resolve-activity --brief com.babasitaram.pro | tail -1 | tr -d '\r')"
-            test -n "$ACTIVITY"
-            echo "Resolved activity: $ACTIVITY"
-            adb shell am start -W -n "$ACTIVITY"
+            adb shell am start -W -n com.babasitaram.pro/.MainActivity
             sleep 8
-            PID="$(adb shell pidof com.babasitaram.pro | tr -d '\r' || true)"
-            test -n "$PID"
-            echo "App PID: $PID"
+            adb shell pidof com.babasitaram.pro
             adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.babasitaram.pro"
             adb logcat -d -t 500 | tee runtime-logcat.txt
-            if grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt; then
-              echo "Runtime fatal exception detected"
-              exit 1
-            fi
+            grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt && exit 1 || true
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
