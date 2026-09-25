@@ -13,7 +13,7 @@ const checks=[
 ['Firebase config referenced',dashboard.includes('firebase-config.js')&&index.includes('firebase-config.js')],
 ['customer-view has no customer-create modal',!(await readFile('customer-view.html','utf8')).includes('openAddCustomer(')],
 ['customer-view payment colors defined', (await readFile('customer-view.html','utf8')).includes('.txn-amt.jama') && (await readFile('customer-view.html','utf8')).includes('.txn-amt.udhaar')],
-['interest income excludes principal', dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)") && !dashboard.includes("income+=(x.amount||0);") ]
+['interest income excludes principal', (dashboard.match(/income\s*\+=\s*\(x\.amount\|\|0\)/g)||[]).length===1 && dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")]
 ];
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
