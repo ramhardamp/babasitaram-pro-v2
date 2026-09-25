@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
       - name: Java 21
         uses: actions/setup-java@v4
         with:
@@ -87,7 +86,7 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: adb install -r "${{ steps.apk.outputs.path }}" && adb shell am force-stop com.babasitaram.pro && adb shell monkey -p com.babasitaram.pro 1 && sleep 8 && adb shell dumpsys activity activities | grep -q "com.babasitaram.pro" && adb shell pidof com.babasitaram.pro
+          script: adb install -r "${{ steps.apk.outputs.path }}" && adb shell am force-stop com.babasitaram.pro && adb shell monkey -p com.babasitaram.pro 1 && sleep 8 && adb shell dumpsys activity activities | grep -q "com.babasitaram.pro" && adb shell pidof com.babasitaram.pro && ! adb logcat -d -t 300 | grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL"
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
