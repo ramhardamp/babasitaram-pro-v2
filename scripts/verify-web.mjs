@@ -10,7 +10,10 @@ const checks=[
 ['customer save logic exists',dashboard.includes('async function saveCustomer()')],
 ['dark mode toggle exists',dashboard.includes('function toggleDarkMode()')&&dashboard.includes('bsp_dark_mode')],
 ['PIN lock exists',dashboard.includes('function lockApp()')&&dashboard.includes('function pinPress')],
-['Firebase config referenced',dashboard.includes('firebase-config.js')&&index.includes('firebase-config.js')]
+['Firebase config referenced',dashboard.includes('firebase-config.js')&&index.includes('firebase-config.js')],
+['customer-view has no customer-create modal',!(await readFile('customer-view.html','utf8')).includes('openAddCustomer(')],
+['customer-view payment colors defined', (await readFile('customer-view.html','utf8')).includes('.txn-amt.jama') && (await readFile('customer-view.html','utf8')).includes('.txn-amt.udhaar')],
+['interest income excludes principal', !dashboard.includes("income+=(x.amount||0)")) || dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")]
 ];
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
