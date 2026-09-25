@@ -84,11 +84,18 @@ jobs:
           arch: x86_64
           profile: pixel_7
           force-avd-creation: true
+          emulator-boot-timeout: 900
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            set -euo pipefail
             APK="${{ steps.apk.outputs.path }}"
+            adb wait-for-device
+            for i in $(seq 1 30); do
+              STATE="$(adb get-state 2>/dev/null || true)"
+              [ "$STATE" = "device" ] && break
+              sleep 2
+            done
+            test "$(adb get-state)" = "device"
             adb install -r "$APK"
             adb shell am force-stop com.babasitaram.pro
             adb logcat -c
