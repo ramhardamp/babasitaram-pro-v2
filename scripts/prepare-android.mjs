@@ -226,6 +226,55 @@ if (!mainText.includes('BsrSmsSchedulerPlugin')) {
   fs.writeFileSync(main, mainText);
 }
 
+/* Android system Back must reach the web app before the Activity exits.
+   This is intentionally native as a fallback to @capacitor/app, so it also
+   works if the JS bridge/plugin has not registered yet. */
+mainText = fs.readFileSync(main, 'utf8');
+if (!mainText.includes('bsrSetupAndroidBack')) {
+  if (!mainText.includes('import androidx.activity.OnBackPressedCallback;')) {
+    mainText = mainText.replace(
+      'import com.getcapacitor.BridgeActivity;',
+      'import com.getcapacitor.BridgeActivity;\nimport androidx.activity.OnBackPressedCallback;'
+    );
+  }
+  const setupMethod = `
+  private void bsrSetupAndroidBack() {
+    getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+      @Override public void handleOnBackPressed() {
+        try {
+          android.webkit.WebView webView = getBridge().getWebView();
+          if (webView == null) { finish(); return; }
+          webView.evaluateJavascript(
+            "(function(){try{if(window.__nativeAndroidBack){return String(!!window.__nativeAndroidBack());}return 'false';}catch(e){return 'false';}})()",
+            value -> {
+              if (!"true".equals(value)) finish();
+            }
+          );
+        } catch (Exception e) {
+          finish();
+        }
+      }
+    });
+  }
+`;
+  const createCall='bsrSetupAndroidBack();';
+  if (mainText.includes('super.onCreate(savedInstanceState); registerPlugin(BsrSmsSchedulerPlugin.class);')) {
+    mainText = mainText.replace(
+      'super.onCreate(savedInstanceState); registerPlugin(BsrSmsSchedulerPlugin.class);',
+      'super.onCreate(savedInstanceState); registerPlugin(BsrSmsSchedulerPlugin.class); '+createCall
+    );
+  } else if (mainText.includes('super.onCreate(savedInstanceState);')) {
+    mainText = mainText.replace('super.onCreate(savedInstanceState);', 'super.onCreate(savedInstanceState); '+createCall);
+  } else {
+    const classMarker='public class MainActivity extends BridgeActivity {';
+    if (!mainText.includes(classMarker)) throw new Error('MainActivity class marker not found for back setup');
+    mainText=mainText.replace(classMarker,classMarker+'\n  @Override public void onCreate(android.os.Bundle savedInstanceState) { super.onCreate(savedInstanceState); '+createCall+' }');
+  }
+  mainText = mainText.replace('\\n  private void bsrSetupAndroidBack()', '\n  private void bsrSetupAndroidBack()');
+  mainText = mainText.replace('\n}', '\n'+setupMethod+'}');
+  fs.writeFileSync(main, mainText);
+}
+
 const manifest = path.join(app, 'src', 'main', 'AndroidManifest.xml');
 let manifestText = fs.readFileSync(manifest, 'utf8');
 if (!manifestText.includes('android.permission.SEND_SMS')) {
