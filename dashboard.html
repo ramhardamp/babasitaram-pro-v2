@@ -1084,16 +1084,22 @@ function shareCustomerLinkWhatsApp(id){
 
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
+  const derivedMessage=txn.type==='loan_repay'
+    ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
+    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।');
+  const actionHtml=isDerivedLoanTxn
+    ? `<div style="padding:12px;background:var(--interest-bg);border:1px solid var(--interest);border-radius:12px;margin-bottom:12px;color:#92400e;font-size:13px;font-weight:700;text-align:center">${derivedMessage}</div>`
+    : `<button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
+       <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>`;
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
     <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
       <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
       <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
       <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div></div>
-    <button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
-    <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>
-    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Cancel','रद्द')}</button>`);
+    ${actionHtml}
+    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);
 }
-
 function editTxnConfirm(id){requirePIN(()=>{const txn=transactions.find(t=>t.id===id);if(!txn){toast('Transaction not found','error');return}openEditTxnModal(txn)})}
 function deleteTxnConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this transaction?','यह लेन-देन डिलीट करें?')))return;deleteTxn(id)})}
 
