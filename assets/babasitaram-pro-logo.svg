@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">BABASITARAM PRO</title>
+<desc id="desc">BABASITARAM PRO brand mark</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e1b4b"/><stop offset="0.55" stop-color="#4f46e5"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+</defs>
+<rect x="12" y="12" width="488" height="488" rx="116" fill="url(#bg)"/>
+<circle cx="256" cy="236" r="150" fill="none" stroke="url(#gold)" stroke-width="12"/>
+<circle cx="256" cy="236" r="122" fill="rgba(255,255,255,.08)" stroke="#ffffff" stroke-opacity=".18" stroke-width="3"/>
+<path d="M185 300c24-36 49-55 71-55s47 19 71 55" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+<path d="M206 198c17-25 33-37 50-37s33 12 50 37" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linecap="round"/>
+<text x="256" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="900" fill="#fff">BS</text>
+<text x="256" y="388" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="900" letter-spacing="4" fill="#fde68a">BSP</text>
+</svg>
