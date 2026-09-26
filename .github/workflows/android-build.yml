@@ -32,6 +32,8 @@ jobs:
         run: npm run prepare:web
       - name: Add Android platform
         run: npx cap add android
+      - name: Prepare native Android SMS scheduler
+        run: node scripts/prepare-android.mjs
       - name: Generate branded Android icon and splash
         run: npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827' --splashBackgroundColor '#1e1b4b' --splashBackgroundColorDark '#0f172a'
       - name: Sync Android
