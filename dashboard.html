@@ -606,13 +606,15 @@ async function updatePublicView(partyId, viewToken, partyData){
       else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
     });
     txns.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    await db.collection('publicViews').doc(viewToken).set({
+    // 👈 यहाँ JSON ट्रिक लगाई गई है
+    const publicViewData = JSON.parse(JSON.stringify({
       businessUid:currentUser.uid, partyId,
       shopName:userData.shopName||'BABASITARAM PRO',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       customerName:partyData.name, customerPhone:partyData.phone||'',
       balance:partyData.balance||0, totalUdhaar, totalJama, transactions:txns
-    });
+    }));
+    await db.collection('publicViews').doc(viewToken).set(publicViewData);
     console.log('✅ Public view updated:', viewToken);
   }catch(e){console.error('❌ updatePublicView error:', e)}
 }
@@ -1101,7 +1103,8 @@ async function saveEditedTxn(id){
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   try{
     const c=customers.find(x=>x.id===txn.partyId);if(!c)return;
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({amount:newAmt,note:newNote,date:newDate});
+    const updateData = JSON.parse(JSON.stringify({amount:newAmt,note:newNote,date:newDate}));
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     let newBal = 0;
     const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
     allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0);});
@@ -1167,7 +1170,8 @@ async function saveEditedLoan(id){
   if(!newP||newP<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!newR||newR<=0)return toast(t('Enter rate','दर डालें'),'error');
   try{
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update({principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart});
+    const updateData = JSON.parse(JSON.stringify({principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart}));
+    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
     if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Updated','अपडेट हो गया'),'success');
@@ -1222,12 +1226,15 @@ async function saveCustomer(){
     const viewToken=generateToken();
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
-    // 👈 createdAt हटा दिया गया है
-    batch.set(partyRef,{name,phone,email,balance:bal,viewToken});
+    
+    // 👈 JSON ट्रिक लगाई गई है
+    const partyData = JSON.parse(JSON.stringify({name,phone,email,balance:bal,viewToken}));
+    batch.set(partyRef, partyData);
+    
     if(bal !== 0){
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      // 👈 createdAt हटा दिया गया है
-      batch.set(txnRef,{partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]});
+      const txnData = JSON.parse(JSON.stringify({partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]}));
+      batch.set(txnRef, txnData);
     }
     await batch.commit();
     await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal});
@@ -1262,7 +1269,8 @@ async function updateCustomer(){
     const c=customers.find(x=>x.id===currentCustomerId);
     const newPhone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
     const newEmail=document.getElementById('mEmail').value.trim();
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update({name,phone:newPhone,email:newEmail});
+    const updateData = JSON.parse(JSON.stringify({name,phone:newPhone,email:newEmail}));
+    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}
     closeModal();toast(t('Updated','अपडेट'),'success');
   }catch(e){console.error(e);toast('Error','error')}
@@ -1317,8 +1325,11 @@ async function saveTxn(type){
       txnSnap.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0)});
       if(type==='udhaar')newBal+=amt; else if(type==='jama')newBal-=amt;
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      // 👈 createdAt हटा दिया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type:type,amount:amt,note:note,date:date});
+      
+      // 👈 JSON ट्रिक लगाई गई है
+      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:type,amount:amt,note:note,date:date}));
+      transaction.set(txnRef, txnData);
+      
       transaction.update(partyRef,{balance:newBal});
       return newBal;
     });
@@ -1354,8 +1365,10 @@ async function saveLoan(){
   if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
-    // 👈 createdAt हटा दिया गया है
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note,status:'active',interestPaid:0,repayments:[],date:sd});
+    // 👈 JSON ट्रिक लगाई गई है
+    const loanData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note:note,status:'active',interestPaid:0,repayments:[],date:sd}));
+    await db.collection('users').doc(currentUser.uid).collection('transactions').add(loanData);
+    
     if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Loan created','लोन बनाया'),'success');
     if(c.email){await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0)}
@@ -1397,8 +1410,11 @@ async function saveRepay(){
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
-      // 👈 createdAt हटा दिया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate});
+      
+      // 👈 JSON ट्रिक लगाई गई है
+      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate}));
+      transaction.set(txnRef, txnData);
+      
       return true;
     });
     if(!result)return;
@@ -1438,8 +1454,11 @@ async function saveIntPaid(){
       const fresh=loanSnap.data();
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
-      // 👈 createdAt हटा दिया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate});
+      
+      // 👈 JSON ट्रिक लगाई गई है
+      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate}));
+      transaction.set(txnRef, txnData);
+      
     });
     const c=customers.find(x=>x.id===currentCustomerId);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
@@ -1500,14 +1519,19 @@ async function saveShop(){
   const phone=document.getElementById('mShopPhone').value.trim();
   if(!shopName)return toast('Name required','error');
   try{
-    await db.collection('users').doc(currentUser.uid).update({shopName,phone});
+    const updateData = JSON.parse(JSON.stringify({shopName,phone}));
+    await db.collection('users').doc(currentUser.uid).update(updateData);
     userData.shopName=shopName;userData.phone=phone;
     closeModal();renderSettings();toast(t('Saved','सेव'),'success');
   }catch(e){console.error(e);toast('Error','error')}
 }
 async function saveSettings(){
   const rate=parseFloat(document.getElementById('sDefaultRate').value)||2;
-  try{await db.collection('users').doc(currentUser.uid).update({defaultRate:rate});userData.defaultRate=rate;toast(t('Settings saved','सेटिंग सेव'),'success')}catch(e){console.error(e)}
+  try{
+    const updateData = JSON.parse(JSON.stringify({defaultRate:rate}));
+    await db.collection('users').doc(currentUser.uid).update(updateData);
+    userData.defaultRate=rate;toast(t('Settings saved','सेटिंग सेव'),'success')
+  }catch(e){console.error(e)}
 }
 function applyDarkMode(){
   const enabled=localStorage.getItem('bsp_dark_mode')==='1';
