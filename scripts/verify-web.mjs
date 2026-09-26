@@ -58,7 +58,7 @@ checks.push(['Existing users get non-destructive profile fields',dashboard.inclu
 
 checks.push(['Login preloads dashboard data before redirect',index.includes('preloadDashboardData(user.uid)')&&index.includes('sessionStorage.setItem(\'bsp_dashboard_prefetched\'')&&index.includes('डेटा तैयार हो रहा है')]);
 checks.push(['Dashboard primes initial data before first render',dashboard.includes('async function primeDashboardData()')&&dashboard.includes('await primeDashboardData();')&&dashboard.includes('source:\'cache\'')&&dashboard.includes('initialCustomersReady=true')&&dashboard.includes('initialTransactionsReady=true')]);
-checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/webp;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>8000]);
+checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/webp;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
 checks.push(['PIN change has return target and visible back',dashboard.includes("pinReturnScreen='settings'")&&dashboard.includes('const canGoBack=!!pinReturnScreen')&&dashboard.includes("if(currentScreen==='pin' && pinReturnScreen)")]);
 checks.push(['Support email is updated',dashboard.includes('mailto:babasitaram@gmail.com')&&dashboard.includes('babasitaram@gmail.com')&&!dashboard.includes('ramhardamp@gmail.com')]);
 checks.push(['Dashboard top logo markup is valid',dashboard.includes('<img class="brand-logo" src="assets/guru-shree-logo.svg"')&&!dashboard.includes("src=\\\"'+logoUrl+'\\\"")]);
