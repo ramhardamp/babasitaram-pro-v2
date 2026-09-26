@@ -1354,10 +1354,10 @@ async function saveCustomer(){
       batch.set(txnRef, txnData);
     }
     await batch.commit();
-    await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal});
     closeModal();
-    if(bal>0){await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
+    try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
+    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
