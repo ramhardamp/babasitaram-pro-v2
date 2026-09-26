@@ -1118,15 +1118,18 @@ async function saveEditedTxn(id){
       const current=txSnap.data()||{};
       const oldAmt=Number(current.amount)||0;
       const oldType=String(current.type||'');
-      const newType=String(current.type||'');
+
+      // Derived loan-payment records must remain aligned with parent-loan history.
+      if(oldType==='loan_repay'||oldType==='interest_paid'){
+        throw new Error('Derived loan transaction cannot be edited independently');
+      }
 
       // Only normal Udhaar/Jama transactions affect the party balance.
-      // Loan/interest records have their own accounting and are not rewritten here.
       let balanceDelta=0;
       if(oldType==='udhaar')balanceDelta-=oldAmt;
       else if(oldType==='jama')balanceDelta+=oldAmt;
-      if(newType==='udhaar')balanceDelta+=newAmt;
-      else if(newType==='jama')balanceDelta-=newAmt;
+      if(oldType==='udhaar')balanceDelta+=newAmt;
+      else if(oldType==='jama')balanceDelta-=newAmt;
 
       transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate});
       if(balanceDelta!==0)transaction.update(partyRef,{
@@ -1167,6 +1170,12 @@ async function deleteTxn(id){
       const current=txSnap.data()||{};
       const amount=Number(current.amount)||0;
       const type=String(current.type||'');
+
+      // Derived loan-payment records cannot be deleted independently because
+      // their parent loan history would remain inconsistent.
+      if(type==='loan_repay'||type==='interest_paid'){
+        throw new Error('Derived loan transaction cannot be deleted independently');
+      }
 
       // Reverse only the balance effect of the transaction being removed.
       let reverseDelta=0;
@@ -1369,20 +1378,58 @@ async function updateCustomer(){
 async function deleteCustomer(){
   if(!confirm(t('Delete customer?','ग्राहक डिलीट करें?')))return;
   try{
-    const c=customers.find(x=>x.id===currentCustomerId);
-    const txns=transactions.filter(t=>t.partyId===currentCustomerId);
-    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
-    for(let i=0;i<txns.length;i+=450){
-      const batch=db.batch();
-      txns.slice(i,i+450).forEach(t2=>batch.delete(txCol.doc(t2.id)));
-      await batch.commit();
+    const uid=currentUser.uid;
+    const customerId=String(currentCustomerId||'').trim();
+    if(!uid||!customerId)throw new Error('Invalid customer');
+
+    // Never destructively delete a customer that has ledger history.
+    // The previous implementation deleted transactions in batches first,
+    // which could leave permanent partial deletion if a later write failed.
+    const txCol=db.collection('users').doc(uid).collection('transactions');
+    const txSnap=await txCol.where('partyId','==',customerId).limit(1).get();
+    if(!txSnap.empty){
+      return toast(
+        t('Customer has transaction history. Delete is blocked to protect data.',
+          'इस ग्राहक का लेन-देन इतिहास मौजूद है। डेटा सुरक्षित रखने के लिए डिलीट रोक दिया गया है।'),
+        'error'
+      );
     }
-    if(c&&c.viewToken){try{await db.collection('publicViews').doc(c.viewToken).delete()}catch(e){console.warn('Public view cleanup failed',e)}}
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).delete();
+
+    const c=customers.find(x=>String(x.id)===customerId);
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(customerId);
+    const publicRef=c?.viewToken
+      ? db.collection('publicViews').doc(String(c.viewToken))
+      : null;
+
+    // No ledger history exists, so remove the party and public view together.
+    await db.runTransaction(async(transaction)=>{
+      const partySnap=await transaction.get(partyRef);
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const liveTx=await transaction.get(
+        txCol.where('partyId','==',customerId).limit(1)
+      );
+      if(!liveTx.empty)throw new Error('Customer gained transaction history');
+
+      transaction.delete(partyRef);
+      if(publicRef){
+        const publicSnap=await transaction.get(publicRef);
+        if(publicSnap.exists)transaction.delete(publicRef);
+      }
+    });
+
     closeModal();currentCustomerId=null;screenHistory=[];
     showScreen('dashboard',true);
-    toast(t('Deleted','डिलीट'),'success');
-  }catch(e){console.error(e);toast(t('Delete failed — data was not partially committed. Please retry.','डिलीट विफल — डेटा आंशिक रूप से सेव नहीं किया गया। फिर कोशिश करें।'),'error')}
+    toast(t('Deleted','डिलीट हो गया'),'success');
+  }catch(e){
+    console.error('deleteCustomer failed:',e);
+    toast(
+      e.message==='Customer gained transaction history'
+        ? t('Delete cancelled because transaction history was created.','लेन-देन इतिहास बन जाने के कारण डिलीट रद्द हुआ।')
+        : 'Error: '+(e.message||'Delete failed'),
+      'error'
+    );
+  }
 }
 
 function openTxnModal(type){
