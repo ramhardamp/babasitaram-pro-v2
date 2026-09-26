@@ -60,6 +60,7 @@ jobs:
           test -n "$AAPT"
           "$AAPT" dump badging "${{ steps.apk.outputs.path }}" | tee apk-badging.txt
           grep -q "package: name='com.babasitaram.pro'" apk-badging.txt
+          "$AAPT" dump permissions "${{ steps.apk.outputs.path }}" | grep -q "android.permission.SEND_SMS"
       - name: Verify APK archive
         run: |
           unzip -t "${{ steps.apk.outputs.path }}"
