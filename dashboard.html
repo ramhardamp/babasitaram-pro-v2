@@ -620,7 +620,6 @@ async function updatePublicView(partyId, viewToken, partyData){
       else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
     });
     txns.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    // 👈 यहाँ JSON ट्रिक लगाई गई है
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
       shopName:userData.shopName||'BABASITARAM PRO',
@@ -1344,7 +1343,6 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     
-    // 👈 JSON ट्रिक लगाई गई है
     const partyData = {name,phone,email,balance:bal,viewToken};
     batch.set(partyRef, partyData);
     
