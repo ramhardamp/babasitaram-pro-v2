@@ -67,6 +67,7 @@ checks.push(['Customer statement includes loan principal',dashboard.includes("co
 checks.push(['Customer statement exposes PDF action',dashboard.includes('exportCustomerStatementPdf')&&dashboard.includes('Statement PDF')]);
 checks.push(['Offline/cache status is visible',dashboard.includes('id="syncStatus"')&&dashboard.includes('function setSyncStatus(')&&dashboard.includes('includeMetadataChanges:true')&&dashboard.includes('snap.metadata.fromCache')]);
 checks.push(['Settings has one bottom navigation Settings entry',!dashboard.includes('id="settingsHeaderBtn"')&&dashboard.includes('data-view="settings" onclick="switchTab(\'settings\')"')]);
+checks.push(['Obsolete login marketing badges removed',!index.includes('हमेशा फ्री')&&!index.includes('बिना इंटरनेट')&&!index.includes('डेटा सुरक्षित')]);
 checks.push(['PIN and Language are inside Settings',dashboard.includes('PIN / Security')&&dashboard.includes('PIN बदलें')&&dashboard.includes('Language')&&dashboard.includes('English / हिंदी')]);
 checks.push(['Android automatic SMS hooks exist',dashboard.includes('function getSmsPlugin()')&&dashboard.includes('BsrSmsScheduler')&&dashboard.includes('function sendNativeSms')&&dashboard.includes('function scheduleUdhaarReminder')]);
 checks.push(['SMS settings are persisted non-destructively',dashboard.includes('smsSettings')&&dashboard.includes("db.collection('users').doc(currentUser.uid).update({smsSettings:next})")]);
