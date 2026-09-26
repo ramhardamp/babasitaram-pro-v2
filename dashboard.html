@@ -433,14 +433,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div id="screen-settings" class="screen">
       <div class="android-settings">
 
-        <div class="android-settings-hero">
-          <img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="Guru Shree">
-          <div>
-            <div class="android-settings-title">Settings / सेटिंग्स</div>
-            <div class="android-settings-sub">अकाउंट और ऐप की सभी सेटिंग्स</div>
-          </div>
-        </div>
-
         <div class="android-settings-list">
 
           <section class="android-setting-section open" data-settings-section="profile">
@@ -2378,7 +2370,7 @@ function renderSettings(){
   document.getElementById('sShopName').textContent=userData.shopName||'-';
   document.getElementById('sPhone').textContent=userData.profilePhone||userData.phone||'-';
   document.getElementById('sDefaultRate').value=userData.defaultRate||2;
-  document.getElementById('topTitle').textContent='⚙️ '+t('Settings','सेटिंग्स');
+  document.getElementById('topTitle').textContent='⚙️ '+t('Settings / सेटिंग्स','सेटिंग्स');
 }
 function editShop(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Edit Business','व्यवसाय एडिट')}</div>
