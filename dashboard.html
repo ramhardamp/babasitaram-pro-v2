@@ -775,7 +775,7 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('topTitle').textContent='🔐 PIN';
   const canGoBack=!!pinReturnScreen;
   document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
-  document.getElementById('lockBtn').style.display='none';
+  // Header lock control was moved into Settings; nothing to hide here.
 }
 function updatePinDots(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pendingPIN.length))}
 function pinPress(digit){
