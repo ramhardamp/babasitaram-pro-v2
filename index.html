@@ -180,7 +180,6 @@ async function handleLogin() {
     const user = result.user;
 
     if (!user.emailVerified) {
-      hideLoginDataLoading();
       document.getElementById('verifyEmailDisplay').textContent = user.email;
       showScreen('verify');
       setBtnLoading(btn, false);
@@ -190,20 +189,18 @@ async function handleLogin() {
     const userDoc = await db.collection('users').doc(user.uid).get();
 
     if (!userDoc.exists) {
-      hideLoginDataLoading();
       window.location.href = 'signup.html';
       return;
     }
 
     if (!userDoc.data().shopName) {
-      hideLoginDataLoading();
       window.location.href = 'signup.html';
       return;
     }
 
-    await preloadDashboardData(user.uid);
-
-    // The dashboard opens only after Auth + account + customer + transaction data are ready.
+    // Do not download the full customer/transaction ledger here.
+    // That was the source of the visible 2–3s post-login wait. Dashboard listeners
+    // hydrate from Firestore cache/server in parallel after the route opens.
     try {
       sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
         uid: user.uid,
@@ -213,15 +210,10 @@ async function handleLogin() {
     } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
 
     localStorage.setItem('bsp_userId', user.uid);
-    sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
-      uid: user.uid,
-      at: Date.now()
-    }));
     window.location.replace('dashboard.html');
 
   } catch (error) {
     console.error('Login error:', error);
-    hideLoginDataLoading();
     let msg = 'लॉगिन विफल';
     if (error.code === 'auth/user-not-found') msg = 'यूजर नहीं मिला। पहले साइनअप करें।';
     else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') msg = 'गलत पासवर्ड या ईमेल।';
@@ -234,26 +226,6 @@ async function handleLogin() {
     if (btnText) btnText.textContent = '🔑 लॉगिन करें';
     setBtnLoading(btn, false);
   }
-}
-
-async function preloadDashboardData(uid) {
-  if (!uid) throw new Error('Login session नहीं मिला');
-
-  const customerQuery = db.collection('users').doc(uid).collection('parties');
-  const transactionQuery = db.collection('users').doc(uid).collection('transactions').orderBy('date', 'desc');
-
-  const preload = Promise.all([
-    customerQuery.get(),
-    transactionQuery.get()
-  ]);
-
-  await Promise.race([
-    preload,
-    new Promise((_, reject) => setTimeout(
-      () => reject(new Error('डेटा तैयार होने में बहुत समय लग रहा है। Internet connection check करें।')),
-      15000
-    ))
-  ]);
 }
 
 async function resendVerification() {
@@ -360,7 +332,6 @@ auth.onAuthStateChanged(async (user) => {
           setBtnLoading(loginBtn, true);
           const loginBtnText = loginBtn?.querySelector('.btn-text');
           if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
-          await preloadDashboardData(user.uid);
           try {
             sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
               uid: user.uid,
@@ -368,10 +339,6 @@ auth.onAuthStateChanged(async (user) => {
               at: Date.now()
             }));
           } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
-          sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
-            uid: user.uid,
-            at: Date.now()
-          }));
         } catch (e) {
           console.warn('Dashboard data prefetch skipped:', e);
         }
