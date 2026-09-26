@@ -450,19 +450,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             </div>
           </section>
 
-          <section class="android-setting-section" data-settings-section="business">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('business')">
-              <span class="android-setting-icon">🏪</span>
-              <span class="android-setting-main"><b>Business</b><small>व्यवसाय की जानकारी और ब्याज</small></span>
-              <span class="android-setting-chevron">›</span>
-            </button>
-            <div class="android-setting-content">
-              <button class="android-sub-row action" type="button" onclick="editShop()"><span>🏪 <b>Business Name</b></span><em id="sShopName">-</em><i>›</i></button>
-              <div class="android-sub-row"><span>📱 <b>Mobile</b></span><em id="sPhone">-</em></div>
-              <div class="android-sub-row"><span>📈 <b>Default Interest Rate</b></span><em><input class="android-rate-input" type="number" id="sDefaultRate" value="2" step="0.1" onchange="saveSettings()"> % / month</em></div>
-            </div>
-          </section>
-
           <section class="android-setting-section" data-settings-section="security">
             <button class="android-setting-row" type="button" onclick="toggleSettingsSection('security')">
               <span class="android-setting-icon">🔐</span>
@@ -519,6 +506,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
               <button class="android-sub-row action warning" type="button" onclick="fixAllBalances()"><span>🔧 <b>Fix All Balances</b><small>पुराने balance को recalculate करें</small></span><i>›</i></button>
               <button class="android-sub-row action" type="button" onclick="backfillViewTokens()"><span>🔗 <b>Generate Portal Links</b><small>पुराने customers के लिए public link</small></span><i>›</i></button>
               <div class="android-setting-note warning-note">⚠️ Advanced tools को सामान्य रोज़ के काम में न चलाएँ।</div>
+              <div class="android-sub-row">
+                <span>📈 <b>Default Interest Rate</b><small>Per month (%)</small></span>
+                <em><input class="android-rate-input" type="number" id="sDefaultRate" value="2" step="0.1" onchange="saveSettings()"> %</em>
+              </div>
             </div>
           </section>
 
@@ -2364,9 +2355,9 @@ function renderSettings(){
   document.getElementById('pOwnerName').textContent=userData.profileName||userData.ownerName||'-';
   document.getElementById('pPhone').textContent=userData.profilePhone||userData.phone||'-';
   document.getElementById('pEmail').textContent=userData.profileEmail||currentUser?.email||'-';
-  document.getElementById('sShopName').textContent=userData.shopName||'-';
-  document.getElementById('sPhone').textContent=userData.profilePhone||userData.phone||'-';
-  document.getElementById('sDefaultRate').value=userData.defaultRate||2;
+  const shopEl=document.getElementById('sShopName'); if(shopEl)shopEl.textContent=userData.shopName||'-';
+  const phoneEl=document.getElementById('sPhone'); if(phoneEl)phoneEl.textContent=userData.profilePhone||userData.phone||'-';
+  const rateEl=document.getElementById('sDefaultRate'); if(rateEl)rateEl.value=userData.defaultRate||2;
   document.getElementById('topTitle').textContent='⚙️ '+t('Settings / सेटिंग्स','सेटिंग्स');
 }
 function editShop(){
