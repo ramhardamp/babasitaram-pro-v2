@@ -217,17 +217,19 @@ fs.writeFileSync(path.join(src, 'BsrSmsBootReceiver.java'), boot);
 const main = path.join(src, 'MainActivity.java');
 let mainText = fs.readFileSync(main, 'utf8');
 if (!mainText.includes('BsrSmsSchedulerPlugin')) {
-  mainText = mainText.replace(/(public class MainActivity extends BridgeActivity\\s*\\{)/, '$1\\n  @Override public void onCreate(android.os.Bundle savedInstanceState) { super.onCreate(savedInstanceState); registerPlugin(BsrSmsSchedulerPlugin.class); }');
+  const marker = 'public class MainActivity extends BridgeActivity {';
+  if (!mainText.includes(marker)) throw new Error('MainActivity marker not found');
+  mainText = mainText.replace(marker, marker + '\n  @Override public void onCreate(android.os.Bundle savedInstanceState) { super.onCreate(savedInstanceState); registerPlugin(BsrSmsSchedulerPlugin.class); }');
   fs.writeFileSync(main, mainText);
 }
 
 const manifest = path.join(app, 'src', 'main', 'AndroidManifest.xml');
 let manifestText = fs.readFileSync(manifest, 'utf8');
 if (!manifestText.includes('android.permission.SEND_SMS')) {
-  manifestText = manifestText.replace(/(<manifest[^>]*>)/, '$1\\n    <uses-permission android:name="android.permission.SEND_SMS" />\\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />');
+  manifestText = manifestText.replace(/(<manifest[^>]*>)/, '$1\n    <uses-permission android:name="android.permission.SEND_SMS" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />');
 }
 if (!manifestText.includes('.BsrSmsAlarmReceiver')) {
-  manifestText = manifestText.replace('</application>', '        <receiver android:name=".BsrSmsAlarmReceiver" android:exported="false" />\\n        <receiver android:name=".BsrSmsBootReceiver" android:enabled="true" android:exported="false">\\n            <intent-filter>\\n                <action android:name="android.intent.action.BOOT_COMPLETED" />\\n                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />\\n            </intent-filter>\\n        </receiver>\\n    </application>');
+  manifestText = manifestText.replace('</application>', '        <receiver android:name=".BsrSmsAlarmReceiver" android:exported="false" />\n        <receiver android:name=".BsrSmsBootReceiver" android:enabled="true" android:exported="false">\n            <intent-filter>\n                <action android:name="android.intent.action.BOOT_COMPLETED" />\n                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />\n            </intent-filter>\n        </receiver>\n    </application>');
 }
 fs.writeFileSync(manifest, manifestText);
 console.log('Android SMS native layer prepared.');
