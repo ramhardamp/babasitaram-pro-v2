@@ -246,7 +246,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo">📒</div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg" alt="Guru Shree"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots">
@@ -417,7 +417,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
+            <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -859,7 +859,7 @@ function showScreen(name, noPush){
   
   // Top title
   const titles = {
-    dashboard: '📒 ' + (userData?.shopName || 'BABASITARAM PRO'),
+    dashboard: (userData?.shopName || 'BABASITARAM PRO'),
     customer: '← ' + (customers.find(c => c.id === currentCustomerId)?.name || ''),
     reports: '📊 ' + t('Reports', 'रिपोर्ट'),
     settings: '⚙️ ' + t('Settings', 'सेटिंग्स'),
