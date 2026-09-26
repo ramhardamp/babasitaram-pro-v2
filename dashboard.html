@@ -64,6 +64,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .tab{padding:7px 11px;border-radius:var(--radius-full);background:var(--white);border:2px solid var(--border);font-size:12px;font-weight:800;color:var(--text-muted);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
 .tab.active{background:var(--primary-lighter);color:var(--primary);border-color:var(--primary)}
 .customer-list{box-sizing:border-box;width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 12px calc(112px + env(safe-area-inset-bottom, 0px));overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.skeleton-block{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 37%,#e2e8f0 63%);background-size:400% 100%;animation:skeletonShimmer 1.15s ease-in-out infinite;border-radius:8px}.dashboard-skeleton{pointer-events:none}@keyframes skeletonShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
 .customer-card{box-sizing:border-box;width:100%;background:var(--white);border:2px solid var(--border);border-radius:12px;padding:10px;margin-bottom:7px;cursor:pointer;transition:all .2s;content-visibility:auto;contain-intrinsic-size:0 150px;contain:layout paint style}
 .customer-card:active{border-color:var(--primary);transform:scale(.99)}
 .cc-header{display:flex;align-items:center;gap:9px;margin-bottom:8px}
@@ -286,22 +287,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       </div>
     </div>
 
-    <script>
-      (function(){
-        try{
-          const raw=sessionStorage.getItem('bsp_user_prefetched');
-          const meta=raw?JSON.parse(raw):null;
-          const fresh=!!(meta?.uid && (Date.now()-Number(meta.at||0))<5*60*1000);
-          if(!fresh){
-            const el=document.getElementById('loadingScreen');
-            if(el)el.style.display='flex';
-          }
-        }catch(e){
-          const el=document.getElementById('loadingScreen');
-          if(el)el.style.display='flex';
-        }
-      })();
-    </script>
+>
 
     <div id="screen-dashboard" class="screen">
       <div class="dash-hero">
@@ -1095,8 +1081,10 @@ async function loadUserData(){  if(!currentUser?.uid)throw new Error('Login sess
     if(!userData.profilePhone && userData.phone)profilePatch.profilePhone=String(userData.phone);
     if(!userData.profileEmail && currentUser.email)profilePatch.profileEmail=String(currentUser.email);
     if(Object.keys(profilePatch).length){
-      await db.collection('users').doc(currentUser.uid).set(profilePatch,{merge:true});
+      // Non-critical profile backfill must never delay the first Dashboard paint.
       userData={...userData,...profilePatch};
+      db.collection('users').doc(currentUser.uid).set(profilePatch,{merge:true})
+        .catch(e=>console.warn('Profile backfill skipped:',e));
     }
     storedPIN = userData.pin ? String(userData.pin) : null;
     if(!storedPIN){
@@ -1105,81 +1093,20 @@ async function loadUserData(){  if(!currentUser?.uid)throw new Error('Login sess
       return;
     }
 
-    // Login page ने parties + transactions cache warm कर दिया है.
-    // Normal login handoff में Dashboard को दूसरा blocking cache-read नहीं करना है.
-    let ledgerAlreadyPrefetched=false;
-    try{
-      const raw=sessionStorage.getItem('bsp_dashboard_prefetched');
-      const meta=raw?JSON.parse(raw):null;
-      ledgerAlreadyPrefetched=meta?.uid===currentUser.uid && (Date.now()-Number(meta.at||0))<5*60*1000;
-    }catch(e){ledgerAlreadyPrefetched=false}
-
-    if(!ledgerAlreadyPrefetched){
-      await primeDashboardData();
-    }
-
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
+
+    // Start both Firestore listeners before the first Dashboard paint. Cached data
+    // appears immediately when available; otherwise the Dashboard uses a small skeleton
+    // instead of a blocking full-screen spinner or false ₹0/empty state.
+    setupListeners();
     showScreen('dashboard',true);
     if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}
-    setupListeners();
   }catch(e){
     console.error('loadUserData failed:',e);
     showLoadError(e?.message==='Firebase response timeout (15s)'
       ? 'Firebase से response नहीं आया। Internet/Firebase connection check करके Retry करें।'
       : 'Account data load नहीं हुआ: '+(e?.message||'Unknown error'));
   }
-}
-
-async function primeDashboardData(){
-  if(!currentUser?.uid) throw new Error('Login session नहीं मिला');
-
-  const customerQuery=db.collection('users').doc(currentUser.uid).collection('parties');
-  const transactionQuery=db.collection('users').doc(currentUser.uid).collection('transactions').orderBy('date','desc');
-
-  let prefetched=false;
-  try{
-    const raw=sessionStorage.getItem('bsp_dashboard_prefetched');
-    if(raw){
-      const meta=JSON.parse(raw);
-      prefetched=meta?.uid===currentUser.uid && (Date.now()-Number(meta.at||0)) < 5*60*1000;
-    }
-  }catch(e){prefetched=false}
-
-  const read = async query => {
-    if(prefetched){
-      try{return await query.get({source:'cache'});}
-      catch(e){console.warn('Cached dashboard read unavailable, using Firestore:',e);}
-    }
-    return await query.get();
-  };
-
-  const timeout=new Promise((_,reject)=>setTimeout(
-    ()=>reject(new Error('Firebase response timeout (15s)')),
-    15000
-  ));
-  const [customerSnap,transactionSnap]=await Promise.race([
-    Promise.all([read(customerQuery),read(transactionQuery)]),
-    timeout
-  ]);
-
-  customers=[];
-  customerSnap.forEach(d=>customers.push({id:d.id,...d.data()}));
-  customers.sort((a,b)=>(b.balance||0)-(a.balance||0));
-
-  transactions=[];
-  transactionSnap.forEach(d=>transactions.push({id:d.id,...d.data()}));
-  rebuildTxnIndex();
-
-  initialCustomersReady=true;
-  initialTransactionsReady=true;
-  setSyncStatus(
-    navigator.onLine,
-    !!(customerSnap.metadata?.fromCache || transactionSnap.metadata?.fromCache),
-    !!(customerSnap.metadata?.hasPendingWrites || transactionSnap.metadata?.hasPendingWrites)
-  );
-  dataReadyResolve();
-
-  try{sessionStorage.removeItem('bsp_dashboard_prefetched');}catch(e){}
 }
 
 function setSyncStatus(online,fromCache=false,pending=false){
@@ -1223,6 +1150,36 @@ function setupListeners(){
 
 function renderDashboard(){
   if(!userData)return;
+
+  const list=document.getElementById('customerList');
+  if(!initialCustomersReady || !initialTransactionsReady){
+    document.getElementById('dTotal').textContent='—';
+    document.getElementById('dUdhaar').textContent='—';
+    document.getElementById('dByaj').textContent='—';
+    document.getElementById('dPaid').textContent='—';
+    document.getElementById('dIncome').textContent='—';
+    if(list && !list.querySelector('.dashboard-skeleton')){
+      list.innerHTML=Array.from({length:5},()=>`
+        <div class="customer-card dashboard-skeleton" aria-hidden="true">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+            <div class="skeleton-block" style="width:38px;height:38px;border-radius:50%"></div>
+            <div style="flex:1">
+              <div class="skeleton-block" style="width:55%;height:13px;margin-bottom:7px"></div>
+              <div class="skeleton-block" style="width:38%;height:10px"></div>
+            </div>
+            <div class="skeleton-block" style="width:54px;height:18px"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+            <div class="skeleton-block" style="height:42px"></div>
+            <div class="skeleton-block" style="height:42px"></div>
+            <div class="skeleton-block" style="height:42px"></div>
+          </div>
+        </div>`).join('');
+    }
+    return;
+  }
+
+  const totals=getTotals();
   const totals=getTotals();
   document.getElementById('dTotal').textContent=fmt(totals.total);
   document.getElementById('dUdhaar').textContent=fmt(totals.udhaar);
@@ -1235,7 +1192,6 @@ function renderDashboard(){
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
   else if(currentFilter==='byaj')filtered=filtered.filter(s=>s.byajBalance>0);
   else if(currentFilter==='clear')filtered=filtered.filter(s=>s.grandTotal===0&&s.udhaarBalance===0);
-  const list=document.getElementById('customerList');
   if(customerListObserver){customerListObserver.disconnect();customerListObserver=null;}
   if(filtered.length===0){
     list.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">${t('No customers','कोई ग्राहक नहीं')}</div><div class="empty-text">${t('Add first customer','पहला ग्राहक जोड़ें')}</div></div>`;
