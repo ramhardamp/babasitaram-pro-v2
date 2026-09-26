@@ -60,6 +60,14 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--error-bg:#450a0a;--success-bg:#052e16;--info-bg:#172554}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.email-input,.password-input{color:var(--text);background:var(--white)}}
+
+/* Fixed login viewport — no page scrolling */
+html,body{height:100%;min-height:100%;overflow:hidden}
+body{height:100dvh;min-height:100dvh}
+.app-shell{height:100dvh;min-height:0;max-height:none;overflow:hidden}
+.screen-container{min-height:0;overflow:hidden}
+@media(min-width:500px){body{height:100dvh;min-height:100dvh;padding:24px 0}.app-shell{height:calc(100dvh - 48px);min-height:0;max-height:none}}
+@media(max-width:500px){.brand-header{padding:18px 16px 16px;margin-bottom:12px}.brand-logo-top{width:58px;height:58px;margin-bottom:8px}.brand-title{font-size:17px}.brand-newtagline{font-size:12px;margin-top:8px}.screen-container{padding:0 14px 10px}.card{padding:18px 16px;margin-bottom:10px}.card-subtitle{margin-bottom:13px}.input-group{margin-bottom:11px}.input-label{margin-bottom:5px}.text-input,.email-input,.password-input{height:50px;padding:12px 14px}.btn{min-height:50px;padding:12px 16px}.divider{margin:13px 0}.footer-bar{padding:10px 0 4px}}
 </style>
 </head>
 <body>
