@@ -317,6 +317,17 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 #screen-settings.active .android-setting-content{max-height:calc(100vh - 390px);overflow:hidden}
 #screen-settings.active .android-setting-section.open .android-setting-content{display:block}
 @media(max-width:600px){#screen-settings.active .android-settings{padding:8px 8px calc(88px + env(safe-area-inset-bottom,0px))}#screen-settings.active .android-setting-section{margin-bottom:6px;border-radius:11px}#screen-settings.active .android-setting-row{min-height:55px;padding:8px 10px;gap:9px}#screen-settings.active .android-setting-icon{width:30px;height:30px;flex-basis:30px;font-size:16px}#screen-settings.active .android-setting-main b{font-size:12.5px}#screen-settings.active .android-setting-main small{font-size:9px}#screen-settings.active .android-setting-content{max-height:calc(100vh - 330px)}#screen-settings.active .android-sub-row{min-height:44px;padding:7px 10px}}
+
+/* Premium settings detail panel */
+.settings-panel-overlay{position:fixed;inset:0;z-index:12000;background:rgba(10,15,30,.58);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:16px;animation:settingsPanelIn .18s ease-out}
+.settings-panel{width:min(560px,100%);max-height:min(760px,calc(100dvh - 32px));background:var(--white);border:1px solid rgba(255,255,255,.5);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.28);overflow:hidden;display:flex;flex-direction:column;color:var(--text)}
+.settings-panel-head{min-height:74px;padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--white)}
+.settings-panel-back{width:42px;height:42px;border:0;border-radius:12px;background:var(--primary-lighter);color:var(--primary);font-size:30px;line-height:1;cursor:pointer}.settings-panel-heading{flex:1;min-width:0}.settings-panel-heading b{display:block;font-size:18px;font-weight:900}.settings-panel-heading small{display:block;margin-top:3px;color:var(--text-muted);font-size:12px;font-weight:650}
+.settings-panel-body{padding:10px 12px;overflow-y:auto;overscroll-behavior:contain}.settings-panel-body .android-setting-content{display:block!important;border:0;background:transparent}.settings-panel-body .android-sub-row{min-height:64px;padding:12px 13px;border:1px solid var(--border);border-radius:12px;margin-bottom:7px;box-shadow:0 1px 3px rgba(15,23,42,.04)}.settings-panel-body .android-sub-row b{font-size:14px;font-weight:900}.settings-panel-body .android-sub-row small{font-size:11px;font-weight:600;margin-top:3px}.settings-panel-body .android-sub-row em{font-size:12px;font-weight:750}.settings-panel-body .android-sub-row i{font-size:21px}
+.settings-panel-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);background:var(--white)}.settings-panel-actions button{min-height:50px;border-radius:13px;font:900 14px inherit;cursor:pointer}.settings-panel-cancel{border:1px solid var(--border);background:var(--white);color:var(--text)}.settings-panel-save{border:0;background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(99,102,241,.22)}
+body.settings-panel-open{overflow:hidden!important}
+@keyframes settingsPanelIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+@media(max-width:600px){.settings-panel-overlay{padding:0;align-items:stretch}.settings-panel{width:100%;max-height:100dvh;height:100dvh;border-radius:0;border:0}.settings-panel-head{min-height:76px;padding:12px 14px}.settings-panel-heading b{font-size:19px}.settings-panel-heading small{font-size:12px}.settings-panel-body{padding:12px 12px}.settings-panel-body .android-sub-row{min-height:68px}.settings-panel-actions{padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px))}}
 </style>
 </head>
 <body>
@@ -442,7 +453,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="android-settings-list">
 
           <section class="android-setting-section" data-settings-section="profile">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('profile')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('profile')">
               <span class="android-setting-icon">👤</span>
               <span class="android-setting-main"><b>Profile</b><small>नाम, मोबाइल और ईमेल</small></span>
               <span class="android-setting-chevron">⌄</span>
@@ -457,7 +468,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </section>
 
           <section class="android-setting-section" data-settings-section="security">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('security')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('security')">
               <span class="android-setting-icon">🔐</span>
               <span class="android-setting-main"><b>Security & Preferences</b><small>PIN, dark mode और language</small></span>
               <span class="android-setting-chevron">›</span>
@@ -470,7 +481,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </section>
 
           <section class="android-setting-section" data-settings-section="sms">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('sms')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('sms')">
               <span class="android-setting-icon">📲</span>
               <span class="android-setting-main"><b>SMS & Notifications</b><small>Automatic SMS और reminders</small></span>
               <span class="android-setting-chevron">›</span>
@@ -484,7 +495,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </section>
 
           <section class="android-setting-section" data-settings-section="data">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('data')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('data')">
               <span class="android-setting-icon">💾</span>
               <span class="android-setting-main"><b>Data & Backup</b><small>Integrity check, backup और export</small></span>
               <span class="android-setting-chevron">›</span>
@@ -503,7 +514,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </section>
 
           <section class="android-setting-section" data-settings-section="advanced">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('advanced')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('advanced')">
               <span class="android-setting-icon">🔧</span>
               <span class="android-setting-main"><b>Advanced Data Tools</b><small>केवल आवश्यकता होने पर</small></span>
               <span class="android-setting-chevron">›</span>
@@ -520,7 +531,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           </section>
 
           <section class="android-setting-section" data-settings-section="about">
-            <button class="android-setting-row" type="button" onclick="toggleSettingsSection('about')">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('about')">
               <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="Guru Shree"></span>
               <span class="android-setting-main"><b>About & Support</b><small>Version और सहायता</small></span>
               <span class="android-setting-chevron">›</span>
@@ -2332,12 +2343,46 @@ async function cancelCustomerSmsReminders(customerId){
   try{await plugin.cancelCustomerReminders({prefix:'udhaar7:'+customerId+':'})}catch(e){console.warn('Cancel SMS reminders failed:',e)}
 }
 
-function toggleSettingsSection(name){
-  const target=document.querySelector('.android-setting-section[data-settings-section="'+name+'"]');
-  if(!target)return;
-  const wasOpen=target.classList.contains('open');
-  document.querySelectorAll('.android-setting-section').forEach(section=>section.classList.remove('open'));
-  if(!wasOpen)target.classList.add('open');
+function openSettingsPanel(name){
+  const section=document.querySelector('.android-setting-section[data-settings-section="'+name+'"]');
+  if(!section)return;
+  closeSettingsPanel();
+  const content=section.querySelector('.android-setting-content');
+  if(!content)return;
+  const title=section.querySelector('.android-setting-main b')?.textContent||'Settings';
+  const subtitle=section.querySelector('.android-setting-main small')?.textContent||'';
+  const placeholder=document.createComment('settings-content-placeholder');
+  content.replaceWith(placeholder);
+  const overlay=document.createElement('div');
+  overlay.id='settingsPanelOverlay';
+  overlay.className='settings-panel-overlay';
+  overlay.innerHTML=`<div class="settings-panel" role="dialog" aria-modal="true">
+    <div class="settings-panel-head">
+      <button type="button" class="settings-panel-back" onclick="closeSettingsPanel()" aria-label="Back">‹</button>
+      <div class="settings-panel-heading"><b>${esc(title)}</b><small>${esc(subtitle)}</small></div>
+    </div>
+    <div class="settings-panel-body"></div>
+    <div class="settings-panel-actions">
+      <button type="button" class="settings-panel-cancel" onclick="closeSettingsPanel()">Cancel</button>
+      <button type="button" class="settings-panel-save" onclick="saveSettingsPanel('${name}')">Save</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.settings-panel-body').appendChild(content);
+  document.body.classList.add('settings-panel-open');
+  window.__settingsPanelState={section,content,placeholder,overlay};
+}
+function closeSettingsPanel(){
+  const state=window.__settingsPanelState;
+  if(!state)return;
+  state.placeholder.replaceWith(state.content);
+  state.overlay.remove();
+  document.body.classList.remove('settings-panel-open');
+  window.__settingsPanelState=null;
+}
+async function saveSettingsPanel(name){
+  if(name==='advanced' && document.getElementById('sDefaultRate')) await saveSettings();
+  closeSettingsPanel();
 }
 
 function unlockProfileUpdate(){
