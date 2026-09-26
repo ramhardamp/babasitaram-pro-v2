@@ -1388,8 +1388,8 @@ async function updateCustomer(){
     const newEmail=document.getElementById('mEmail').value.trim();
     const updateData = {name,phone:newPhone,email:newEmail};
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}
     closeModal();toast(t('Updated','अपडेट'),'success');
+    if(c&&c.viewToken){try{await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}catch(viewErr){console.warn('Public view sync failed after customer update:',viewErr)}}
   }catch(e){console.error(e);toast('Error','error')}
 }
 async function deleteCustomer(){
