@@ -482,6 +482,7 @@ let customers = [];
 let transactions = [];
 let unsubCustomers = null;
 let unsubTransactions = null;
+let ledgerWriteBusy = false;
 
 let storedPIN = null;
 let pendingPIN = '';
@@ -1463,64 +1464,63 @@ async function saveTxn(type){
   const note=document.getElementById('mNote').value.trim();
   const date=document.getElementById('mDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
 
-  // Firestore document IDs are always handled as plain strings.
   const customerId=String(currentCustomerId||'').trim();
   const c=customers.find(x=>String(x.id)===customerId);
   if(!customerId||!c)return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
   if(type!=='udhaar'&&type!=='jama')return toast(t('Invalid transaction type','लेन-देन प्रकार गलत है'),'error');
 
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const partyRef=db.collection('users').doc(currentUser.uid)
       .collection('parties').doc(customerId);
     const txCol=db.collection('users').doc(currentUser.uid)
       .collection('transactions');
     const txnRef=txCol.doc();
-
-    // Atomically create the transaction and update the customer's balance.
-    // This removes the previous transaction-query path that caused the
-    // "Expected type 'Object' ... custom Id object" Firestore error.
     const delta=type==='udhaar'?amt:-amt;
     const batch=db.batch();
 
-    batch.set(txnRef,{
-      partyId:customerId,
-      type:type,
-      amount:amt,
-      note:note,
-      date:date
-    });
-
-    batch.update(partyRef,{
-      balance:firebase.firestore.FieldValue.increment(delta)
-    });
+    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date});
+    batch.update(partyRef,{balance:firebase.firestore.FieldValue.increment(delta)});
 
     await batch.commit();
-
-    // Read the committed balance for public-view/email updates.
-    const freshParty=await partyRef.get();
-    if(!freshParty.exists)throw new Error('Customer not found after save');
-    const newBal=Number(freshParty.data().balance)||0;
-
-    if(c.viewToken){
-      await updatePublicView(customerId,c.viewToken,{
-        name:c.name,phone:c.phone,balance:newBal
-      });
-    }
+    committed=true;
+    ledgerWriteBusy=false;
 
     closeModal();
     toast(t('Saved','सेव हो गया'),'success');
 
-    if(c.email){
-      const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
-      if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
+    // Financial write is already committed. Public view/email are secondary;
+    // their failure must never make the user retry the ledger write.
+    try{
+      const freshParty=await partyRef.get();
+      if(!freshParty.exists)throw new Error('Customer not found after save');
+      const newBal=Number(freshParty.data().balance)||0;
+      if(c.viewToken){
+        try{
+          await updatePublicView(customerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+        }catch(viewErr){console.warn('Public view update failed after transaction save:',viewErr);}
+      }
+      if(c.email){
+        const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
+        if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
+      }
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after transaction save:',syncErr);
     }
   }catch(e){
+    ledgerWriteBusy=false;
     console.error('saveTxn failed:',e);
-    toast('Error: '+(e.message||'Save failed'),'error');
+    if(committed){
+      closeModal();
+      toast(t('Saved, but sync is pending','सेव हो गया, sync बाकी है'),'success');
+    }else{
+      toast('Error: '+(e.message||'Save failed'),'error');
+    }
   }
 }
-
 function openLoanModal(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">📈 ${t('New Loan','नया लोन')}</div>
     <div class="input-group"><label class="input-label">${t('Principal','मूलधन')} *</label>
@@ -1544,11 +1544,15 @@ async function saveLoan(){
   const note=document.getElementById('mNote').value.trim();
   if(!p||p<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc();
-    const loanData = {
+    const loanData={
       partyId:String(currentCustomerId),
       type:'byaj_loan',
       principal:p,
@@ -1562,12 +1566,32 @@ async function saveLoan(){
       loanId:loanRef.id
     };
     await loanRef.set(loanData);
-    
-    if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Loan created','लोन बनाया'),'success');
-    if(c.email){await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0)}
-  }catch(e){console.error(e);toast('Error','error')}
+    committed=true;
+    ledgerWriteBusy=false;
+
+    closeModal();
+    toast(t('Loan created','लोन बनाया'),'success');
+
+    try{
+      if(c.viewToken){
+        await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      }
+      if(c.email)await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after loan creation:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Loan created, but sync is pending','लोन बन गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast('Error','error');
+    }
+  }
 }
+
 
 function openRepayModal(){
   const loans=getLoans(currentCustomerId);
@@ -1588,43 +1612,61 @@ async function saveRepay(){
   const amt=parseFloat(document.getElementById('mRepay').value);
   const rdate=document.getElementById('mRepayDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
-  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
-  if(amt>loan.principal-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
+  const repaid=(Array.isArray(loan.repayments)?loan.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
+  if(amt>Number(loan.principal||0)-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc(id);
-    const result=await db.runTransaction(async transaction=>{
+    await db.runTransaction(async transaction=>{
       const loanSnap=await transaction.get(loanRef);
       if(!loanSnap.exists)throw new Error('Loan not found');
       const fresh=loanSnap.data();
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
-      const newRepayments=[...(fresh.repayments||[]),{date:rdate,amount:amt}];
+      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
-      
-      const txnData = {
+      transaction.set(txnRef,{
         partyId:String(currentCustomerId),
         type:'loan_repay',
         amount:amt,
         note:t('Loan repayment','लोन वापसी'),
         date:rdate,
         loanId:String(id)
-      };
-      transaction.set(txnRef, txnData);
-      
-      return true;
+      });
     });
-    if(!result)return;
+    committed=true;
+    ledgerWriteBusy=false;
+
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Recorded','दर्ज'),'success');
-    if(c&&c.email){await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0)}
-  }catch(e){console.error(e);toast(e.message==='Exceeds principal'?t('Exceeds principal','मूलधन से ज्यादा'):t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
+    closeModal();
+    toast(t('Recorded','दर्ज'),'success');
+
+    try{
+      if(c?.viewToken)await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      if(c?.email)await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after loan repayment:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Recorded, but sync is pending','दर्ज हो गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast(e.message==='Exceeds principal'?t('Exceeds principal','मूलधन से ज्यादा'):t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error');
+    }
+  }
 }
+
 
 function openIntPaidModal(){
   const loans=getLoans(currentCustomerId);
@@ -1645,7 +1687,11 @@ async function saveIntPaid(){
   const amt=parseFloat(document.getElementById('mIntAmt').value);
   const idate=document.getElementById('mIntDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc(id);
@@ -1656,24 +1702,40 @@ async function saveIntPaid(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
-      
-      const txnData = {
+      transaction.set(txnRef,{
         partyId:String(currentCustomerId),
         type:'interest_paid',
         amount:amt,
         note:t('Interest received','ब्याज मिला'),
         date:idate,
         loanId:String(id)
-      };
-      transaction.set(txnRef, txnData);
-      
+      });
     });
+    committed=true;
+    ledgerWriteBusy=false;
+
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Recorded','दर्ज'),'success');
-    if(c&&c.email){await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0)}
-  }catch(e){console.error(e);toast(t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
+    closeModal();
+    toast(t('Recorded','दर्ज'),'success');
+
+    try{
+      if(c?.viewToken)await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      if(c?.email)await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after interest payment:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Recorded, but sync is pending','दर्ज हो गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast(t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error');
+    }
+  }
 }
+
 
 function renderReports(){
   if(!userData){showScreen('dashboard',true);return}
