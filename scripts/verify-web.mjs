@@ -50,4 +50,10 @@ const checks=[
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
 if(failed)process.exit(1);
-console.log('WEB VERIFICATION PASS');
+console.log('WEB VERIFICATION PASS');checks.push(['PIN change has return target and visible back',dashboard.includes("pinReturnScreen='settings'")&&dashboard.includes('const canGoBack=!!pinReturnScreen')&&dashboard.includes("if(currentScreen==='pin' && pinReturnScreen)")]);
+checks.push(['Support email is updated',dashboard.includes('mailto:babasitaram@gmail.com')&&dashboard.includes('babasitaram@gmail.com')&&!dashboard.includes('ramhardamp@gmail.com')]);
+checks.push(['Dashboard top logo markup is valid',dashboard.includes('<img class="brand-logo" src="assets/guru-shree-logo.svg"')&&!dashboard.includes("src=\\\"'+logoUrl+'\\\"")]);
+checks.push(['Customer avatar logo markup is JS-safe',dashboard.includes('const brandLogo=')&&dashboard.includes('cc-avatar-logo')&&!dashboard.includes("const brandLogo='<img class='cc-avatar-logo'")]);
+checks.push(['Customer statement includes loan principal',dashboard.includes("const isLoan=tx.type==='byaj_loan'")&&dashboard.includes('Number(tx.principal||tx.amount)||0')&&dashboard.includes('Loan Principal')]);
+checks.push(['Customer statement exposes PDF action',dashboard.includes('exportCustomerStatementPdf')&&dashboard.includes('Statement PDF')]);
+checks.push(['Offline/cache status is visible',dashboard.includes('id="syncStatus"')&&dashboard.includes('function setSyncStatus(')&&dashboard.includes('includeMetadataChanges:true')&&dashboard.includes('snap.metadata.fromCache')]);
