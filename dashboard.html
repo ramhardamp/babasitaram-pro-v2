@@ -237,7 +237,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree">
+      <img class="brand-logo" src=\"'+logoUrl+'\" onerror=\"this.onerror=null;this.src='\"+fallbackLogoUrl+\"'\" loading="eager" decoding="sync" alt="Guru Shree">
       <div class="top-title" id="topTitle">Loading...</div>
     </div>
     <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
@@ -1079,10 +1079,11 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
+    const brandLogo='<img class='cc-avatar-logo' src='assets/guru-shree-logo.svg' onerror='this.onerror=null;this.src=''assets/babasitaram-pro-logo.svg'' ' alt='BABASITARAM PRO'>';
     const total=s.grandTotal;
     const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
-      <div class="cc-header"><div class="cc-avatar">${esc(init)}</div>
+      <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
         <div style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
         <div style="font-size:16px;font-weight:900;${totalColor}">${fmt(total)}</div></div></div>
@@ -1114,6 +1115,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
+  const brandLogo='<img class='cc-avatar-logo' src='assets/guru-shree-logo.svg' onerror='this.onerror=null;this.src=''assets/babasitaram-pro-logo.svg'' ' alt='BABASITARAM PRO'>';
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -1154,7 +1156,7 @@ function renderCustomerDetail(){
   }
   document.getElementById('customerDetail').innerHTML=`
     <div class="customer-hero">
-      <div class="ch-header"><div class="ch-avatar">${esc(init)}</div>
+      <div class="ch-header"><div class="ch-avatar ch-avatar-brand">${brandLogo}</div>
         <div style="flex:1;min-width:0"><div class="ch-name">${esc(c.name)}</div>
         <div class="ch-meta">${esc(c.phone||'-')}${c.email?' • '+esc(c.email):''}</div></div></div>
       <div class="ch-total-label">${t('TOTAL DUE','कुल बकाया')}</div>
@@ -2135,6 +2137,8 @@ function printExportWindow(title,bodyHtml){
   const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
   const safeTitle=esc(title);
   const shop=esc(userData?.shopName||'BABASITARAM PRO');
+  const logoUrl=new URL('assets/guru-shree-logo.svg',window.location.href).href;
+  const fallbackLogoUrl=new URL('assets/babasitaram-pro-logo.svg',window.location.href).href;
   const owner=esc(userData?.ownerName||'');
   const phone=esc(userData?.phone||'');
   const brandBlock='<div class="brand-head"><img src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src=\'assets/babasitaram-pro-logo.svg\'" alt="BABASITARAM PRO logo"><div><div class="brand-name">BABASITARAM PRO</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
