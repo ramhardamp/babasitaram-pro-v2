@@ -39,6 +39,16 @@
 - [x] Android emulator install/launch/runtime smoke passed with no fatal exception detected.
 - [x] GitHub Android release artifact created from the passing build.
 
+## Backup & export hardening — 2026-09-26
+- [x] Existing full JSON recovery backup retained; schemaVersion, record counts and SHA-256 integrity metadata preserved.
+- [x] Backup/export UI expanded into separate Full Backup, Excel Workbook, Business PDF, and CSV actions.
+- [x] Excel export uses SheetJS on demand and creates Summary, Customers, Transactions, Loans and Integrity sheets; CSV fallback remains available if the spreadsheet library cannot load.
+- [x] Business PDF is generated as a print-ready report so the browser can save it as PDF without modifying production data.
+- [x] Customer-level Statement PDF/print export added to the customer detail action grid.
+- [x] Customer/transaction/loan export rows preserve existing stored fields and add derived display fields without writing back to Firestore.
+- [x] Export operations are read-only; no destructive restore/import was introduced.
+- [x] Web verification assertions added for backup/export UI and export logic.
+
 ## Offline scope
 - [x] Firestore offline cache/persistence foundation exists.
 - [x] Multi-tab synchronization is enabled.
