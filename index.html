@@ -60,7 +60,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--error-bg:#450a0a;--success-bg:#052e16;--info-bg:#172554}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.email-input,.password-input{color:var(--text);background:var(--white)}}
-.login-data-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.78);backdrop-filter:blur(8px);padding:20px}.login-data-loading.hidden{display:none!important}.login-data-loading-card{width:min(420px,92vw);background:var(--white);border:2px solid var(--border);border-radius:22px;padding:28px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}.login-data-loading .loading-spinner{margin:0 auto 16px;width:42px;height:42px}.login-data-loading-title{font-size:20px;font-weight:900;color:var(--text)}.login-data-loading-text{margin-top:8px;font-size:13px;line-height:1.6;color:var(--text-muted)}.login-data-loading-step{margin-top:12px;font-size:12px;font-weight:800;color:var(--primary)}</style>
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -70,14 +70,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div class="brand-newtagline">आपका हिसाब, हमेशा सुरक्षित</div>
   </div>
 
-  <div id="loginDataLoading" class="login-data-loading hidden" aria-live="polite">
-    <div class="login-data-loading-card">
-      <div class="loading-spinner"></div>
-      <div class="login-data-loading-title">लॉगिन हो रहा है...</div>
-      <div class="login-data-loading-text">आपका डेटा लोड हो रहा है। कृपया इस स्क्रीन को बंद न करें।</div>
-      <div class="login-data-loading-step" id="loginDataLoadingStep">ग्राहक और लेन-देन तैयार हो रहे हैं...</div>
-    </div>
-  </div>
+
 
   <div class="screen-container">
 
@@ -179,7 +172,8 @@ async function handleLogin() {
   }
 
   setBtnLoading(btn, true);
-  showLoginDataLoading('लॉगिन हो रहा है...', 'ग्राहक और लेन-देन तैयार हो रहे हैं...');
+  const loginBtnText = btn.querySelector('.btn-text');
+  if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
 
   try {
     const result = await auth.signInWithEmailAndPassword(email, password);
@@ -207,16 +201,22 @@ async function handleLogin() {
       return;
     }
 
-    setLoginDataLoadingStep('ग्राहक और लेन-देन का डेटा लोड हो रहा है...');
     await preloadDashboardData(user.uid);
 
-    // Login is considered successful only after the initial data preload completes.
+    // The dashboard opens only after Auth + account + customer + transaction data are ready.
+    try {
+      sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
+        uid: user.uid,
+        data: userDoc.data(),
+        at: Date.now()
+      }));
+    } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
+
     localStorage.setItem('bsp_userId', user.uid);
     sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
       uid: user.uid,
       at: Date.now()
     }));
-    setLoginDataLoadingStep('डेटा तैयार है — Dashboard खोला जा रहा है...');
     window.location.replace('dashboard.html');
 
   } catch (error) {
@@ -234,25 +234,6 @@ async function handleLogin() {
     if (btnText) btnText.textContent = '🔑 लॉगिन करें';
     setBtnLoading(btn, false);
   }
-}
-
-function showLoginDataLoading(title, step) {
-  const overlay = document.getElementById('loginDataLoading');
-  if (!overlay) return;
-  const titleEl = overlay.querySelector('.login-data-loading-title');
-  if (titleEl) titleEl.textContent = title || 'लॉगिन हो रहा है...';
-  setLoginDataLoadingStep(step || 'डेटा लोड हो रहा है...');
-  overlay.classList.remove('hidden');
-}
-
-function setLoginDataLoadingStep(step) {
-  const el = document.getElementById('loginDataLoadingStep');
-  if (el) el.textContent = step;
-}
-
-function hideLoginDataLoading() {
-  const overlay = document.getElementById('loginDataLoading');
-  if (overlay) overlay.classList.add('hidden');
 }
 
 async function preloadDashboardData(uid) {
@@ -340,8 +321,17 @@ function setBtnLoading(btn, loading) {
   const txt = btn.querySelector('.btn-text');
   const loader = btn.querySelector('.btn-loader');
   btn.disabled = loading;
-  if (txt) txt.classList.toggle('hidden', loading);
-  if (loader) loader.classList.toggle('hidden', !loading);
+  if (btn.id === 'loginBtn') {
+    if (txt) {
+      txt.classList.toggle('hidden', false);
+      if (loading) txt.textContent = 'लॉगिन हो रहा है...';
+      else txt.textContent = '🔑 लॉगिन करें';
+    }
+    if (loader) loader.classList.toggle('hidden', !loading);
+  } else {
+    if (txt) txt.classList.toggle('hidden', loading);
+    if (loader) loader.classList.toggle('hidden', !loading);
+  }
 }
 
 function showToast(msg, type) {
@@ -366,8 +356,18 @@ auth.onAuthStateChanged(async (user) => {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data().shopName) {
         try {
-          showLoginDataLoading('लॉगिन हो रहा है...', 'आपका डेटा लोड हो रहा है...');
+          const loginBtn = document.getElementById('loginBtn');
+          setBtnLoading(loginBtn, true);
+          const loginBtnText = loginBtn?.querySelector('.btn-text');
+          if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
           await preloadDashboardData(user.uid);
+          try {
+            sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
+              uid: user.uid,
+              data: doc.data(),
+              at: Date.now()
+            }));
+          } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
           sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
             uid: user.uid,
             at: Date.now()
