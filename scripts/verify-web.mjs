@@ -2,7 +2,6 @@ import { readFile } from 'node:fs/promises';
 const dashboard=await readFile('dashboard.html','utf8');
 const index=await readFile('index.html','utf8');
 const prep=await readFile('scripts/prepare-web.mjs','utf8');
-const logo=await readFile('assets/logo.svg','utf8');
 const guruLogo=await readFile('assets/guru-shree-logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
@@ -28,7 +27,7 @@ const checks=[
 ['verified backup schema exists',dashboard.includes('schemaVersion:2')&&dashboard.includes('checksumSha256')&&dashboard.includes('function verifyDataIntegrity')],
 ['atomic customer/payment writes',dashboard.includes('const batch=db.batch()')&&dashboard.includes('db.runTransaction(async transaction=>')],
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
-['web asset copied into www',prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
+['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
