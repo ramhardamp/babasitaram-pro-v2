@@ -13,9 +13,9 @@
 - [x] Loan principal edit is blocked after repayment history exists.
 - [x] Loan delete is blocked when payment history exists.
 - [x] dashboard.html JavaScript syntax verified by extracting all script blocks and compiling them.
-- [ ] Firestore Rules audit — source not present in repository.
-- [ ] PublicViews security audit — depends on actual Firestore Rules.
-- [ ] Customer delete strategy — must be made non-destructive/rollback-safe before production merge.
+- [x] Production Firestore Rules captured from Firebase Console and added to safe branch.
+- [x] PublicViews security baseline tightened: public read retained; writes/deletes restricted to owning business UID.
+- [x] Customer deletion hardened: customers with ledger history are never destructively deleted; zero-history deletion is transaction-protected.
 - [ ] Balance engine full audit.
 - [ ] Email flow audit.
 - [ ] API v1 design + read-only implementation.
@@ -29,11 +29,14 @@
 ## Changes already committed on this branch
 1. `70509b1` — atomic transaction edit/delete balance updates.
 2. `54546e0` — protect loan payment history from destructive edit/delete.
+3. `400a0e6` — add audited Firestore Rules baseline on safe branch.
+4. `1342e40` — prevent destructive customer deletion and independent loan-payment transaction edits.
 
 ## Important unresolved blockers
-1. Actual Firestore Rules are required before security can be marked PASS.
+1. Firestore Rules still need live Emulator/Rules Playground verification against every production write path before release.
 2. Android Autofill cannot be fully verified from this repository because Android source is absent.
-3. Customer deletion currently performs multiple destructive steps and must be redesigned before production release.
+3. Balance engine, loan accounting, email, API, and regression testing remain pending.
+4. Production merge remains blocked until backup/data-integrity and live regression checks pass.
 
 ## Working rule for future chats
 Continue from this file and the branch state. Do not restart the audit or assume production is safe merely because the branch passes static checks.
