@@ -59,9 +59,8 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .tab{padding:8px 14px;border-radius:var(--radius-full);background:var(--white);border:2px solid var(--border);font-size:12px;font-weight:800;color:var(--text-muted);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
 .tab.active{background:var(--primary-lighter);color:var(--primary);border-color:var(--primary)}
 .customer-list{box-sizing:border-box;width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 16px calc(112px + env(safe-area-inset-bottom, 0px));overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-.customer-card{box-sizing:border-box;width:100%;background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.customer-card{box-sizing:border-box;width:100%;background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;content-visibility:auto;contain-intrinsic-size:0 150px;contain:layout paint style}
 .customer-card:active{border-color:var(--primary);transform:scale(.99)}
-.customer-card{content-visibility:auto;contain-intrinsic-size:0 150px;contain:layout paint style;}
 .cc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .cc-avatar{width:42px;height:42px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.3)}
 .cc-info{flex:1;min-width:0}
@@ -1010,6 +1009,24 @@ async function loadUserData(){
 }
 
 function setupListeners(){
+  const customerList=document.getElementById('customerList');
+  if(customerList && !customerList.dataset.clickBound){
+    customerList.dataset.clickBound='1';
+    customerList.addEventListener('click',event=>{
+      const card=event.target.closest('.customer-card[data-customer-id]');
+      if(!card || !customerList.contains(card))return;
+      const id=card.dataset.customerId;
+      if(id)openCustomer(id);
+    });
+    customerList.addEventListener('keydown',event=>{
+      if(event.key!=='Enter' && event.key!==' ')return;
+      const card=event.target.closest('.customer-card[data-customer-id]');
+      if(!card || !customerList.contains(card))return;
+      event.preventDefault();
+      const id=card.dataset.customerId;
+      if(id)openCustomer(id);
+    });
+  }
   if(unsubCustomers)unsubCustomers();
   if(unsubTransactions)unsubTransactions();
   unsubCustomers=db.collection('users').doc(currentUser.uid).collection('parties')
@@ -1048,7 +1065,7 @@ function renderDashboard(){
     const init=(s.name||'?').charAt(0).toUpperCase();
     const total=s.grandTotal;
     const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
-    return`<div class="customer-card" onclick="openCustomer('${esc(s.id)}')">
+    return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar">${esc(init)}</div>
         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
         <div style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
@@ -1068,9 +1085,14 @@ function renderDashboard(){
 function setFilter(f){currentFilter=f;customerRenderLimit=CUSTOMER_RENDER_CHUNK;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
 
 function openCustomer(id){
-  currentCustomerId=id;
-  screenHistory = ['dashboard']; // ⭐ Ensure history has dashboard
-  showScreen('customer', true); // ⭐ noPush = true (humne khud history set ki)
+  const customer=customers.find(c=>c.id===id);
+  if(!customer){
+    console.warn('Customer not found:',id);
+    return;
+  }
+  currentCustomerId=customer.id;
+  screenHistory=['dashboard'];
+  showScreen('customer',true);
 }
 function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
