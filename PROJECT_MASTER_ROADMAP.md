@@ -89,3 +89,18 @@ Production code is audited and the current web + Android packaging pipeline has 
 - [x] Loan + Udhaar balances are distinguished in the reminder text; portal link is included when the customer already has a public view token.
 - [x] Existing portal sharing was also corrected so its WhatsApp signature uses business/owner/phone instead of the app name.
 - [x] Share operations are read-only and do not modify customer, transaction or balance data.
+
+
+## Final development pass — 2026-09-26
+- [x] Removed duplicate header Settings control; Settings remains in bottom navigation only.
+- [x] PIN / Security and Language controls are inside Settings.
+- [x] Removed stale header lock DOM references that caused `Cannot read properties of null (reading 'style')`.
+- [x] Added Android-native SMS bridge preparation with SEND_SMS permission handling.
+- [x] Added on-device 7-day SMS reminder scheduler with persistence and reboot rescheduling.
+- [x] Added automatic transaction-update SMS hooks for Udhaar and payment saves/edits.
+- [x] Added duplicate-reminder cancellation when payments/deletions/edits occur.
+- [x] Added Settings controls for Automatic SMS, Transaction Update SMS and 7-Day Reminder.
+- [x] Added CI verification for SMS web hooks and native Android preparation.
+- [ ] Final Android runtime SMS permission/send/schedule test on a physical SMS-capable device.
+- [ ] Final login -> data-ready -> dashboard runtime verification after the null-style fix.
+- [ ] One final signed APK build/release only after all development fixes pass.
