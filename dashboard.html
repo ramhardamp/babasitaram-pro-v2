@@ -442,11 +442,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
               <span class="android-setting-chevron">⌄</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>👤 <b>नाम</b></span><em id="pOwnerName">-</em><i>🔒</i></div>
+              <button class="android-sub-row action" type="button" onclick="unlockProfileUpdate()"><span>👤 <b>नाम</b><small>Update करने के लिए यहाँ क्लिक करें</small></span><em id="pOwnerName">-</em><i>✏️</i></button>
               <div class="android-sub-row"><span>📱 <b>मोबाइल</b></span><em id="pPhone">-</em><i>🔒</i></div>
               <div class="android-sub-row"><span>📧 <b>ईमेल आईडी</b></span><em id="pEmail">-</em><i>🔒</i></div>
-              <button class="android-profile-update" type="button" onclick="unlockProfileUpdate()">✏️ Update</button>
-              <div class="android-setting-note">🔒 Profile default में locked है। <b>Update</b> दबाने पर ही edit mode खुलेगा।</div>
+              <div class="android-setting-note">🔒 मोबाइल और ईमेल locked हैं। केवल नाम update किया जा सकता है।</div>
             </div>
           </section>
 
@@ -2346,21 +2345,18 @@ function toggleSettingsSection(name){
 function unlockProfileUpdate(){
   if(!userData)return;
   showModal(`<div class="modal-handle"></div>
-    <div class="modal-title">✏️ Update Profile</div>
+    <div class="modal-title">✏️ Update Name</div>
     <div class="input-group"><label class="input-label">नाम</label><input id="mProfileName" class="text-input" value="${esc(userData.profileName||userData.ownerName||'')}"></div>
-    <div class="input-group"><label class="input-label">मोबाइल</label><input id="mProfilePhone" class="text-input" inputmode="tel" value="${esc(userData.profilePhone||userData.phone||'')}"></div>
-    <div class="input-group"><label class="input-label">ईमेल आईडी 🔒</label><input class="text-input" value="${esc(userData.profileEmail||currentUser?.email||'')}" disabled></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveProfileUpdate()">Save</button></div>`);
 }
 async function saveProfileUpdate(){
   const name=document.getElementById('mProfileName')?.value.trim();
-  const phone=document.getElementById('mProfilePhone')?.value.trim();
-  if(!name||!phone)return toast('Name और mobile required','error');
+  if(!name)return toast('Name required','error');
   try{
-    await db.collection('users').doc(currentUser.uid).update({profileName:name,profilePhone:phone});
-    userData.profileName=name;userData.profilePhone=phone;
-    closeModal();renderSettings();toast('Profile updated','success');
-  }catch(e){console.error('Profile update failed:',e);toast('Profile update failed','error')}
+    await db.collection('users').doc(currentUser.uid).update({profileName:name});
+    userData.profileName=name;
+    closeModal();renderSettings();toast('Profile name updated','success');
+  }catch(e){console.error('Profile name update failed:',e);toast('Profile name update failed','error')}
 }
 function renderSettings(){
   if(!userData){showScreen('dashboard',true);return}
