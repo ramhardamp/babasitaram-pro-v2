@@ -26,6 +26,11 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .screen-container::-webkit-scrollbar{width:0}
 .screen{display:none;min-height:0}
 .screen.active{display:block}.screen#screen-dashboard.active{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
+.screen#screen-dashboard.active>.dash-hero{flex:0 0 auto}
+.screen#screen-dashboard.active>.dash-hero + div{flex:0 0 auto}
+.screen#screen-dashboard.active>.customer-search-wrap{flex:0 0 auto}
+.screen#screen-dashboard.active>.tabs{flex:0 0 auto}
+.screen#screen-dashboard.active>.customer-list{flex:1 1 0;height:0;min-height:0}
 .loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -571,6 +576,11 @@ function observeCustomerListTail(filteredLength){
   if(customerListObserver){customerListObserver.disconnect();customerListObserver=null;}
   const tail=document.getElementById('customerListTail');
   if(!tail || filteredLength<=customerRenderLimit)return;
+  if(typeof IntersectionObserver==='undefined'){
+    customerRenderLimit=filteredLength;
+    renderDashboard();
+    return;
+  }
   customerListObserver=new IntersectionObserver(entries=>{
     if(entries.some(e=>e.isIntersecting)){
       customerRenderLimit=Math.min(customerRenderLimit+CUSTOMER_RENDER_CHUNK,filteredLength);
@@ -1082,7 +1092,7 @@ function renderDashboard(){
   list.innerHTML=cards+more;
   observeCustomerListTail(filtered.length);
 }
-function setFilter(f){currentFilter=f;customerRenderLimit=CUSTOMER_RENDER_CHUNK;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
+function setFilter(f){currentFilter=f;customerRenderLimit=CUSTOMER_RENDER_CHUNK;const list=document.getElementById('customerList');if(list)list.scrollTop=0;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));renderDashboard()}
 
 function openCustomer(id){
   const customer=customers.find(c=>c.id===id);
