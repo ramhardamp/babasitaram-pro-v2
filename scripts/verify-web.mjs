@@ -45,11 +45,11 @@ const checks=[
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
 ['Reliable brand logo fallback exists',brandLogo.includes('<svg')&&dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&index.includes("this.src='assets/babasitaram-pro-logo.svg'")&&prep.includes("'assets/babasitaram-pro-logo.svg'")],
 ['Customer avatars use brand logo',dashboard.includes('cc-avatar-brand')&&dashboard.includes('cc-avatar-logo')&&dashboard.includes('assets/guru-shree-logo.svg')],
-['PDF logo uses absolute live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg',window.location.href).href")&&dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
+['PDF logo uses absolute live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href")&&dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
 ['Branded PDF header includes logo and business identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BABASITARAM PRO')&&dashboard.includes('assets/babasitaram-pro-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
-checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/webp;base64,')&&guruLogo.length>1000]);
+checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/jpeg;base64,')&&guruLogo.length>1000]);
 checks.push(['Support email is consistent across public entry pages',!index.includes('ramhardamp@gmail.com')&&!signup.includes('ramhardamp@gmail.com')&&!forgot.includes('ramhardamp@gmail.com')&&index.includes('babasitaram@gmail.com')&&signup.includes('babasitaram@gmail.com')&&forgot.includes('babasitaram@gmail.com')]);
 checks.push(['Signup captures immutable profile mobile',signup.includes('id="ownerPhone"')&&signup.includes('profilePhone: ownerPhone')&&signup.includes('profileName: ownerName')&&signup.includes('profileEmail: user.email')]);
 checks.push(['Settings shows locked profile identity',dashboard.includes('id="pOwnerName"')&&dashboard.includes('id="pPhone"')&&dashboard.includes('id="pEmail"')&&dashboard.includes('प्रोफाइल में लॉक')]);
@@ -58,7 +58,7 @@ checks.push(['Existing users get non-destructive profile fields',dashboard.inclu
 
 checks.push(['Login preloads dashboard data before redirect',index.includes('preloadDashboardData(user.uid)')&&index.includes('sessionStorage.setItem(\'bsp_dashboard_prefetched\'')&&index.includes('डेटा तैयार हो रहा है')]);
 checks.push(['Dashboard primes initial data before first render',dashboard.includes('async function primeDashboardData()')&&dashboard.includes('await primeDashboardData();')&&dashboard.includes('source:\'cache\'')&&dashboard.includes('initialCustomersReady=true')&&dashboard.includes('initialTransactionsReady=true')]);
-checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/webp;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
+checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/jpeg;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
 checks.push(['PIN change has return target and visible back',dashboard.includes("pinReturnScreen='settings'")&&dashboard.includes('const canGoBack=!!pinReturnScreen')&&dashboard.includes("if(currentScreen==='pin' && pinReturnScreen)")]);
 checks.push(['Support email is updated',dashboard.includes('mailto:babasitaram@gmail.com')&&dashboard.includes('babasitaram@gmail.com')&&!dashboard.includes('ramhardamp@gmail.com')]);
 checks.push(['Dashboard top logo markup is valid',dashboard.includes('<img class="brand-logo" src="assets/guru-shree-logo.svg?v=')&&!dashboard.includes("src=\\\"'+logoUrl+'\\\"")]);
