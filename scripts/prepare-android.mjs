@@ -23,6 +23,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -101,6 +102,7 @@ public class BsrSmsSchedulerPlugin extends Plugin {
     prefs().edit().putStringSet(KEY_REMINDERS, keep).apply(); call.resolve();
   }
 
+  @PermissionCallback
   void smsPermResult(PluginCall call) {
     JSObject ret = new JSObject();
     ret.put("granted", hasSmsPermission()); call.resolve(ret);
