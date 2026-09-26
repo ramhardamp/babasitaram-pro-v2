@@ -942,21 +942,38 @@ function armAppInitWatchdog(){
   if(appInitWatchdog)clearTimeout(appInitWatchdog);
   appInitWatchdog=setTimeout(()=>{
     if(currentScreen==='loading'){
-      showLoadError('Firebase response बहुत देर से आ रहा है। Page को Retry करें; आपका कोई data delete या change नहीं हुआ है।');
+      showLoadError('Firebase/Auth initialization बहुत देर से हो रहा है। Retry करें; आपका कोई data delete या change नहीं हुआ है।');
     }
   },20000);
 }
 
-auth.onAuthStateChanged(async(user)=>{
-  if(!user){window.location.href='index.html';return}
-  currentUser=user;
-  try{
-    await loadUserData();
-  }catch(e){
-    console.error('Dashboard initialization failed:',e);
-    showLoadError(e?.message||'Account data load नहीं हुआ।');
+/*
+ * IMPORTANT: Arm the watchdog BEFORE waiting for Firebase Auth.
+ * Previously it was armed only inside loadUserData(), so if
+ * onAuthStateChanged() never fired, the page could stay on the
+ * static Loading screen forever with no error/retry state.
+ */
+armAppInitWatchdog();
+
+try{
+  if(typeof auth === 'undefined' || typeof db === 'undefined'){
+    throw new Error('Firebase configuration load नहीं हुई');
   }
-});
+
+  auth.onAuthStateChanged(async(user)=>{
+    if(!user){window.location.href='index.html';return}
+    currentUser=user;
+    try{
+      await loadUserData();
+    }catch(e){
+      console.error('Dashboard initialization failed:',e);
+      showLoadError(e?.message||'Account data load नहीं हुआ।');
+    }
+  });
+}catch(e){
+  console.error('Dashboard Firebase bootstrap failed:',e);
+  showLoadError(e?.message||'Firebase initialize नहीं हुआ।');
+}
 
 async function loadUserData(){
   if(!currentUser?.uid)throw new Error('Login session नहीं मिला');
