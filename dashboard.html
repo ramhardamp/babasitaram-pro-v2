@@ -112,7 +112,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .action-btn.repay{border-color:#bfdbfe;background:var(--info-bg)}
 .action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}
 .action-btn.edit{border-color:#e2e8f0}
-.action-btn.share{border-color:#bfdbfe;background:#eff6ff}
+.action-btn.share{border-color:#bfdbfe;background:#eff6ff}.share-reminder{border-color:#bbf7d0;background:#ecfdf5}.share-reminder-preview{background:linear-gradient(135deg,#0f8f3e,#1aa34a);color:#fff;border-radius:18px;padding:14px;margin:0 0 14px;box-shadow:0 10px 24px rgba(16,185,129,.22)}.share-reminder-head{display:flex;align-items:center;gap:10px}.share-reminder-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;flex:0 0 48px;border:2px solid rgba(255,255,255,.45)}.share-reminder-name{font-size:15px;font-weight:900;line-height:1.2}.share-reminder-owner{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-phone{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-due{background:#fff;color:#0f172a;border-radius:14px;margin-top:12px;padding:12px;text-align:center}.share-reminder-due-label{font-size:11px;color:#64748b;font-weight:800}.share-reminder-due-amount{font-size:30px;font-weight:900;line-height:1.1;margin-top:3px}.share-reminder-message{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px;white-space:pre-line;font-size:13px;line-height:1.6}.share-reminder-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.share-reminder-actions .btn{margin-top:0}.share-reminder-note{font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.45}
 .section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}
 .loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px;position:relative}
 .loan-card.closed{border-color:#e2e8f0;opacity:.7}
@@ -1169,6 +1169,7 @@ function renderCustomerDetail(){
       <button class="action-btn loan wide" onclick="openLoanModal()"><div class="action-icon">📈</div><div><div class="action-title">${t('Give Loan with Interest','ब्याज पर लोन दें')}</div><div class="action-sub">${t('Set rate, auto-calculate','दर तय करें, ऑटो ब्याज')}</div></div></button>
       <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
       <button class="action-btn interest" onclick="openIntPaidModal()"><div class="action-icon">💰</div><div><div class="action-title">${t('Interest Paid','ब्याज भुगतान')}</div><div class="action-sub">${t('Byaj received','ब्याज मिला')}</div></div></button>
+      <button class="action-btn share-reminder wide" onclick="openShareHisaab('${c.id}')"><div class="action-icon">📤</div><div><div class="action-title">${t('Share Hisaab','हिसाब शेयर करें')}</div><div class="action-sub">${t('WhatsApp / SMS / photo','WhatsApp / SMS / फोटो')}</div></div></button>
       <button class="action-btn share" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Portal','पोर्टल लिंक')}</div><div class="action-sub">${t('Customer view link','ग्राहक लिंक')}</div></div></button>
       <button class="action-btn edit" onclick="exportCustomerStatementPdf('${c.id}')"><div class="action-icon">📄</div><div><div class="action-title">${t('Statement PDF','स्टेटमेंट PDF')}</div><div class="action-sub">${t('Print / save PDF','PDF सेव करें')}</div></div></button>
       <button class="action-btn edit wide" onclick="openEditCustomer()"><div class="action-icon">✏️</div><div><div class="action-title">${t('Edit Customer','ग्राहक एडिट करें')}</div><div class="action-sub">${t('Name, phone, email','नाम, फोन, ईमेल')}</div></div></button>
@@ -1176,12 +1177,138 @@ function renderCustomerDetail(){
     ${loansHtml}${txnHtml}`;
 }
 
+function getProfilePhotoUrl(){
+  return currentUser?.photoURL || userData?.photoURL || userData?.profilePhoto || userData?.profileImage || userData?.photo || '';
+}
+function getSharePhone(phone){
+  const clean=String(phone||'').replace(/\D/g,'');
+  if(clean.length===10)return '91'+clean;
+  if(clean.length>=11)return clean;
+  return '';
+}
+function getCustomerShareMessage(c,s){
+  const name=String(c?.name||'ग्राहक').trim();
+  const shop=String(userData?.shopName||'').trim();
+  const owner=String(userData?.ownerName||'').trim();
+  const phone=String(userData?.phone||'').trim();
+  const total=Math.max(0,Math.round(Number(s?.grandTotal)||0));
+  const udhaar=Math.max(0,Math.round(Number(s?.udhaarBalance)||0));
+  const loan=Math.max(0,Math.round(Number(s?.byajBalance)||0));
+  const lines=['Payment Due Reminder!','',`नमस्ते ${name} ji,`];
+  if(total>0){
+    if(udhaar>0&&loan>0)lines.push(`आपका कुल ₹${total.toLocaleString('en-IN')} बकाया है।`,`उधार: ₹${udhaar.toLocaleString('en-IN')}`,`लोन/ब्याज: ₹${loan.toLocaleString('en-IN')}`);
+    else if(loan>0)lines.push(`आपके लोन खाते में ₹${total.toLocaleString('en-IN')} बकाया है।`,`लोन बकाया: ₹${loan.toLocaleString('en-IN')}`);
+    else lines.push(`आपका ₹${total.toLocaleString('en-IN')} बकाया है।`);
+    lines.push('कृपया सुविधानुसार भुगतान करें।');
+  }else{
+    lines.push('आपका हिसाब अभी साफ है।');
+  }
+  if(c?.viewToken)lines.push('',`पूरा हिसाब: ${getCustomerViewLink(c.viewToken)}`);
+  lines.push('');
+  if(shop)lines.push(`— ${shop}`);
+  if(owner)lines.push(owner);
+  if(phone)lines.push(`📞 ${phone}`);
+  return lines.join('\n');
+}
+function getShareCardData(c,s){
+  return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):''};
+}
+function openShareHisaab(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  const s=getSummary(id);if(!s)return;
+  const data=getShareCardData(c,s);
+  const photo=getProfilePhotoUrl();
+  const avatar=photo?'<img class="share-reminder-avatar" src="'+esc(photo)+'" alt="">':'<div class="share-reminder-avatar">'+esc((data.owner||data.shop||'?').charAt(0).toUpperCase())+'</div>';
+  const message=getCustomerShareMessage(c,s);
+  const phoneState=getSharePhone(c.phone)?'':'<div style="color:var(--credit);font-size:11px;font-weight:800;margin-top:8px;text-align:center">⚠️ ग्राहक का सही मोबाइल नंबर सेव करें</div>';
+  showModal(`<div class="modal-handle"></div><div class="modal-title">📤 ${t('Share Hisaab','हिसाब शेयर करें')}</div>
+    <div class="share-reminder-preview">
+      <div class="share-reminder-head">${avatar}<div><div class="share-reminder-name">${esc(data.shop||'')}</div><div class="share-reminder-owner">${esc(data.owner||'')}</div><div class="share-reminder-phone">📞 ${esc(data.phone||'-')}</div></div></div>
+      <div class="share-reminder-due"><div class="share-reminder-due-label">${data.amount>0?'Payment Due Reminder!':'Hisaab Clear'}</div><div class="share-reminder-due-amount">₹${data.amount.toLocaleString('en-IN')}</div></div>
+    </div>
+    <div class="share-reminder-message">${esc(message)}</div>
+    ${phoneState}
+    <div class="share-reminder-actions" style="margin-top:10px">
+      <button class="btn btn-primary" onclick="shareHisaabWhatsApp('${id}')">🟢 WhatsApp</button>
+      <button class="btn btn-secondary" onclick="shareHisaabSms('${id}')">💬 SMS</button>
+      <button class="btn btn-secondary" onclick="shareHisaabWhatsAppPhoto('${id}')">🖼️ WhatsApp + फोटो</button>
+      <button class="btn btn-secondary" onclick="exportCustomerStatementPdf('${id}');closeModal()">📄 PDF</button>
+    </div>
+    <button class="btn btn-secondary" onclick="shareCustomerViewLink('${id}')" style="margin-top:8px">🔗 Portal Link</button>
+    <div class="share-reminder-note">ग्राहक को भेजने से पहले message review करके Send करें। BABASITARAM PRO का नाम reminder में नहीं जाएगा।</div>`);
+}
+function shareHisaabWhatsApp(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  const phone=getSharePhone(c.phone);if(!phone)return toast('ग्राहक का 10-अंकों वाला मोबाइल नंबर सेव करें','error');
+  const s=getSummary(id);if(!s)return;
+  const msg=getCustomerShareMessage(c,s);
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+}
+function shareHisaabSms(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  const phone=getSharePhone(c.phone);if(!phone)return toast('ग्राहक का 10-अंकों वाला मोबाइल नंबर सेव करें','error');
+  const s=getSummary(id);if(!s)return;
+  const msg=getCustomerShareMessage(c,s);
+  window.location.href='sms:'+phone+'?body='+encodeURIComponent(msg);
+}
+async function loadShareCardImage(url){
+  if(!url)return null;
+  try{
+    const img=await new Promise((resolve,reject)=>{
+      const el=new Image();el.crossOrigin='anonymous';el.onload=()=>resolve(el);el.onerror=reject;el.src=url;
+    });
+    return img;
+  }catch(_){return null}
+}
+function roundRect(ctx,x,y,w,h,r){
+  const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+}
+async function buildShareReminderImage(id){
+  const c=customers.find(x=>x.id===id);if(!c)throw new Error('Customer not found');
+  const s=getSummary(id);if(!s)throw new Error('Customer summary not found');
+  const d=getShareCardData(c,s);
+  const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas unavailable');
+  const bg=ctx.createLinearGradient(0,0,1080,1350);bg.addColorStop(0,'#0f8f3e');bg.addColorStop(1,'#137333');ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1350);
+  const photo=await loadShareCardImage(getProfilePhotoUrl());
+  ctx.fillStyle='#fff';ctx.font='700 44px Arial,sans-serif';ctx.textAlign='left';ctx.fillText(d.shop||'Business',250,115);
+  ctx.font='600 28px Arial,sans-serif';ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillText(d.owner||'',250,160);
+  ctx.font='500 27px Arial,sans-serif';ctx.fillText(d.phone?'📞 '+d.phone:'',250,202);
+  ctx.save();ctx.beginPath();ctx.arc(140,145,72,0,Math.PI*2);ctx.closePath();ctx.clip();
+  if(photo)ctx.drawImage(photo,68,73,144,144);else{ctx.fillStyle='rgba(255,255,255,.2)';ctx.fillRect(68,73,144,144);ctx.fillStyle='#fff';ctx.font='900 56px Arial,sans-serif';ctx.textAlign='center';ctx.fillText((d.owner||d.shop||'?').charAt(0).toUpperCase(),140,165);}
+  ctx.restore();
+  roundRect(ctx,28,260,1024,310,28);ctx.fillStyle='#fff';ctx.fill();
+  ctx.fillStyle='#475569';ctx.font='700 32px Arial,sans-serif';ctx.textAlign='center';ctx.fillText(d.amount>0?'Payment Due Reminder!':'Hisaab Clear',540,330);
+  ctx.fillStyle='#111827';ctx.font='900 88px Arial,sans-serif';ctx.fillText('₹'+d.amount.toLocaleString('en-IN'),540,445);
+  ctx.fillStyle='#64748b';ctx.font='600 27px Arial,sans-serif';ctx.fillText('Customer: '+d.name,540,515);
+  roundRect(ctx,28,610,1024,610,28);ctx.fillStyle='#fff';ctx.fill();
+  ctx.fillStyle='#111827';ctx.textAlign='left';ctx.font='600 31px Arial,sans-serif';
+  const msgLines=getCustomerShareMessage(c,s).split('\n').filter(x=>!x.startsWith('पूरा हिसाब:'));
+  let y=680;for(const line of msgLines){const chunks=[];let current='';for(const word of line.split(' ')){const test=current?current+' '+word:word;if(ctx.measureText(test)>900){chunks.push(current);current=word}else current=test}if(current)chunks.push(current);for(const chunk of chunks.slice(0,2)){ctx.fillText(chunk,85,y);y+=48}y+=8;if(y>1110)break;}
+  if(d.link){ctx.fillStyle='#0f8f3e';ctx.font='700 27px Arial,sans-serif';ctx.fillText('पूरा हिसाब: Portal Link',85,1155);}
+  ctx.fillStyle='#64748b';ctx.font='500 22px Arial,sans-serif';ctx.fillText(d.name+' • '+(d.phone||''),85,1265);
+  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Image creation failed')),'image/png',.92));
+}
+async function shareHisaabWhatsAppPhoto(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  const phone=getSharePhone(c.phone);if(!phone)return toast('ग्राहक का 10-अंकों वाला मोबाइल नंबर सेव करें','error');
+  try{
+    const blob=await buildShareReminderImage(id);
+    const file=new File([blob],'babasitaram-payment-reminder.png',{type:'image/png'});
+    const canShare=!!navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}));
+    if(canShare){await navigator.share({files:[file],text:getCustomerShareMessage(c,getSummary(id)),title:'Payment Due Reminder'});return;}
+    toast('इस device पर photo-share उपलब्ध नहीं है। WhatsApp text reminder खोला जा रहा है।','error');shareHisaabWhatsApp(id);
+  }catch(e){
+    if(e?.name==='AbortError')return;
+    console.error('Share reminder image failed:',e);
+    toast('Photo share नहीं हो सका। WhatsApp text reminder खोला जा रहा है।','error');shareHisaabWhatsApp(id);
+  }
+}
 function shareCustomerViewLink(id){
   const c=customers.find(x=>x.id===id);if(!c)return;
   if(!c.viewToken)return toast('इस ग्राहक के लिए पोर्टल लिंक नहीं है। Settings → Generate Portal Links चलाएं','error');
   const link=getCustomerViewLink(c.viewToken);
-  showModal(`<div class="modal-handle"></div>
-    <div class="modal-title">🔗 ग्राहक पोर्टल लिंक</div>
+  showModal(`<div class="modal-handle"></div><div class="modal-title">🔗 ग्राहक पोर्टल लिंक</div>
     <div class="info-box" style="text-align:left">
       <span>📱 इस लिंक को ग्राहक को भेजें। वे अपना खाता देख सकेंगे — सिर्फ आपकी दुकान का।</span>
     </div>
@@ -1201,7 +1328,7 @@ function shareCustomerLinkWhatsApp(id){
   const c=customers.find(x=>x.id===id);
   if(!c||!c.phone)return toast('फोन नंबर नहीं है','error');
   const link=getCustomerViewLink(c.viewToken);
-  const msg=`नमस्ते ${c.name},\n\nआपका खाता देखने के लिए यह लिंक खोलें:\n${link}\n\n— ${userData.shopName||'BABASITARAM PRO'}`;
+  const msg=`नमस्ते ${c.name},\n\nआपका खाता देखने के लिए यह लिंक खोलें:\n${link}\n\n— ${userData.shopName||'दुकान'}${userData.ownerName?'\n'+userData.ownerName:''}${userData.phone?'\n📞 '+userData.phone:''}`;
   const clean=(c.phone||'').replace(/\D/g,'');
   const fullPhone=clean.length===10?'91'+clean:clean;
   window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`,'_blank');

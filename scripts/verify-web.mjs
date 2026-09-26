@@ -30,6 +30,13 @@ const checks=[
 ['PDF business report is printable',dashboard.includes('function exportBusinessPdf()')&&dashboard.includes('function printExportWindow')&&dashboard.includes('w.print()')],
 ['customer statement export exists',dashboard.includes('function exportCustomerStatementPdf(id)')&&dashboard.includes('exportCustomerStatementPdf(\'')],
 ['backup export is read-only',dashboard.includes('Export read-only')&&dashboard.includes('buildBackupPayload()')&&dashboard.includes('downloadTextFile')],
+['customer Hisaab share UI exists',dashboard.includes('openShareHisaab(')&&dashboard.includes('Share Hisaab')&&dashboard.includes('share-reminder-preview')],
+['customer Hisaab message uses profile identity',dashboard.includes('function getCustomerShareMessage(c,s)')&&dashboard.includes('userData?.shopName')&&dashboard.includes('userData?.ownerName')&&dashboard.includes('userData?.phone')],
+['customer Hisaab message excludes app branding',(()=>{const a=dashboard.indexOf('function getCustomerShareMessage(c,s)');const b=dashboard.indexOf('function getShareCardData',a);return a>=0&&b>a&&!dashboard.slice(a,b).includes('BABASITARAM PRO')})()],
+['WhatsApp reminder targets customer number',dashboard.includes('function shareHisaabWhatsApp(id)')&&dashboard.includes("window.open('https://wa.me/'+phone+'?text='")],
+['SMS reminder targets customer number',dashboard.includes('function shareHisaabSms(id)')&&dashboard.includes("window.location.href='sms:'")],
+['photo reminder sharing has file fallback',dashboard.includes('function buildShareReminderImage(id)')&&dashboard.includes('navigator.canShare')&&dashboard.includes('image/png')],
+['profile photo is used when available',dashboard.includes('function getProfilePhotoUrl()')&&dashboard.includes('currentUser?.photoURL')&&dashboard.includes('userData?.profilePhoto')],
 
 ['atomic customer/payment writes',dashboard.includes('const batch=db.batch()')&&dashboard.includes('db.runTransaction(async transaction=>')],
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
