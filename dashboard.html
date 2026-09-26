@@ -577,7 +577,7 @@ function observeCustomerListTail(filteredLength){
       customerRenderLimit=Math.min(customerRenderLimit+CUSTOMER_RENDER_CHUNK,filteredLength);
       renderDashboard();
     }
-  ],{root:document.getElementById('customerList'),rootMargin:'500px 0px',threshold:0});
+  },{root:document.getElementById('customerList'),rootMargin:'500px 0px',threshold:0});
   customerListObserver.observe(tail);
 }
 function getTotals(){
