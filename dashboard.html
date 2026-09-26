@@ -916,7 +916,7 @@ function focusPinInput(){
 function pinInputChanged(input){
   const err=document.getElementById('pinError');
   if(err)err.textContent='';
-  const clean=String(input.value||'').replace(/\\D/g,'').slice(0,4);
+  const clean=String(input.value||'').replace(/\D/g,'').slice(0,4);
   if(input.value!==clean)input.value=clean;
   pendingPIN=clean;
   updatePinDots();
