@@ -20,6 +20,7 @@
 - [x] Loan accounting hardening: new loan repayment/interest transactions now carry loanId and validate the selected loan belongs to the current customer; legacy derived records remain untouched.
 - [x] Post-commit sync hardening: ledger/loan writes now report success immediately after the primary Firestore commit; public-view/email failures no longer tell the user to retry a write that already committed. A short write-busy guard also blocks rapid duplicate submissions.
 - [x] Customer save/edit post-commit hardening: customer writes remain successful when public-view/email secondary synchronization fails, reducing duplicate-retry risk.
+- [x] Final code-cleanup pass: removed obsolete JSON-trick comments and verified no legacy JSON.parse path or old 📒 branding remains in dashboard.html.
 - [ ] Email flow audit (secondary delivery/retry reconciliation still pending).
 - [ ] API v1 design + read-only implementation.
 - [ ] API write/idempotency implementation.
