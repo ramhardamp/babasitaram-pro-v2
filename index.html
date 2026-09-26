@@ -158,6 +158,9 @@ function togglePassword(id, btn) {
 }
 
 async function handleLogin() {
+  const loginT0 = performance.now();
+  const markLogin = (label) => console.debug('[LOGIN-TIMING]', label, Math.round(performance.now() - loginT0) + 'ms');
+  markLogin('submit');
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   const errorEl = document.getElementById('loginError');
@@ -176,8 +179,10 @@ async function handleLogin() {
   if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
 
   try {
+    markLogin('auth sign-in complete');
     const result = await auth.signInWithEmailAndPassword(email, password);
     const user = result.user;
+    markLogin('auth user received');
 
     if (!user.emailVerified) {
       document.getElementById('verifyEmailDisplay').textContent = user.email;
@@ -186,30 +191,19 @@ async function handleLogin() {
       return;
     }
 
-    const userDoc = await db.collection('users').doc(user.uid).get();
-
-    if (!userDoc.exists) {
-      window.location.href = 'signup.html';
-      return;
-    }
-
-    if (!userDoc.data().shopName) {
-      window.location.href = 'signup.html';
-      return;
-    }
-
-    // Do not download the full customer/transaction ledger here.
-    // That was the source of the visible 2–3s post-login wait. Dashboard listeners
-    // hydrate from Firestore cache/server in parallel after the route opens.
+    // Critical path: Auth only. Do NOT wait for the users/{uid} Firestore
+    // profile or the ledger here. Dashboard starts profile + ledger hydration
+    // in parallel after navigation, so the login page never blocks on data.
     try {
-      sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
+      sessionStorage.setItem('bsp_login_handoff', JSON.stringify({
         uid: user.uid,
-        data: userDoc.data(),
+        email: user.email || '',
         at: Date.now()
       }));
-    } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
+    } catch (e) { console.warn('Login handoff cache skipped:', e); }
 
     localStorage.setItem('bsp_userId', user.uid);
+    markLogin('handoff ready; navigating dashboard');
     window.location.replace('dashboard.html');
 
   } catch (error) {
@@ -263,15 +257,9 @@ async function checkVerified() {
       localStorage.setItem('bsp_userId', user.uid);
       showToast('ईमेल verify हो गया!', 'success');
 
-      // Firestore check — dashboard ya setup
-      const doc = await db.collection('users').doc(user.uid).get();
-      setTimeout(() => {
-        if (doc.exists && doc.data().shopName) {
-          window.location.href = 'dashboard.html';
-        } else {
-          window.location.href = 'signup.html';
-        }
-      }, 700);
+      // Dashboard now validates the profile without adding another
+      // blocking read or artificial delay on the verification screen.
+      window.location.replace('dashboard.html');
     } else {
       showToast('अभी verify नहीं हुआ। ईमेल चेक करें।', 'error');
       setBtnLoading(btn, false);
@@ -325,25 +313,15 @@ auth.onAuthStateChanged(async (user) => {
   if (user && user.emailVerified) {
     const loginScreen = document.getElementById('screen-login');
     if (loginScreen && loginScreen.classList.contains('active')) {
-      const doc = await db.collection('users').doc(user.uid).get();
-      if (doc.exists && doc.data().shopName) {
-        try {
-          const loginBtn = document.getElementById('loginBtn');
-          setBtnLoading(loginBtn, true);
-          const loginBtnText = loginBtn?.querySelector('.btn-text');
-          if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
-          try {
-            sessionStorage.setItem('bsp_user_prefetched', JSON.stringify({
-              uid: user.uid,
-              data: doc.data(),
-              at: Date.now()
-            }));
-          } catch (e) { console.warn('Account prefetch session cache skipped:', e); }
-        } catch (e) {
-          console.warn('Dashboard data prefetch skipped:', e);
-        }
-        window.location.replace('dashboard.html');
+      try {
+        const loginBtn = document.getElementById('loginBtn');
+        setBtnLoading(loginBtn, true);
+        const loginBtnText = loginBtn?.querySelector('.btn-text');
+        if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
+      } catch (e) {
+        console.warn('Auto-login button state update skipped:', e);
       }
+      window.location.replace('dashboard.html');
     }
   }
 });
