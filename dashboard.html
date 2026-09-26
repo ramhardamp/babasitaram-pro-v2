@@ -222,6 +222,8 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .settings-sublabel{font-size:11px;color:var(--text-muted);margin-top:2px}
 .settings-arrow{color:var(--text-light);font-size:18px;margin-left:8px}.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}.export-card{border:2px solid var(--border);background:var(--white);border-radius:12px;padding:13px 10px;text-align:left;cursor:pointer;font-family:inherit;color:var(--text);min-height:78px}.export-card:active{transform:scale(.98);background:var(--bg)}.export-card-icon{font-size:22px;margin-bottom:5px}.export-card-title{font-size:12px;font-weight:900}.export-card-sub{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.35}.export-card.primary{border-color:var(--primary-light);background:var(--primary-lighter)}.export-note{font-size:10px;color:var(--text-muted);padding:0 12px 12px;line-height:1.5}
 .settings-header{font-size:11px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;padding:16px 4px 8px}
+.sync-status{font-size:9px;font-weight:800;color:var(--text-muted);white-space:nowrap;margin-left:6px;max-width:92px;overflow:hidden;text-overflow:ellipsis}
+.sync-status.online{color:#15803d}.sync-status.offline{color:#b45309}.sync-status.pending{color:#b45309}
 .hidden{display:none!important}
 .spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 .link-box{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:var(--text-muted);font-family:monospace;margin:10px 0;max-height:80px;overflow-y:auto}
@@ -237,8 +239,9 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src=\"'+logoUrl+'\" onerror=\"this.onerror=null;this.src='\"+fallbackLogoUrl+\"'\" loading="eager" decoding="sync" alt="Guru Shree">
+      <img class="brand-logo" src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="BABASITARAM PRO">
       <div class="top-title" id="topTitle">Loading...</div>
+      <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
     </div>
     <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
     <div class="lang-toggle">
@@ -430,9 +433,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
           </div>
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
-          </div>
+          <a class="settings-item" href="mailto:babasitaram@gmail.com" style="text-decoration:none;color:inherit">
+            <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">babasitaram@gmail.com</div></div></div>
+            <div class="settings-arrow">›</div>
+          </a>
         </div>
       </div>
     </div>
@@ -497,10 +501,10 @@ let unsubTransactions = null;
 let ledgerWriteBusy = false;
 
 let storedPIN = null;
-let pendingPIN = '';
-let pinMode = 'verify';
+let pendingPIN = '';let pinMode = 'verify';
 let pinActionCallback = null;
 let pinSetupFirst = '';
+let pinReturnScreen = null;
 
 const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings', 'pin'];
 
@@ -743,6 +747,8 @@ async function backfillViewTokens(){
 /* ============ PIN ============ */
 function showPinScreen(mode,title,subtitle,callback){
   pinMode=mode;pendingPIN='';pinActionCallback=callback||null;
+  if(mode.startsWith('change-') && !pinReturnScreen)pinReturnScreen='settings';
+  currentScreen='pin';
   document.getElementById('pinTitle').textContent=title;
   document.getElementById('pinSubtitle').textContent=subtitle;
   document.getElementById('pinError').textContent='';
@@ -753,7 +759,8 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('bottomTabs').classList.add('hidden');
   document.getElementById('fab').classList.add('hidden');
   document.getElementById('topTitle').textContent='🔐 PIN';
-  document.getElementById('backBtn').classList.add('hidden');
+  const canGoBack=mode.startsWith('change-') && !!pinReturnScreen;
+  document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
   document.getElementById('lockBtn').style.display='none';
 }
 function updatePinDots(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pendingPIN.length))}
@@ -802,6 +809,7 @@ async function savePIN(pin){
     if(document.getElementById('screen-pin').classList.contains('active')){
       const cb=pinActionCallback;pinActionCallback=null;
       if(typeof cb === 'function'){setTimeout(()=>{try{cb()}catch(e){showScreen('dashboard',true)}},150);}
+      else if(pinReturnScreen){const target=pinReturnScreen;pinReturnScreen=null;showScreen(target,true)}
       else {showScreen('dashboard',true)}
     }
   }catch(e){document.getElementById('pinError').textContent='PIN सेव नहीं हुआ।'}
@@ -811,7 +819,10 @@ function requirePIN(callback){
   showPinScreen('verify','PIN डालें','कार्य करने के लिए PIN डालें',callback);
 }
 function lockApp(){if(!storedPIN)return;showPinScreen('verify','PIN डालें','ऐप लॉक है',()=>{showScreen('dashboard',true)})}
-function changePIN(){requirePIN(()=>{showPinScreen('change-old','वर्तमान PIN','पुराना PIN डालें')})}
+function changePIN(){
+  pinReturnScreen='settings';
+  requirePIN(()=>{showPinScreen('change-old','वर्तमान PIN','पुराना PIN डालें')});
+}
 
 function setLang(lang){
   currentLang=lang;localStorage.setItem('bsp_lang',lang);
@@ -918,6 +929,12 @@ function showScreen(name, noPush){
 
 /* ⭐ FIXED: goBack with proper logic */
 function goBack(){
+  if(currentScreen==='pin' && pinReturnScreen){
+    pendingPIN='';pinSetupFirst='';pinActionCallback=null;
+    const target=pinReturnScreen;pinReturnScreen=null;
+    showScreen(target,true);
+    return;
+  }
   // Agar history khatam, dashboard par jao
   if(screenHistory.length === 0){
     showScreen('dashboard', true);
@@ -997,8 +1014,7 @@ try{
   showLoadError(e?.message||'Firebase initialize नहीं हुआ।');
 }
 
-async function loadUserData(){
-  if(!currentUser?.uid)throw new Error('Login session नहीं मिला');
+async function loadUserData(){  if(!currentUser?.uid)throw new Error('Login session नहीं मिला');
   armAppInitWatchdog();
   try{
     const docPromise=db.collection('users').doc(currentUser.uid).get();
@@ -1024,6 +1040,14 @@ async function loadUserData(){
   }
 }
 
+function setSyncStatus(online,fromCache=false,pending=false){
+  const el=document.getElementById('syncStatus');if(!el)return;
+  el.className='sync-status '+(pending?'pending':online?'online':'offline');
+  el.textContent=pending?'● Sync pending':online?(fromCache?'● Online • cache':'● Online'):'● Offline • cache';
+}
+window.addEventListener('online',()=>setSyncStatus(true,false,false));
+window.addEventListener('offline',()=>setSyncStatus(false,true,false));
+
 function setupListeners(){
   const customerList=document.getElementById('customerList');
   if(customerList && !customerList.dataset.clickBound){
@@ -1045,13 +1069,12 @@ function setupListeners(){
   }
   if(unsubCustomers)unsubCustomers();
   if(unsubTransactions)unsubTransactions();
-  unsubCustomers=db.collection('users').doc(currentUser.uid).collection('parties')
-    .onSnapshot(snap=>{customers=[];snap.forEach(d=>customers.push({id:d.id,...d.data()}));customers.sort((a,b)=>(b.balance||0)-(a.balance||0));initialCustomersReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
+  const customerQuery=db.collection('users').doc(currentUser.uid).collection('parties');
+  const txnQuery=db.collection('users').doc(currentUser.uid).collection('transactions').orderBy('date','desc');
+  unsubCustomers=customerQuery.onSnapshot({includeMetadataChanges:true},snap=>{customers=[];snap.forEach(d=>customers.push({id:d.id,...d.data()}));customers.sort((a,b)=>(b.balance||0)-(a.balance||0));initialCustomersReady=true;setSyncStatus(navigator.onLine,snap.metadata.fromCache,snap.metadata.hasPendingWrites);if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();
     },err=>{console.error('Customer error:',err);if(!initialCustomersReady)showLoadError('Customers data load नहीं हुआ: '+(err?.message||'Firestore error'));});
-  unsubTransactions=db.collection('users').doc(currentUser.uid).collection('transactions')
-    .orderBy('date','desc')
-    .onSnapshot(snap=>{transactions=[];snap.forEach(d=>transactions.push({id:d.id,...d.data()}));rebuildTxnIndex();initialTransactionsReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
+  unsubTransactions=txnQuery.onSnapshot({includeMetadataChanges:true},snap=>{transactions=[];snap.forEach(d=>transactions.push({id:d.id,...d.data()}));rebuildTxnIndex();initialTransactionsReady=true;setSyncStatus(navigator.onLine,snap.metadata.fromCache,snap.metadata.hasPendingWrites);if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();else if(currentScreen==='reports')renderReports();
     },err=>{console.error('Txn error:',err);if(!initialTransactionsReady)showLoadError('Transactions data load नहीं हुआ: '+(err?.message||'Firestore error'));});
 }
@@ -1079,7 +1102,7 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
-    const brandLogo='<img class='cc-avatar-logo' src='assets/guru-shree-logo.svg' onerror='this.onerror=null;this.src=''assets/babasitaram-pro-logo.svg'' ' alt='BABASITARAM PRO'>';
+    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
     const total=s.grandTotal;
     const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
@@ -1115,7 +1138,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
-  const brandLogo='<img class='cc-avatar-logo' src='assets/guru-shree-logo.svg' onerror='this.onerror=null;this.src=''assets/babasitaram-pro-logo.svg'' ' alt='BABASITARAM PRO'>';
+  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -1497,8 +1520,7 @@ function deleteLoanConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this loan?'
 function openEditLoanModal(loan){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Edit Loan','लोन एडिट')}</div>
     <div class="input-group"><label class="input-label">${t('Principal','मूलधन')} *</label>
-      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
-        <input type="number" id="mPrincipal" class="text-input" value="${loan.principal}" inputmode="numeric"></div></div>
+      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>        <input type="number" id="mPrincipal" class="text-input" value="${loan.principal}" inputmode="numeric"></div></div>
     <div class="input-group"><label class="input-label">${t('Rate (% per month)','दर (% प्रति माह)')} *</label>
       <div class="input-prefix-wrap"><span class="input-prefix">%</span>
         <input type="number" id="mRate" class="text-input" value="${loan.rate}" step="0.1" inputmode="decimal"></div></div>
@@ -1999,7 +2021,6 @@ async function saveIntPaid(){
   }
 }
 
-
 function renderReports(){
   if(!userData){showScreen('dashboard',true);return}
   const totals=getTotals();
@@ -2167,11 +2188,23 @@ function exportBusinessPdf(){
   }catch(e){console.error('PDF report failed:',e);toast('PDF report failed: '+(e.message||'Unknown error'),'error')}
 }
 function exportCustomerStatementPdf(id){
-  const c=customers.find(x=>x.id===id);if(!c)return;const s=getSummary(id);const txns=getPartyTransactions(id).slice().sort((a,b)=>sortableDateValue(a.date)-sortableDateValue(b.date));let running=0;
-  const rows=txns.map(tx=>{const amt=Number(tx.amount)||0;if(tx.type==='udhaar'||tx.type==='byaj_loan')running+=amt;else if(['jama','loan_repay','interest_paid'].includes(tx.type))running-=amt;return '<tr><td>'+esc(dateStr(tx.date))+'</td><td>'+esc(tx.type)+'</td><td>'+esc(tx.note||'-')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(running)+'</td></tr>'}).join('');
+  const c=customers.find(x=>x.id===id);if(!c)return;
+  const s=getSummary(id);
+  const txns=getPartyTransactions(id).slice().sort((a,b)=>sortableDateValue(a.date)-sortableDateValue(b.date));
+  let running=0;
+  const typeLabels={udhaar:'Udhaar',jama:'Payment',byaj_loan:'Loan Principal',loan_repay:'Loan Repayment',interest_paid:'Interest Received'};
+  const rows=txns.map(tx=>{
+    const isLoan=tx.type==='byaj_loan';
+    const amt=isLoan?Number(tx.principal||tx.amount)||0:Number(tx.amount)||0;
+    const debit=['udhaar','byaj_loan'].includes(tx.type);
+    const credit=['jama','loan_repay','interest_paid'].includes(tx.type);
+    if(debit)running+=amt;else if(credit)running-=amt;
+    return '<tr><td>'+esc(dateStr(tx.date||tx.startDate))+'</td><td>'+esc(typeLabels[tx.type]||tx.type)+'</td><td>'+esc(tx.note||'-')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(running)+'</td></tr>';
+  }).join('');
   const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(c.phone||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(userData?.shopName||'BABASITARAM PRO')+' • '+dateStr(new Date())+'</div>'+
-    '<div class="summary"><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(s?.udhaarBalance||0)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(s?.byajBalance||0)+'</div></div><div class="box"><div class="label">Total Due</div><div class="value">'+fmt(s?.grandTotal||0)+'</div></div></div>'+
-    '<h2>Ledger History</h2><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th>Running Balance</th></tr></thead><tbody>'+(rows||'<tr><td colspan="5">No transactions</td></tr>')+'</tbody></table>';
+    '<div class="summary"><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(s?.udhaarBalance||0)+'</div></div><div class="box"><div class="label">Interest / Loan Due</div><div class="value">'+fmt(s?.byajBalance||0)+'</div></div><div class="box"><div class="label">Total Due</div><div class="value">'+fmt(s?.grandTotal||0)+'</div></div></div>'+
+    '<h2>Ledger History</h2><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th>Running Balance</th></tr></thead><tbody>'+(rows||'<tr><td colspan="5">No transactions</td></tr>')+'</tbody></table>'+
+    '<div class="meta" style="margin-top:12px">Statement is generated from the saved ledger records. Interest outstanding shown above is calculated from active loan terms.</div>';
   printExportWindow((c.name||'Customer')+' Statement',body);
 }
 async function buildBackupPayload(){
