@@ -57,3 +57,11 @@ checks.push(['Customer avatar logo markup is JS-safe',dashboard.includes('const 
 checks.push(['Customer statement includes loan principal',dashboard.includes("const isLoan=tx.type==='byaj_loan'")&&dashboard.includes('Number(tx.principal||tx.amount)||0')&&dashboard.includes('Loan Principal')]);
 checks.push(['Customer statement exposes PDF action',dashboard.includes('exportCustomerStatementPdf')&&dashboard.includes('Statement PDF')]);
 checks.push(['Offline/cache status is visible',dashboard.includes('id="syncStatus"')&&dashboard.includes('function setSyncStatus(')&&dashboard.includes('includeMetadataChanges:true')&&dashboard.includes('snap.metadata.fromCache')]);
+
+// Account identity and logo integrity checks.
+checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/webp;base64,')&&guruLogo.length>1000]);
+checks.push(['Support email is consistent across public entry pages',!index.includes('ramhardamp@gmail.com')&&!signup.includes('ramhardamp@gmail.com')&&!forgot.includes('ramhardamp@gmail.com')&&index.includes('babasitaram@gmail.com')&&signup.includes('babasitaram@gmail.com')&&forgot.includes('babasitaram@gmail.com')]);
+checks.push(['Signup captures immutable profile mobile',signup.includes('id="ownerPhone"')&&signup.includes('profilePhone: ownerPhone')&&signup.includes('profileName: ownerName')&&signup.includes('profileEmail: user.email')]);
+checks.push(['Settings shows locked profile identity',dashboard.includes('id="pOwnerName"')&&dashboard.includes('id="pPhone"')&&dashboard.includes('id="pEmail"')&&dashboard.includes('प्रोफाइल में लॉक')]);
+checks.push(['Business edit cannot change profile mobile',dashboard.includes('const updateData = {shopName}')&&!dashboard.includes('const updateData = {shopName,phone}')]);
+checks.push(['Existing users get non-destructive profile fields',dashboard.includes('const profilePatch={}')&&dashboard.includes('set(profilePatch,{merge:true})')&&dashboard.includes('if(!userData.profilePhone && userData.phone)')]);
