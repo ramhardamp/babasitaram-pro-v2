@@ -21,7 +21,7 @@ const checks=[
 ['interest income excludes principal', (dashboard.match(/income\s*\+=\s*\(x\.amount\|\|0\)/g)||[]).length===1 && dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
 ['100+ customer scroll architecture',dashboard.includes('height:100dvh')&&dashboard.includes('height:0')&&dashboard.includes('min-height:0')&&dashboard.includes('overflow-y:auto')&&dashboard.includes('touch-action:pan-y')&&dashboard.includes('overscroll-behavior-y:contain')&&dashboard.includes('env(safe-area-inset-bottom')&&dashboard.includes('html,body{height:100%;overflow:hidden')],
 ['large customer list rendering guard',dashboard.includes('content-visibility:auto')&&dashboard.includes('contain-intrinsic-size:0 150px')],
-['incremental customer rendering',dashboard.includes('CUSTOMER_RENDER_CHUNK = 100')&&dashboard.includes('IntersectionObserver')&&dashboard.includes('customerListTail')],
+['incremental customer rendering',dashboard.includes('CUSTOMER_RENDER_CHUNK = 5')&&dashboard.includes('IntersectionObserver')&&dashboard.includes('customerListTail')],
 ['secure public view token generation',dashboard.includes('crypto.getRandomValues')&&dashboard.includes('Uint8Array(32)')],
 ['customer deletion is non-destructive and transaction-protected',dashboard.includes('Never destructively delete a customer')&&dashboard.includes("const txSnap=await txCol.where('partyId','==',customerId).limit(1).get()")&&dashboard.includes('await db.runTransaction(async(transaction)=>')&&dashboard.includes('transaction.delete(partyRef)')],
 ['atomic loan repayment and interest history',dashboard.includes("async function saveRepay()")&&dashboard.includes("db.runTransaction(async transaction=>")&&dashboard.includes("async function saveIntPaid()")&&dashboard.includes("transaction.set(txnRef")],
@@ -66,6 +66,14 @@ checks.push(['Customer avatar logo markup is JS-safe',dashboard.includes('const 
 checks.push(['Customer statement includes loan principal',dashboard.includes("const isLoan=tx.type==='byaj_loan'")&&dashboard.includes('Number(tx.principal||tx.amount)||0')&&dashboard.includes('Loan Principal')]);
 checks.push(['Customer statement exposes PDF action',dashboard.includes('exportCustomerStatementPdf')&&dashboard.includes('Statement PDF')]);
 checks.push(['Offline/cache status is visible',dashboard.includes('id="syncStatus"')&&dashboard.includes('function setSyncStatus(')&&dashboard.includes('includeMetadataChanges:true')&&dashboard.includes('snap.metadata.fromCache')]);
+checks.push(['Settings has one bottom navigation Settings entry',!dashboard.includes('id="settingsHeaderBtn"')&&dashboard.includes('data-view="settings" onclick="switchTab(\'settings\')"')]);
+checks.push(['PIN and Language are inside Settings',dashboard.includes('PIN / Security')&&dashboard.includes('PIN बदलें')&&dashboard.includes('Language')&&dashboard.includes('English / हिंदी')]);
+checks.push(['Android automatic SMS hooks exist',dashboard.includes('function getSmsPlugin()')&&dashboard.includes('BsrSmsScheduler')&&dashboard.includes('function sendNativeSms')&&dashboard.includes('function scheduleUdhaarReminder')]);
+checks.push(['SMS settings are persisted non-destructively',dashboard.includes('smsSettings')&&dashboard.includes("db.collection('users').doc(currentUser.uid).update({smsSettings:next})")]);
+checks.push(['Transaction update triggers automatic SMS',dashboard.includes('smsMessageForTransaction(c,type,amt,newBal)')&&dashboard.includes('type===\'udhaar\'')&&dashboard.includes('type===\'jama\'')]);
+checks.push(['Seven-day reminder is scheduled from udhaar date',dashboard.includes('7*24*60*60*1000')&&dashboard.includes("id:'udhaar7:'")&&dashboard.includes('scheduleReminder')]);
+checks.push(['Payment cancels duplicate customer reminders',dashboard.includes('cancelCustomerSmsReminders(customerId)')]);
+
 
 
 let failed=0;
