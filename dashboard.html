@@ -294,7 +294,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
 /* Android-style Settings — single vertical list with expandable sections */
 #screen-settings.active{height:100%;min-height:0;overflow:hidden}
-#screen-settings.active .android-settings{height:100%;overflow-y:auto;overflow-x:hidden;padding:12px 12px calc(120px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+#screen-settings.active .android-settings{height:100%;overflow:hidden;padding:12px 12px calc(120px + env(safe-area-inset-bottom,0px))}
 .android-settings-hero{display:flex;align-items:center;gap:12px;padding:14px 15px;margin-bottom:10px;background:var(--gradient-dark);color:#fff;border-radius:16px;box-shadow:0 5px 18px rgba(30,27,75,.18)}
 .android-settings-hero img{width:44px;height:44px;object-fit:cover;border-radius:12px;background:#fff;padding:2px;flex:0 0 44px}.android-settings-title{font-size:16px;font-weight:900}.android-settings-sub{font-size:10px;opacity:.8;margin-top:2px}
 .android-settings-list{max-width:760px;margin:0 auto}.android-setting-section{background:var(--white);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.05)}
@@ -311,6 +311,12 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 @media(max-width:380px){#screen-settings.active .android-settings{padding-left:8px;padding-right:8px}.android-setting-row{padding-left:10px;padding-right:10px}.android-setting-main b{font-size:13px}}
 
 .android-profile-update{width:calc(100% - 20px);margin:8px 10px;padding:10px 12px;border:1px solid var(--primary);border-radius:10px;background:var(--primary-lighter);color:var(--primary);font:800 12px inherit;cursor:pointer}.android-profile-update:active{opacity:.8}
+
+/* Settings viewport mode: no page scrolling; sections open in place. */
+#screen-settings.active .android-settings-list{height:100%;overflow:hidden}
+#screen-settings.active .android-setting-content{max-height:calc(100vh - 390px);overflow:hidden}
+#screen-settings.active .android-setting-section.open .android-setting-content{display:block}
+@media(max-width:600px){#screen-settings.active .android-settings{padding:8px 8px calc(88px + env(safe-area-inset-bottom,0px))}#screen-settings.active .android-setting-section{margin-bottom:6px;border-radius:11px}#screen-settings.active .android-setting-row{min-height:55px;padding:8px 10px;gap:9px}#screen-settings.active .android-setting-icon{width:30px;height:30px;flex-basis:30px;font-size:16px}#screen-settings.active .android-setting-main b{font-size:12.5px}#screen-settings.active .android-setting-main small{font-size:9px}#screen-settings.active .android-setting-content{max-height:calc(100vh - 330px)}#screen-settings.active .android-sub-row{min-height:44px;padding:7px 10px}}
 </style>
 </head>
 <body>
@@ -435,7 +441,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
         <div class="android-settings-list">
 
-          <section class="android-setting-section open" data-settings-section="profile">
+          <section class="android-setting-section" data-settings-section="profile">
             <button class="android-setting-row" type="button" onclick="toggleSettingsSection('profile')">
               <span class="android-setting-icon">👤</span>
               <span class="android-setting-main"><b>Profile</b><small>नाम, मोबाइल और ईमेल</small></span>
