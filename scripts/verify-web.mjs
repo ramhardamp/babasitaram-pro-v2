@@ -79,6 +79,9 @@ checks.push(['Seven-day reminder is scheduled from udhaar date',dashboard.includ
 checks.push(['Payment cancels duplicate customer reminders',dashboard.includes('cancelCustomerSmsReminders(customerId)')]);
 checks.push(['Android SMS preparation script exists',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('BsrSmsSchedulerPlugin.java')&&x.includes('SEND_SMS')&&x.includes('BsrSmsAlarmReceiver'))]);
 checks.push(['Android workflow prepares native SMS layer',await readFile('.github/workflows/android-build.yml','utf8').then(x=>x.includes('node scripts/prepare-android.mjs'))]);
+checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
+checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
+checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.4.4']);
 
 
 
