@@ -22,11 +22,12 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}
 .lang-btn.active{background:var(--primary);color:#fff}
 .lock-btn{background:rgba(99,102,241,.1);border:none;font-size:14px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}
-.screen-container{flex:1 1 auto;height:0;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable;contain:layout style}.screen-container>.screen{width:100%;min-height:100%}
+.screen-container{flex:1 1 auto;height:0;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable;contain:layout style}.screen-container.dashboard-mode{overflow:hidden;padding-bottom:0}.screen-container>.screen{width:100%;min-height:100%}
 .screen-container::-webkit-scrollbar{width:0}
 .screen{display:none;min-height:0}
 .screen.active{display:block}.screen#screen-dashboard.active{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
-.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
+.customer-list{box-sizing:border-box;width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 16px calc(112px + env(safe-area-inset-bottom, 0px));overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.customer-card{box-sizing:border-box;width:100%;}.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .pin-screen{padding:40px 20px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -884,8 +885,15 @@ function showScreen(name, noPush){
   };
   document.getElementById('topTitle').textContent = titles[name] || 'BABASITARAM PRO';
   
-  // Scroll to top
-  document.getElementById('screenContainer').scrollTop = 0;
+  // Dashboard owns its own customer-list scroll. Keep the outer screen container fixed
+  // so a long customer list cannot push/clip the dashboard hero/header.
+  const screenContainer = document.getElementById('screenContainer');
+  screenContainer.classList.toggle('dashboard-mode', name === 'dashboard');
+  screenContainer.scrollTop = 0;
+  if(name === 'dashboard'){
+    const customerList = document.getElementById('customerList');
+    if(customerList) customerList.scrollTop = 0;
+  }
   
   // Render content
   if(name === 'dashboard') renderDashboard();
