@@ -198,10 +198,20 @@ async function handleLogin() {
       return;
     }
 
-    // Dashboard par jao
+    // Dashboard खोलने से पहले initial Firestore data warm करें.
+    // इससे login थोड़ा समय लेगा, लेकिन dashboard पर अलग "Data load ho raha hai..."
+    // screen दिखने की जरूरत नहीं पड़ेगी.
+    setBtnLoading(btn, true);
+    const btnText = btn.querySelector('.btn-text');
+    if (btnText) btnText.textContent = '⏳ डेटा तैयार हो रहा है...';
+    await preloadDashboardData(user.uid);
+
     localStorage.setItem('bsp_userId', user.uid);
-    showToast('लॉगिन सफल!', 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+    sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
+      uid: user.uid,
+      at: Date.now()
+    }));
+    window.location.replace('dashboard.html');
 
   } catch (error) {
     console.error('Login error:', error);
@@ -214,6 +224,26 @@ async function handleLogin() {
     errorEl.classList.remove('hidden');
     setBtnLoading(btn, false);
   }
+}
+
+async function preloadDashboardData(uid) {
+  if (!uid) throw new Error('Login session नहीं मिला');
+
+  const customerQuery = db.collection('users').doc(uid).collection('parties');
+  const transactionQuery = db.collection('users').doc(uid).collection('transactions').orderBy('date', 'desc');
+
+  const preload = Promise.all([
+    customerQuery.get(),
+    transactionQuery.get()
+  ]);
+
+  await Promise.race([
+    preload,
+    new Promise((_, reject) => setTimeout(
+      () => reject(new Error('डेटा तैयार होने में बहुत समय लग रहा है। Internet connection check करें।')),
+      15000
+    ))
+  ]);
 }
 
 async function resendVerification() {
@@ -306,7 +336,16 @@ auth.onAuthStateChanged(async (user) => {
     if (loginScreen && loginScreen.classList.contains('active')) {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data().shopName) {
-        window.location.href = 'dashboard.html';
+        try {
+          await preloadDashboardData(user.uid);
+          sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
+            uid: user.uid,
+            at: Date.now()
+          }));
+        } catch (e) {
+          console.warn('Dashboard data prefetch skipped:', e);
+        }
+        window.location.replace('dashboard.html');
       }
     }
   }
