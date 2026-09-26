@@ -2216,7 +2216,7 @@ async function toggleSmsSetting(key){
     userData.smsSettings=next; updateSmsSettingsUI();
     if(key==='enabled'&&!next.enabled) await cancelAllSmsReminders();
     if(key==='reminderSms'&&!next.reminderSms) await cancelAllSmsReminders();
-    if(key==='reminderSms'&&next.reminderSms) await rescheduleFutureUdhaarReminders();
+    if((key==='reminderSms'&&next.reminderSms)||(key==='enabled'&&next.enabled&&next.reminderSms)) await rescheduleFutureUdhaarReminders();
     toast(next[key]?'SMS setting ON':'SMS setting OFF','success');
   }catch(e){console.error('SMS settings failed',e);toast('SMS setting save failed','error')}
 }
