@@ -1542,6 +1542,18 @@ async function saveEditedTxn(id){
         await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
       }catch(viewErr){console.warn('Public view update failed after transaction edit:',viewErr);}
     }
+    if(c&&getSmsSettings().enabled){
+      if(getSmsSettings().transactionSms){
+        const smsSent=await sendNativeSms(c,'नमस्ते '+(c.name||'ग्राहक')+', आपका '+(txn.type==='jama'?'भुगतान':'उधार')+' लेन-देन अपडेट किया गया है। वर्तमान बकाया ₹'+newBal.toLocaleString('en-IN')+' है। — '+(userData?.shopName||'Rajput Mobile and Photocopy'));
+        if(smsSent)setTimeout(()=>toast('📱 SMS भेज दिया गया','success'),1200);
+      }
+      if(txn.type==='udhaar'){
+        await cancelCustomerSmsReminders(txn.partyId);
+        await scheduleUdhaarReminder(c,{id,date:newDate},newBal);
+      }else if(txn.type==='jama'){
+        await cancelCustomerSmsReminders(txn.partyId);
+      }
+    }
     closeModal();
     toast(t('Updated','अपडेट हो गया'),'success');
   }catch(e){
