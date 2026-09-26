@@ -230,7 +230,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .dark-mode{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}.dark-mode body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.dark-mode .text-input,.dark-mode .select-input{color:var(--text)}.dark-mode .top-bar,.dark-mode .bottom-tabs{background:rgba(30,27,75,.95)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 .customer-search-wrap{padding:0 12px 7px}.customer-search{width:100%;height:42px;border:2px solid var(--border);border-radius:14px;background:var(--white);color:var(--text);font:700 14px/1.2 inherit;padding:0 14px;outline:none}.customer-search:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
-.settings-logout-last{margin-bottom:18px!important}.settings-logout-last:active{background:var(--bg)!important}</style>
+.settings-logout-last{margin-bottom:18px!important}.settings-logout-last:active{background:var(--bg)!important}.sms-toggle{width:46px;height:26px;border-radius:20px;border:0;background:#cbd5e1;position:relative;cursor:pointer;flex:0 0 46px}.sms-toggle.on{background:#22c55e}.sms-toggle:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .18s}.sms-toggle.on:after{transform:translateX(20px)}.sms-status{font-size:11px;font-weight:800}.sms-note{font-size:10px;color:var(--text-muted);line-height:1.45;padding:0 12px 12px}</style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
@@ -402,6 +402,23 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
               <button class="lang-btn" data-lang="hi" onclick="setLang('hi')">हिंदी</button>
             </div>
           </div>
+        </div>
+
+        <div class="settings-header">📱 SMS Reminder</div>
+        <div class="settings-section">
+          <div class="settings-item" onclick="toggleSmsSetting('enabled')">
+            <div class="settings-left"><div class="settings-icon">📲</div><div><div class="settings-label">Automatic SMS</div><div class="settings-sublabel sms-status" id="smsPermissionState">OFF</div></div></div>
+            <button type="button" class="sms-toggle" id="smsEnabledToggle" onclick="event.stopPropagation();toggleSmsSetting('enabled')"></button>
+          </div>
+          <div class="settings-item" onclick="toggleSmsSetting('transactionSms')">
+            <div class="settings-left"><div class="settings-icon">🧾</div><div><div class="settings-label">Transaction Update SMS</div><div class="settings-sublabel">Udhaar / payment save होने पर</div></div></div>
+            <button type="button" class="sms-toggle" id="smsTxnToggle" onclick="event.stopPropagation();toggleSmsSetting('transactionSms')"></button>
+          </div>
+          <div class="settings-item" onclick="toggleSmsSetting('reminderSms')">
+            <div class="settings-left"><div class="settings-icon">⏰</div><div><div class="settings-label">7-Day Reminder</div><div class="settings-sublabel">उधार के 7 दिन बाद reminder</div></div></div>
+            <button type="button" class="sms-toggle" id="smsReminderToggle" onclick="event.stopPropagation();toggleSmsSetting('reminderSms')"></button>
+          </div>
+          <div class="sms-note">SMS केवल Android APK में native SMS permission मिलने पर अपने-आप भेजा जाएगा। Browser/PWA में message composer fallback रहेगा।</div>
         </div>
 
         <div class="settings-header" id="sH3">डेटा</div>
@@ -1872,6 +1889,14 @@ async function saveTxn(type){
         const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
         if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
       }
+      if(getSmsSettings().enabled){
+        if(getSmsSettings().transactionSms){
+          const smsSent=await sendNativeSms(c,smsMessageForTransaction(c,type,amt,newBal));
+          if(smsSent)setTimeout(()=>toast('📱 SMS भेज दिया गया','success'),1400);
+        }
+        if(type==='udhaar') await scheduleUdhaarReminder(c,{id:txnRef.id,date},newBal);
+        if(type==='jama') await cancelCustomerSmsReminders(customerId);
+      }
     }catch(syncErr){
       console.warn('Post-commit sync failed after transaction save:',syncErr);
     }
@@ -2129,6 +2154,72 @@ function renderReports(){
     return`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
       <span style="font-size:13px;font-weight:700">${esc(s.name)}</span>
       <span style="font-size:14px;font-weight:900;color:${cls}">${fmt(s.grandTotal)}</span></div>`}).join('')}
+}
+
+function getSmsPlugin(){
+  return window.Capacitor?.Plugins?.BsrSmsScheduler || null;
+}
+function getSmsSettings(){
+  const s=userData?.smsSettings||{};
+  return {enabled:s.enabled===true,transactionSms:s.transactionSms!==false,reminderSms:s.reminderSms!==false,reminderDays:7};
+}
+async function ensureSmsPermission(){
+  const plugin=getSmsPlugin();
+  if(!plugin)return false;
+  try{
+    const state=await plugin.checkPermission();
+    if(state?.granted)return true;
+    const asked=await plugin.requestPermission();
+    return asked?.granted===true;
+  }catch(e){console.warn('SMS permission unavailable:',e);return false}
+}
+function updateSmsSettingsUI(){
+  const s=getSmsSettings();
+  [['smsEnabledToggle',s.enabled],['smsTxnToggle',s.transactionSms],['smsReminderToggle',s.reminderSms]].forEach(([id,on])=>document.getElementById(id)?.classList.toggle('on',on));
+  const state=document.getElementById('smsPermissionState'); if(state)state.textContent=s.enabled?'ON':'OFF';
+}
+async function toggleSmsSetting(key){
+  if(!userData)return;
+  const s=getSmsSettings();
+  if(key==='enabled'&&!s.enabled){
+    const granted=await ensureSmsPermission();
+    if(!granted){toast('Android SMS permission नहीं मिली','error');return}
+  }
+  const next={...s,[key]:!s[key]};
+  try{
+    await db.collection('users').doc(currentUser.uid).update({smsSettings:next});
+    userData.smsSettings=next; updateSmsSettingsUI();
+    toast(next[key]?'SMS setting ON':'SMS setting OFF','success');
+  }catch(e){console.error('SMS settings failed',e);toast('SMS setting save failed','error')}
+}
+async function sendNativeSms(customer,message){
+  const s=getSmsSettings(); if(!s.enabled)return false;
+  const plugin=getSmsPlugin(); if(!plugin)return false;
+  try{if(!(await ensureSmsPermission()))return false;await plugin.sendSms({phone:String(customer?.phone||'').trim(),message});return true}catch(e){console.warn('Automatic SMS failed:',e);return false}
+}
+function smsMessageForTransaction(customer,type,amount,balance){
+  const name=customer?.name||'ग्राहक',shop=userData?.shopName||'Rajput Mobile and Photocopy';
+  const a=Number(amount||0).toLocaleString('en-IN'),b=Number(balance||0).toLocaleString('en-IN');
+  return type==='jama'
+    ? 'नमस्ते '+name+', आपके खाते में ₹'+a+' भुगतान अपडेट किया गया है। वर्तमान बकाया ₹'+b+' है। — '+shop
+    : 'नमस्ते '+name+', आपके खाते में ₹'+a+' का उधार अपडेट हुआ है। वर्तमान बकाया ₹'+b+' है। — '+shop;
+}
+async function scheduleUdhaarReminder(customer,txn,balance){
+  const s=getSmsSettings(),plugin=getSmsPlugin();
+  if(!s.enabled||!s.reminderSms||!plugin||!customer?.phone||Number(balance||0)<=0)return false;
+  const base=new Date(String(txn.date||'').slice(0,10)+'T10:00:00');
+  if(Number.isNaN(base.getTime()))return false;
+  const triggerAt=base.getTime()+7*24*60*60*1000;
+  if(triggerAt<=Date.now())return false;
+  try{
+    if(!(await ensureSmsPermission()))return false;
+    await plugin.scheduleReminder({id:'udhaar7:'+customer.id+':'+txn.id,phone:String(customer.phone).trim(),message:'नमस्ते '+(customer.name||'ग्राहक')+', आपके खाते में ₹'+Number(balance||0).toLocaleString('en-IN')+' की राशि अभी बाकी है। कृपया भुगतान करें। — '+(userData?.shopName||'Rajput Mobile and Photocopy'),triggerAt});
+    return true;
+  }catch(e){console.warn('7-day SMS schedule failed:',e);return false}
+}
+async function cancelCustomerSmsReminders(customerId){
+  const plugin=getSmsPlugin(); if(!plugin)return;
+  try{await plugin.cancelCustomerReminders({prefix:'udhaar7:'+customerId+':'})}catch(e){console.warn('Cancel SMS reminders failed:',e)}
 }
 
 function renderSettings(){
