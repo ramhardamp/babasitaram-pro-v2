@@ -65,3 +65,10 @@ Continue from this file and the branch state. Do not restart the audit or assume
 - Firestore web persistence is already enabled in `firebase-config.js` with `synchronizeTabs: true`; offline cache support is therefore present. Offline financial-operation end-to-end testing remains required before claiming offline operation fully verified.
 - Auth routing hardened so Firestore/profile lookup errors no longer incorrectly send users to first-time setup; invalid-credential login handling is covered.
 - Android Autofill/Chrome source audit remains blocked because this repository contains no Android Autofill source tree or `AutofillService` implementation.
+
+
+## Scope Audit — Android / Autofill
+- Verified repository scope: this project includes a Capacitor Android packaging/build pipeline for `com.babasitaram.pro`.
+- No Android `AutofillService`, `SaveRequest`, Password Manager integration, or Chrome/domain Autofill implementation exists in this repository.
+- Therefore Android Autofill + Chrome Password Save/Update is **not part of this web project's implemented feature set** and is removed from the active roadmap. It must not be treated as a pending defect for this project.
+- The Android CI/build pipeline remains because it packages the existing web application as an Android app; it does not imply an Autofill feature.
