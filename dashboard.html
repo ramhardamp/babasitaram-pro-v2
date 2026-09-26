@@ -1046,13 +1046,32 @@ try{
 async function loadUserData(){  if(!currentUser?.uid)throw new Error('Login session नहीं मिला');
   armAppInitWatchdog();
   try{
-    const docPromise=db.collection('users').doc(currentUser.uid).get();
-    const doc=await Promise.race([
-      docPromise,
-      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase response timeout (15s)')),15000))
-    ]);
-    if(!doc.exists){window.location.href='signup.html';return}
-    userData=doc.data();
+    // Login page has already verified the account and preloaded the ledger.
+    // Reuse that account snapshot so Dashboard does not show a second loading screen.
+    let prefetchedAccount=null;
+    try{
+      const raw=sessionStorage.getItem('bsp_user_prefetched');
+      if(raw){
+        const meta=JSON.parse(raw);
+        if(meta?.uid===currentUser.uid && (Date.now()-Number(meta.at||0)) < 5*60*1000){
+          prefetchedAccount=meta.data||null;
+        }
+      }
+    }catch(e){prefetchedAccount=null}
+
+    let doc;
+    if(prefetchedAccount){
+      userData=prefetchedAccount;
+      doc={exists:true,data:()=>prefetchedAccount};
+    }else{
+      const docPromise=db.collection('users').doc(currentUser.uid).get();
+      doc=await Promise.race([
+        docPromise,
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase response timeout (15s)')),15000))
+      ]);
+      if(!doc.exists){window.location.href='signup.html';return}
+      userData=doc.data();
+    }
     if(!userData.shopName){window.location.href='signup.html';return}
     const profilePatch={};
     if(!userData.profileName && userData.ownerName)profilePatch.profileName=String(userData.ownerName);
