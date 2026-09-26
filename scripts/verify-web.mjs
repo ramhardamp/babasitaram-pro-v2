@@ -20,7 +20,7 @@ const checks=[
 ['large customer list rendering guard',dashboard.includes('content-visibility:auto')&&dashboard.includes('contain-intrinsic-size:0 150px')],
 ['incremental customer rendering',dashboard.includes('CUSTOMER_RENDER_CHUNK = 100')&&dashboard.includes('IntersectionObserver')&&dashboard.includes('customerListTail')],
 ['secure public view token generation',dashboard.includes('crypto.getRandomValues')&&dashboard.includes('Uint8Array(32)')],
-['batched customer deletion',dashboard.includes('for(let i=0;i<txns.length;i+=450)')&&dashboard.includes('batch.commit()')],
+['customer deletion is non-destructive and transaction-protected',dashboard.includes('Never destructively delete a customer')&&dashboard.includes("const txSnap=await txCol.where('partyId','==',customerId).limit(1).get()")&&dashboard.includes('await db.runTransaction(async(transaction)=>')&&dashboard.includes('transaction.delete(partyRef)')],
 ['atomic loan repayment and interest history',dashboard.includes("async function saveRepay()")&&dashboard.includes("db.runTransaction(async transaction=>")&&dashboard.includes("async function saveIntPaid()")&&dashboard.includes("transaction.set(txnRef")],
 ['customer search exists',dashboard.includes('id="customerSearch"')&&dashboard.includes('function setCustomerSearch')],
 ['transaction index exists',dashboard.includes('const txnIndex = new Map()')&&dashboard.includes('function rebuildTxnIndex')],
