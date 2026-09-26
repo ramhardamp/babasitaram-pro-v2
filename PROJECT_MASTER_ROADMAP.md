@@ -49,3 +49,10 @@
 
 ## Working rule for future chats
 Continue from this file and the branch state. Do not restart the audit or assume production is safe merely because the branch passes static checks.
+
+
+## Loop Update — 2026-09-26
+- Dashboard top-bar Guru Shree logo was missing from the rendered header; fixed by explicitly rendering `assets/guru-shree-logo.svg` beside the dashboard title.
+- Existing logo asset and other logo placements remain unchanged.
+- Production `main` is not modified; fix is isolated to `safe-final-fix-2026-09-26` pending regression.
+- Next audit remains: offline-safe behavior, durable idempotency, derived loan transaction UI protections, public-view date normalization, email/auth audit, Android Autofill/Chrome, final regression and data-loss testing.
