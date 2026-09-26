@@ -101,6 +101,7 @@ Production code is audited and the current web + Android packaging pipeline has 
 - [x] Added duplicate-reminder cancellation when payments/deletions/edits occur.
 - [x] Added Settings controls for Automatic SMS, Transaction Update SMS and 7-Day Reminder.
 - [x] Added CI verification for SMS web hooks and native Android preparation.
-- [ ] Final Android runtime SMS permission/send/schedule test on a physical SMS-capable device.
-- [ ] Final login -> data-ready -> dashboard runtime verification after the null-style fix.
-- [ ] One final signed APK build/release only after all development fixes pass.
+- [ ] Physical Android SMS send/scheduled-reminder test on a real SIM-capable device (emulator cannot send carrier SMS).
+- [x] Login -> data-ready -> dashboard web verification and Android runtime smoke completed after the null-style fix.
+- [x] Integrated Android build, signature, manifest, archive and emulator runtime smoke passed in workflow 36243789635.
+- [x] APK release generated from the final app-code commit 29b528aff8b3efa0c02c39a92030a7863bc82fe7; subsequent commit only changed Android workflow triggering to manual.
