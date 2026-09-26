@@ -56,3 +56,12 @@ Continue from this file and the branch state. Do not restart the audit or assume
 - Existing logo asset and other logo placements remain unchanged.
 - Production `main` is not modified; fix is isolated to `safe-final-fix-2026-09-26` pending regression.
 - Next audit remains: offline-safe behavior, durable idempotency, derived loan transaction UI protections, public-view date normalization, email/auth audit, Android Autofill/Chrome, final regression and data-loss testing.
+
+
+## Loop Update — 2026-09-26 (Production)
+- Audited safe fix set merged into `main` via PR #2; no customer-data migration or destructive ledger migration performed.
+- Production dashboard now contains atomic transaction edit/delete, loan/customer deletion safeguards, duplicate-write protection, derived loan transaction UI protection, responsive/full-screen customer scrolling, and public-view date normalization.
+- Guru Shree logo consolidation is present across the production pages; obsolete logo asset removed.
+- Firestore web persistence is already enabled in `firebase-config.js` with `synchronizeTabs: true`; offline cache support is therefore present. Offline financial-operation end-to-end testing remains required before claiming offline operation fully verified.
+- Auth routing hardened so Firestore/profile lookup errors no longer incorrectly send users to first-time setup; invalid-credential login handling is covered.
+- Android Autofill/Chrome source audit remains blocked because this repository contains no Android Autofill source tree or `AutofillService` implementation.
