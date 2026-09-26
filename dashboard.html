@@ -918,7 +918,123 @@ let pinActionCallback = null;
 let pinSetupFirst = '';
 let pinReturnScreen = null;
 
+
 const NO_BACK_SCREENS = ['dashboard', 'reports', 'settings', 'pin'];
+
+/* ============ UNIFIED MOBILE / ANDROID BACK NAVIGATION ============ */
+let appHistoryReady = false;
+let handlingBrowserBack = false;
+
+function initAppHistory(){
+  try{
+    history.replaceState({bsp:true,kind:'screen',screen:currentScreen},'',location.href);
+    appHistoryReady = true;
+  }catch(e){
+    console.warn('[BACK] History API unavailable:',e);
+  }
+}
+
+function pushAppHistory(kind,screen){
+  if(!appHistoryReady)return;
+  try{
+    history.pushState({bsp:true,kind,screen:screen||currentScreen},'',location.href);
+  }catch(e){
+    console.warn('[BACK] pushState failed:',e);
+  }
+}
+
+function replaceAppHistory(kind,screen){
+  if(!appHistoryReady)return;
+  try{
+    history.replaceState({bsp:true,kind,screen:screen||currentScreen},'',location.href);
+  }catch(e){}
+}
+
+function hasOpenBackOverlay(){
+  return !!document.getElementById('activeModal') ||
+    !!document.getElementById('settingsPanelOverlay');
+}
+
+/* Internal back action. Never calls history.back(); it is safe from popstate. */
+function handleAppBack(){
+  if(document.getElementById('activeModal')){
+    closeModal();
+    return true;
+  }
+  if(document.getElementById('settingsPanelOverlay')){
+    closeSettingsPanel();
+    return true;
+  }
+  if(currentScreen==='pin' && pinReturnScreen){
+    pendingPIN='';pinSetupFirst='';pinActionCallback=null;
+    const target=pinReturnScreen;pinReturnScreen=null;
+    showScreen(target,true);
+    return true;
+  }
+  if(screenHistory.length>0){
+    const prev=screenHistory.pop();
+    if(NO_BACK_SCREENS.includes(prev))screenHistory=[];
+    showScreen(prev,true);
+    return true;
+  }
+  if(currentScreen!=='dashboard'){
+    screenHistory=[];
+    showScreen('dashboard',true);
+    return true;
+  }
+  return false;
+}
+
+/* Physical Android back from Capacitor/WebView. At dashboard root, let the
+   native container exit; otherwise consume it inside the app. */
+function setupNativeBackHandler(){
+  const App=window.Capacitor?.Plugins?.App;
+  if(!App?.addListener)return;
+  try{
+    App.addListener('backButton',()=>{
+      const consumed=handleAppBack();
+      if(consumed){
+        replaceAppHistory('screen',currentScreen);
+        return;
+      }
+      try{ if(typeof App.exitApp==='function') App.exitApp(); }catch(e){}
+    });
+  }catch(e){console.warn('[BACK] Native handler unavailable:',e);}
+}
+
+window.addEventListener('popstate',event=>{
+  if(handlingBrowserBack)return;
+  handlingBrowserBack=true;
+  try{
+    /* A modal/detail overlay gets first priority. The browser has already
+       moved to the previous history entry, so restore the current screen
+       after closing the overlay. */
+    if(document.getElementById('activeModal') || document.getElementById('settingsPanelOverlay')){
+      closeModal();
+      closeSettingsPanel();
+      pushAppHistory('screen',currentScreen);
+      return;
+    }
+    if(event.state?.bsp){
+      handleAppBack();
+      /* Keep the current in-app state synchronized with the entry we landed on. */
+      if(currentScreen!=='dashboard' || screenHistory.length>0){
+        replaceAppHistory('screen',currentScreen);
+      }
+      return;
+    }
+    /* If the browser reaches a non-app entry while an internal screen is open,
+       keep the user inside the app for one Back step and route internally. */
+    if(handleAppBack()){
+      pushAppHistory('screen',currentScreen);
+    }
+  }finally{
+    handlingBrowserBack=false;
+  }
+});
+
+initAppHistory();
+
 
 function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -1305,9 +1421,10 @@ function updateBackButton(){
 
 /* ⭐ FIXED: showScreen with proper history */
 function showScreen(name, noPush){
-  // History push karo — sirf valid transitions ke liye
+  // Keep app-level history and browser history in sync for mobile Back.
   if(!noPush && currentScreen !== name && currentScreen !== 'loading' && currentScreen !== 'pin'){
     screenHistory.push(currentScreen);
+    pushAppHistory('screen',name);
   }
   
   currentScreen = name;
@@ -1367,33 +1484,18 @@ function showScreen(name, noPush){
 
 /* ⭐ FIXED: goBack with proper logic */
 function goBack(){
-  if(currentScreen==='pin' && pinReturnScreen){
-    pendingPIN='';pinSetupFirst='';pinActionCallback=null;
-    const target=pinReturnScreen;pinReturnScreen=null;
-    showScreen(target,true);
-    return;
+  if(!handlingBrowserBack && appHistoryReady && history.state?.bsp){
+    try{history.back();return}catch(e){}
   }
-  // Agar history khatam, dashboard par jao
-  if(screenHistory.length === 0){
-    showScreen('dashboard', true);
-    return;
-  }
-  
-  // Previous screen nikalo
-  const prev = screenHistory.pop();
-  
-  // Agar previous top-level hai, to history clear
-  if(NO_BACK_SCREENS.includes(prev)){
-    screenHistory = [];
-  }
-  
-  showScreen(prev, true);
+  handleAppBack();
 }
 
 function switchTab(tab){
+  if(currentScreen===tab)return;
   screenHistory = [];
   currentScreen = '';
   showScreen(tab, true);
+  pushAppHistory('screen',tab);
 }
 
 let appInitWatchdog=null;
@@ -1654,8 +1756,7 @@ function openCustomer(id){
     return;
   }
   currentCustomerId=customer.id;
-  screenHistory=['dashboard'];
-  showScreen('customer',true);
+  showScreen('customer',false);
 }
 function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
@@ -2130,8 +2231,15 @@ function showModal(html){
   div.innerHTML=`<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
   div.onclick=e=>{if(e.target===div)closeModal()};
   document.body.appendChild(div);
+  pushAppHistory('modal',currentScreen);
 }
-function closeModal(){const m=document.getElementById('activeModal');if(m)m.remove()}
+function closeModal(){
+  const m=document.getElementById('activeModal');
+  if(m)m.remove();
+  if(appHistoryReady && !handlingBrowserBack && history.state?.bsp && history.state.kind==='modal'){
+    replaceAppHistory('screen',currentScreen);
+  }
+}
 
 function openAddCustomer(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('New Customer','नया ग्राहक')}</div>
@@ -2595,7 +2703,7 @@ function renderReports(){
       <span style="font-size:14px;font-weight:900;color:${cls}">${fmt(s.grandTotal)}</span></div>`}).join('')}
 }
 
-function getSmsPlugin(){
+setupNativeBackHandler();\n\nfunction getSmsPlugin(){
   return window.Capacitor?.Plugins?.BsrSmsScheduler || null;
 }
 function getSmsSettings(){
@@ -2716,6 +2824,7 @@ function openSettingsPanel(name){
   }
   document.body.classList.add('settings-panel-open');
   window.__settingsPanelState={section,content,placeholder,overlay,name};
+  pushAppHistory('settings-panel',currentScreen);
 }
 function closeSettingsPanel(){
   const state=window.__settingsPanelState;
@@ -2724,6 +2833,9 @@ function closeSettingsPanel(){
   state.overlay.remove();
   document.body.classList.remove('settings-panel-open');
   window.__settingsPanelState=null;
+  if(appHistoryReady && !handlingBrowserBack && history.state?.bsp && history.state.kind==='settings-panel'){
+    replaceAppHistory('screen',currentScreen);
+  }
 }
 async function saveSettingsPanel(name){
   if(name==='profile'){
