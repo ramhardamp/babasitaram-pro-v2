@@ -239,7 +239,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="BABASITARAM PRO">
+      <img class="brand-logo" src="assets/guru-shree-logo.jpg?v=20260926-4" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="BABASITARAM PRO">
       <div class="top-title" id="topTitle">Loading...</div>
       <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
     </div>
@@ -254,7 +254,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.jpg?v=20260926-4" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots">
@@ -448,7 +448,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
+            <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.jpg?v=20260926-4" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
           </div>
           <a class="settings-item" href="mailto:babasitaram@gmail.com" style="text-decoration:none;color:inherit">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">babasitaram@gmail.com</div></div></div>
@@ -1186,7 +1186,7 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
-    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
+    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.jpg?v=20260926-4" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
     const total=s.grandTotal;
     const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
@@ -1222,7 +1222,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
-  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
+  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.jpg?v=20260926-4" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -2241,7 +2241,7 @@ function printExportWindow(title,bodyHtml){
   const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
   const safeTitle=esc(title);
   const shop=esc(userData?.shopName||'BABASITARAM PRO');
-  const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260926-2',window.location.href).href;
+  const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260926-4',window.location.href).href;
   const fallbackLogoUrl=new URL('assets/babasitaram-pro-logo.svg',window.location.href).href;
   const owner=esc(userData?.ownerName||'');
   const phone=esc(userData?.phone||'');
