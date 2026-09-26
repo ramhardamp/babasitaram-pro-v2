@@ -2191,6 +2191,18 @@ function updateSmsSettingsUI(){
   [['smsEnabledToggle',s.enabled],['smsTxnToggle',s.transactionSms],['smsReminderToggle',s.reminderSms]].forEach(([id,on])=>document.getElementById(id)?.classList.toggle('on',on));
   const state=document.getElementById('smsPermissionState'); if(state)state.textContent=s.enabled?'ON':'OFF';
 }
+async function rescheduleFutureUdhaarReminders(){
+  const s=getSmsSettings(); if(!s.enabled||!s.reminderSms)return;
+  const future=transactions.filter(tx=>tx.type==='udhaar'&&tx.partyId);
+  await Promise.all(future.map(async tx=>{
+    const customer=customers.find(x=>String(x.id)===String(tx.partyId));
+    if(customer&&Number(customer.balance||0)>0) await scheduleUdhaarReminder(customer,tx,Number(customer.balance)||0);
+  }));
+}
+async function cancelAllSmsReminders(){
+  const plugin=getSmsPlugin(); if(!plugin)return;
+  await Promise.all(customers.map(c=>cancelCustomerSmsReminders(c.id)));
+}
 async function toggleSmsSetting(key){
   if(!userData)return;
   const s=getSmsSettings();
@@ -2202,6 +2214,9 @@ async function toggleSmsSetting(key){
   try{
     await db.collection('users').doc(currentUser.uid).update({smsSettings:next});
     userData.smsSettings=next; updateSmsSettingsUI();
+    if(key==='enabled'&&!next.enabled) await cancelAllSmsReminders();
+    if(key==='reminderSms'&&!next.reminderSms) await cancelAllSmsReminders();
+    if(key==='reminderSms'&&next.reminderSms) await rescheduleFutureUdhaarReminders();
     toast(next[key]?'SMS setting ON':'SMS setting OFF','success');
   }catch(e){console.error('SMS settings failed',e);toast('SMS setting save failed','error')}
 }
