@@ -1428,6 +1428,9 @@ function showScreen(name, noPush){
   }
   
   currentScreen = name;
+  if(noPush && appHistoryReady && (history.state?.screen==='loading' || !history.state?.bsp)){
+    replaceAppHistory('screen',name);
+  }
   
   // Hide all screens
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
