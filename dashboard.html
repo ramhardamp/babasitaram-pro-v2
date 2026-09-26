@@ -629,7 +629,10 @@ async async function updatePublicView(partyId, viewToken, partyData){
     };
     await db.collection('publicViews').doc(viewToken).set(publicViewData);
     console.log('✅ Public view updated:', viewToken);
-  }catch(e){console.error('❌ updatePublicView error:', e)}
+  }catch(e){
+    console.error('❌ updatePublicView error:', e);
+    throw e;
+  }
 }
 
 function getCustomerViewLink(token){return CUSTOMER_VIEW_BASE_URL + '?token=' + token;}
