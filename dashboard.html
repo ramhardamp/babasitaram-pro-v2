@@ -279,12 +279,29 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       </div>
     </div>
 
-    <div id="loadingScreen">
+    <div id="loadingScreen" style="display:none">
       <div class="loading-wrap">
         <div class="loading-spinner"></div>
         <div style="color:var(--text-muted);font-size:14px;font-weight:600">Data load ho raha hai...</div>
       </div>
     </div>
+
+    <script>
+      (function(){
+        try{
+          const raw=sessionStorage.getItem('bsp_user_prefetched');
+          const meta=raw?JSON.parse(raw):null;
+          const fresh=!!(meta?.uid && (Date.now()-Number(meta.at||0))<5*60*1000);
+          if(!fresh){
+            const el=document.getElementById('loadingScreen');
+            if(el)el.style.display='flex';
+          }
+        }catch(e){
+          const el=document.getElementById('loadingScreen');
+          if(el)el.style.display='flex';
+        }
+      })();
+    </script>
 
     <div id="screen-dashboard" class="screen">
       <div class="dash-hero">
@@ -1088,9 +1105,18 @@ async function loadUserData(){  if(!currentUser?.uid)throw new Error('Login sess
       return;
     }
 
-    // Login page पहले ही parties + transactions को Firestore cache में warm कर चुका है.
-    // यहाँ उसी cached snapshot को prime करके Dashboard तभी दिखाएँ जब initial data तैयार हो.
-    await primeDashboardData();
+    // Login page ने parties + transactions cache warm कर दिया है.
+    // Normal login handoff में Dashboard को दूसरा blocking cache-read नहीं करना है.
+    let ledgerAlreadyPrefetched=false;
+    try{
+      const raw=sessionStorage.getItem('bsp_dashboard_prefetched');
+      const meta=raw?JSON.parse(raw):null;
+      ledgerAlreadyPrefetched=meta?.uid===currentUser.uid && (Date.now()-Number(meta.at||0))<5*60*1000;
+    }catch(e){ledgerAlreadyPrefetched=false}
+
+    if(!ledgerAlreadyPrefetched){
+      await primeDashboardData();
+    }
 
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
     showScreen('dashboard',true);
