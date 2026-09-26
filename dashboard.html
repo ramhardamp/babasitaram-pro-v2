@@ -1605,6 +1605,7 @@ async function deleteTxn(id){
         await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
       }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
     }
+    if(getSmsSettings().enabled) await cancelCustomerSmsReminders(txn.partyId);
     toast(t('Deleted','डिलीट हो गया'),'success');
   }catch(e){
     console.error('deleteTxn failed:',e);    toast('Error: '+(e.message||'Delete failed'),'error');
