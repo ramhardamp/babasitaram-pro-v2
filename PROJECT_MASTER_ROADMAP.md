@@ -72,3 +72,10 @@ Continue from this file and the branch state. Do not restart the audit or assume
 - No Android `AutofillService`, `SaveRequest`, Password Manager integration, or Chrome/domain Autofill implementation exists in this repository.
 - Therefore Android Autofill + Chrome Password Save/Update is **not part of this web project's implemented feature set** and is removed from the active roadmap. It must not be treated as a pending defect for this project.
 - The Android CI/build pipeline remains because it packages the existing web application as an Android app; it does not imply an Autofill feature.
+
+
+## Loop Batch — Offline / Backup / Final Regression Scope
+- Firestore web persistence is enabled with multi-tab synchronization; this is the existing offline cache foundation.
+- No explicit offline-mode UI or network-state transaction queue exists in the current source, so offline financial operation is **not claimed as fully verified**. No speculative offline queue was added because it could risk duplicate financial writes.
+- Existing backup/integrity code is present in dashboard and remains the next controlled verification target.
+- Web verification was corrected to match the consolidated Guru Shree logo asset; obsolete logo packaging references are no longer expected.
