@@ -76,18 +76,12 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .cc-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc-phone{font-size:11px;color:var(--text-muted);margin-top:2px}
 .cc-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
-.cc-box{padding:6px 4px;border-radius:var(--radius-sm);text-align:center;border:1.5px solid}
-.cc-box.udhaar{background:var(--credit-bg);border-color:#fecaca}
-.cc-box.byaj{background:var(--interest-bg);border-color:#fde68a}
-.cc-box.total{background:var(--primary-lighter);border-color:var(--primary-light)}
-.cc-box-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.cc-box.udhaar .cc-box-label{color:#991b1b}
-.cc-box.byaj .cc-box-label{color:#92400e}
-.cc-box.total .cc-box-label{color:var(--primary-dark)}
-.cc-box-value{font-size:12px;font-weight:900;letter-spacing:-.3px}
-.cc-box.udhaar .cc-box-value{color:var(--credit)}
-.cc-box.byaj .cc-box-value{color:var(--interest)}
-.cc-box.total .cc-box-value{color:var(--primary-dark)}
+.cc-box{padding:7px 5px;border-radius:var(--radius-sm);text-align:center;border:1.5px solid var(--border);background:var(--bg);color:var(--text)}
+.cc-box.udhaar,.cc-box.byaj,.cc-box.total{background:var(--bg);border-color:var(--border)}
+.cc-box-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--text-muted)}
+.cc-box-value{font-size:12px;font-weight:900;letter-spacing:-.3px;color:var(--text)}
+.cc-box.total .cc-box-label,.cc-box.total .cc-box-value{color:var(--primary-dark)}
+.cc-header-total{color:var(--primary-dark)!important}
 .detail-wrap{padding:16px}
 .customer-hero{background:var(--gradient-dark);color:#fff;padding:20px;border-radius:var(--radius-lg);margin-bottom:14px;position:relative;overflow:hidden}
 .customer-hero::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
@@ -1624,8 +1618,8 @@ function renderDashboard(){
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
-        <div style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
-        <div style="font-size:16px;font-weight:900;${totalColor}">${fmt(total)}</div></div></div>
+        <div class="cc-header-total" style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
+        <div style="font-size:16px;font-weight:900;color:var(--primary-dark);">${fmt(total)}</div></div></div>
       <div class="cc-breakdown">
         <div class="cc-box udhaar"><div class="cc-box-label">📤 ${t('Udhaar','उधार')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
         <div class="cc-box byaj"><div class="cc-box-label">📈 ${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
