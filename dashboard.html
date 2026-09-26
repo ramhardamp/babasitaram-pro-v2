@@ -34,18 +34,21 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.pin-screen{padding:40px 20px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pin-logo{width:100px;height:100px;margin:0 auto 20px;background:var(--gradient);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 12px 40px rgba(99,102,241,.4);overflow:hidden}.pin-logo img{width:100%;height:100%;object-fit:cover}
+.pin-screen{padding:32px 20px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pin-logo{width:88px;height:88px;margin:0 auto 18px;background:var(--gradient);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 12px 40px rgba(99,102,241,.4);overflow:hidden}.pin-logo img{width:100%;height:100%;object-fit:cover}
 .pin-title{font-size:22px;font-weight:900;margin-bottom:8px}
-.pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:30px;line-height:1.5}
-.pin-dots{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
-.pin-dot{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--primary);background:transparent;transition:all .2s}
-.pin-dot.filled{background:var(--primary);transform:scale(1.1)}
-.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;margin:0 auto;width:100%}
-.pin-key{aspect-ratio:1;border-radius:50%;border:2px solid var(--border);background:var(--white);font-size:22px;font-weight:800;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center}
-.pin-key:active{background:var(--primary-lighter);border-color:var(--primary);transform:scale(.95)}
-.pin-key.empty{border:none;background:transparent;pointer-events:none}
-.pin-error{color:var(--error);font-size:13px;margin-top:16px;font-weight:600;min-height:20px}
+.pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.5}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:18px;min-height:22px}
+.pin-dot{width:17px;height:17px;border-radius:50%;border:2.5px solid var(--primary);background:transparent;transition:all .18s}
+.pin-dot.filled{background:var(--primary);transform:scale(1.08)}
+.pin-native-input-wrap{width:min(320px,100%);margin:0 auto}
+.pin-native-input{width:100%;height:58px;border:2px solid var(--border);border-radius:16px;background:var(--white);color:var(--text);font-family:inherit;font-size:28px;font-weight:900;letter-spacing:12px;text-align:center;outline:none;padding:8px 14px;box-shadow:0 4px 16px rgba(15,23,42,.06);caret-color:var(--primary);-webkit-appearance:none;appearance:none}
+.pin-native-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
+.pin-native-input::placeholder{font-size:14px;letter-spacing:0;color:var(--text-light);font-weight:700}
+.pin-native-input::-webkit-outer-spin-button,.pin-native-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pin-native-help{font-size:11px;color:var(--text-muted);font-weight:700;margin-top:10px}
+.pin-error{color:var(--error);font-size:13px;margin-top:14px;font-weight:600;min-height:20px;line-height:1.4}
+@media(max-width:500px){.pin-screen{padding:24px 18px calc(32px + env(safe-area-inset-bottom,0px))}.pin-logo{width:78px;height:78px;margin-bottom:14px}.pin-title{font-size:21px}.pin-subtitle{margin-bottom:18px}.pin-native-input{height:56px;font-size:26px;letter-spacing:10px}}
 .dash-hero{background:var(--gradient-dark);color:#fff;padding:16px 16px 18px;border-radius:0 0 28px 28px;margin-bottom:16px;box-shadow:0 12px 40px rgba(30,27,75,.3);position:relative;overflow:hidden}
 .dash-hero::before{content:'';position:absolute;top:-50%;right:-30%;width:250px;height:250px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
 .dash-greeting{font-size:11px;opacity:.8;margin-bottom:4px;position:relative;letter-spacing:.5px;text-transform:uppercase;font-weight:700}
@@ -375,27 +378,34 @@ body.settings-panel-open{overflow:hidden!important}
         <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
-        <div class="pin-dots" id="pinDots">
+        <div class="pin-dots" id="pinDots" aria-hidden="true">
           <div class="pin-dot"></div>
           <div class="pin-dot"></div>
           <div class="pin-dot"></div>
           <div class="pin-dot"></div>
         </div>
-        <div class="pin-keypad">
-          <button class="pin-key" onclick="pinPress('1')">1</button>
-          <button class="pin-key" onclick="pinPress('2')">2</button>
-          <button class="pin-key" onclick="pinPress('3')">3</button>
-          <button class="pin-key" onclick="pinPress('4')">4</button>
-          <button class="pin-key" onclick="pinPress('5')">5</button>
-          <button class="pin-key" onclick="pinPress('6')">6</button>
-          <button class="pin-key" onclick="pinPress('7')">7</button>
-          <button class="pin-key" onclick="pinPress('8')">8</button>
-          <button class="pin-key" onclick="pinPress('9')">9</button>
-          <button class="pin-key empty"></button>
-          <button class="pin-key" onclick="pinPress('0')">0</button>
-          <button class="pin-key" onclick="pinPress('del')">⌫</button>
+        <div class="pin-native-input-wrap">
+          <input
+            id="pinInput"
+            class="pin-native-input"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            minlength="4"
+            autocomplete="one-time-code"
+            enterkeyhint="done"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="4 अंकों का PIN"
+            placeholder="PIN दर्ज करें"
+            oninput="pinInputChanged(this)"
+            onkeydown="pinInputKeydown(event)"
+          >
+          <div class="pin-native-help">मोबाइल के अपने keyboard से PIN दर्ज करें</div>
         </div>
-        <div class="pin-error" id="pinError"></div>
+        <div class="pin-error" id="pinError" aria-live="polite"></div>
       </div>
     </div>
 
@@ -628,7 +638,9 @@ let unsubCustomers = null;
 let unsubTransactions = null;let ledgerWriteBusy = false;
 
 let storedPIN = null;
-let pendingPIN = '';let pinMode = 'verify';
+let pendingPIN = '';
+let pinInputTimer = null;
+let pinMode = 'verify';
 let pinActionCallback = null;
 let pinSetupFirst = '';
 let pinReturnScreen = null;
@@ -873,12 +885,15 @@ async function backfillViewTokens(){
 
 /* ============ PIN ============ */
 function showPinScreen(mode,title,subtitle,callback){
+  if(pinInputTimer)clearTimeout(pinInputTimer);
   pinMode=mode;pendingPIN='';pinActionCallback=callback||null;
   if(mode.startsWith('change-') && !pinReturnScreen)pinReturnScreen='settings';
   currentScreen='pin';
   document.getElementById('pinTitle').textContent=title;
   document.getElementById('pinSubtitle').textContent=subtitle;
   document.getElementById('pinError').textContent='';
+  const input=document.getElementById('pinInput');
+  if(input){input.value='';input.maxLength=4;input.setAttribute('inputmode','numeric');}
   updatePinDots();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-pin').classList.add('active');
@@ -888,19 +903,40 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('topTitle').textContent='🔐 PIN';
   const canGoBack=!!pinReturnScreen;
   document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
-  // Header lock control was moved into Settings; nothing to hide here.
+  // Native mobile keyboard: focus after the PIN screen is visible.
+  setTimeout(focusPinInput,80);
 }
 function updatePinDots(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pendingPIN.length))}
-function pinPress(digit){
-  const err=document.getElementById('pinError');err.textContent='';
-  if(digit==='del'){pendingPIN=pendingPIN.slice(0,-1);updatePinDots();return}
-  if(pendingPIN.length>=4)return;
-  pendingPIN+=digit;updatePinDots();
-  if(pendingPIN.length===4)setTimeout(()=>handlePinComplete(),200);
+function focusPinInput(){
+  const input=document.getElementById('pinInput');
+  if(!input)return;
+  input.value=pendingPIN;
+  requestAnimationFrame(()=>{try{input.focus({preventScroll:true});input.setSelectionRange(input.value.length,input.value.length)}catch(e){try{input.focus()}catch(_){}}});
+}
+function pinInputChanged(input){
+  const err=document.getElementById('pinError');
+  if(err)err.textContent='';
+  const clean=String(input.value||'').replace(/\\D/g,'').slice(0,4);
+  if(input.value!==clean)input.value=clean;
+  pendingPIN=clean;
+  updatePinDots();
+  if(pinInputTimer)clearTimeout(pinInputTimer);
+  if(pendingPIN.length===4)pinInputTimer=setTimeout(()=>handlePinComplete(),120);
+}
+function pinInputKeydown(event){
+  if(event.key==='Enter' && pendingPIN.length===4){
+    event.preventDefault();
+    if(pinInputTimer)clearTimeout(pinInputTimer);
+    handlePinComplete();
+  }
 }
 function handlePinComplete(){
+  if(pinInputTimer)clearTimeout(pinInputTimer);
   const pin = String(pendingPIN);
-  pendingPIN = '';updatePinDots();
+  pendingPIN = '';
+  const input=document.getElementById('pinInput');
+  if(input)input.value='';
+  updatePinDots();
   if(pinMode==='setup'){pinSetupFirst=pin;showPinScreen('confirm','PIN दोबारा डालें','पुष्टि के लिए वही PIN डालें');return}
   if(pinMode==='confirm'){
     if(pin===pinSetupFirst){savePIN(pin)}
@@ -912,12 +948,15 @@ function handlePinComplete(){
       const cb=pinActionCallback;pinActionCallback=null;
       if(typeof cb === 'function'){setTimeout(()=>{try{cb()}catch(e){console.error(e);showScreen('dashboard',true)}},150);}
       else {showScreen('dashboard',true)}
-    } else {document.getElementById('pinError').textContent='गलत PIN। दोबारा कोशिश करें।';}
+    } else {
+      document.getElementById('pinError').textContent='गलत PIN। दोबारा कोशिश करें।';
+      setTimeout(focusPinInput,80);
+    }
     return;
   }
   if(pinMode==='change-old'){
     if(pin===String(storedPIN||''))showPinScreen('change-new','नया PIN डालें','4-अंकों का नया PIN');
-    else document.getElementById('pinError').textContent='गलत PIN।';
+    else {document.getElementById('pinError').textContent='गलत PIN।';setTimeout(focusPinInput,80);}
     return;
   }
   if(pinMode==='change-new'){pinSetupFirst=pin;showPinScreen('change-confirm','नया PIN दोबारा','पुष्टि के लिए वही PIN');return}
