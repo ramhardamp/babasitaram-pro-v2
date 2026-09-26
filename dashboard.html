@@ -230,7 +230,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .dark-mode{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}.dark-mode body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.dark-mode .text-input,.dark-mode .select-input{color:var(--text)}.dark-mode .top-bar,.dark-mode .bottom-tabs{background:rgba(30,27,75,.95)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 .customer-search-wrap{padding:0 12px 7px}.customer-search{width:100%;height:42px;border:2px solid var(--border);border-radius:14px;background:var(--white);color:var(--text);font:700 14px/1.2 inherit;padding:0 14px;outline:none}.customer-search:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
-</style>
+.settings-logout-last{margin-bottom:18px!important}.settings-logout-last:active{background:var(--bg)!important}</style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
@@ -432,10 +432,6 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             <button class="export-card" onclick="exportCsvData()"><div class="export-card-icon">📋</div><div class="export-card-title">CSV Data</div><div class="export-card-sub">Excel-compatible customers + transactions</div></button>
           </div>
           <div class="export-note">🔒 Export read-only है। Firebase में कोई customer, transaction या balance modify नहीं होता।</div>
-          <div class="settings-item" onclick="showLogoutConfirm()">
-            <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label" id="sLogout" style="color:var(--credit)">लॉगआउट</div></div>
-            <div class="settings-arrow">›</div>
-          </div>
         </div>
 
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
@@ -447,6 +443,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">babasitaram@gmail.com</div></div></div>
             <div class="settings-arrow">›</div>
           </a>
+          <div class="settings-item settings-logout-last" onclick="showLogoutConfirm()" style="margin-top:8px;border:2px solid var(--border);border-radius:12px;background:var(--white)">
+            <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label" id="sLogout" style="color:var(--credit)">लॉगआउट</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
         </div>
       </div>
     </div>
