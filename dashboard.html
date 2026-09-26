@@ -919,25 +919,70 @@ function switchTab(tab){
   showScreen(tab, true);
 }
 
+let appInitWatchdog=null;
+
+function showLoadError(message){
+  const el=document.getElementById('loadingScreen');
+  if(!el)return;
+  if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}
+  el.style.display='flex';
+  el.innerHTML=`
+    <div class="loading-wrap" style="min-height:60vh;padding:24px;text-align:center">
+      <div style="font-size:42px">⚠️</div>
+      <div style="font-size:17px;font-weight:800;color:var(--text)">Data load नहीं हो सका</div>
+      <div style="max-width:520px;color:var(--text-muted);font-size:14px;line-height:1.6">${esc(message||'Firebase से account data नहीं मिला। Internet connection और login session check करें।')}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+        <button class="btn btn-primary" onclick="location.reload()">🔄 Retry</button>
+        <button class="btn btn-secondary" onclick="auth.signOut()">Logout</button>
+      </div>
+    </div>`;
+}
+
+function armAppInitWatchdog(){
+  if(appInitWatchdog)clearTimeout(appInitWatchdog);
+  appInitWatchdog=setTimeout(()=>{
+    if(currentScreen==='loading'){
+      showLoadError('Firebase response बहुत देर से आ रहा है। Page को Retry करें; आपका कोई data delete या change नहीं हुआ है।');
+    }
+  },20000);
+}
+
 auth.onAuthStateChanged(async(user)=>{
   if(!user){window.location.href='index.html';return}
   currentUser=user;
-  await loadUserData();
+  try{
+    await loadUserData();
+  }catch(e){
+    console.error('Dashboard initialization failed:',e);
+    showLoadError(e?.message||'Account data load नहीं हुआ।');
+  }
 });
 
 async function loadUserData(){
+  if(!currentUser?.uid)throw new Error('Login session नहीं मिला');
+  armAppInitWatchdog();
   try{
-    const doc=await db.collection('users').doc(currentUser.uid).get();
+    const docPromise=db.collection('users').doc(currentUser.uid).get();
+    const doc=await Promise.race([
+      docPromise,
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase response timeout (15s)')),15000))
+    ]);
     if(!doc.exists){window.location.href='signup.html';return}
     userData=doc.data();
     if(!userData.shopName){window.location.href='signup.html';return}
     storedPIN = userData.pin ? String(userData.pin) : null;
-    if(!storedPIN){showPinScreen('setup','नया PIN बनाएं','सुरक्षा के लिए 4-अंकों का PIN सेट करें');return}
+    if(!storedPIN){if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}showPinScreen('setup','नया PIN बनाएं','सुरक्षा के लिए 4-अंकों का PIN सेट करें');return}
     document.getElementById('dShop').textContent=userData.shopName;
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
     showScreen('dashboard',true);
+    if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}
     setupListeners();
-  }catch(e){console.error(e);toast('Data load nahi hua','error')}
+  }catch(e){
+    console.error('loadUserData failed:',e);
+    showLoadError(e?.message==='Firebase response timeout (15s)'
+      ? 'Firebase से response नहीं आया। Internet/Firebase connection check करके Retry करें।'
+      : 'Account data load नहीं हुआ: '+(e?.message||'Unknown error'));
+  }
 }
 
 function setupListeners(){
@@ -946,12 +991,12 @@ function setupListeners(){
   unsubCustomers=db.collection('users').doc(currentUser.uid).collection('parties')
     .onSnapshot(snap=>{customers=[];snap.forEach(d=>customers.push({id:d.id,...d.data()}));customers.sort((a,b)=>(b.balance||0)-(a.balance||0));initialCustomersReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();
-    },err=>console.error('Customer error:',err));
+    },err=>{console.error('Customer error:',err);if(!initialCustomersReady)showLoadError('Customers data load नहीं हुआ: '+(err?.message||'Firestore error'));});
   unsubTransactions=db.collection('users').doc(currentUser.uid).collection('transactions')
     .orderBy('date','desc')
     .onSnapshot(snap=>{transactions=[];snap.forEach(d=>transactions.push({id:d.id,...d.data()}));rebuildTxnIndex();initialTransactionsReady=true;if(initialCustomersReady&&initialTransactionsReady)dataReadyResolve();
       if(currentScreen==='dashboard')renderDashboard();else if(currentScreen==='customer')renderCustomerDetail();else if(currentScreen==='reports')renderReports();
-    },err=>console.error('Txn error:',err));
+    },err=>{console.error('Txn error:',err);if(!initialTransactionsReady)showLoadError('Transactions data load नहीं हुआ: '+(err?.message||'Firestore error'));});
 }
 
 function renderDashboard(){
