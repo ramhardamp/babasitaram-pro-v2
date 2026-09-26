@@ -248,7 +248,7 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
       </div>
 
       <div class="footer-bar">
-        सहायता: <a href="mailto:ramhardamp@gmail.com">ramhardamp@gmail.com</a>
+        सहायता: <a href="mailto:babasitaram@gmail.com">babasitaram@gmail.com</a>
       </div>
     </div>
 
@@ -300,6 +300,12 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
         <div class="input-group">
           <label class="input-label">आपका नाम *</label>
           <input type="text" id="ownerName" class="text-input" placeholder="जैसे: रमेश कुमार" maxlength="60">
+        </div>
+        
+        <div class="input-group">
+          <label class="input-label">मोबाइल नंबर *</label>
+          <input type="tel" id="ownerPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric" autocomplete="tel">
+          <div class="helper-text">यह अकाउंट प्रोफाइल मोबाइल होगा और बाद में बदला नहीं जाएगा।</div>
         </div>
 
         <div class="input-group">
@@ -561,6 +567,7 @@ async function sendWelcomeEmail(userEmail) {
 async function saveSetup() {
   const shopName = document.getElementById('shopName').value.trim();
   const ownerName = document.getElementById('ownerName').value.trim();
+  const ownerPhone = document.getElementById('ownerPhone').value.replace(/\D/g,'').slice(0,10);
   const upiId = document.getElementById('upiId').value.trim();
   const errorEl = document.getElementById('setupError');
   const btn = document.getElementById('setupBtn');
@@ -568,6 +575,7 @@ async function saveSetup() {
   errorEl.classList.add('hidden');
   if (!shopName) return showError(errorEl, 'व्यवसाय का नाम डालें');
   if (!ownerName) return showError(errorEl, 'अपना नाम डालें');
+  if (!/^\d{10}$/.test(ownerPhone)) return showError(errorEl, '10 अंकों का मोबाइल नंबर डालें');
 
   setBtnLoading(btn, true);
 
@@ -578,6 +586,10 @@ async function saveSetup() {
     await db.collection('users').doc(user.uid).update({
       shopName: shopName,
       ownerName: ownerName,
+      phone: ownerPhone,
+      profileName: ownerName,
+      profilePhone: ownerPhone,
+      profileEmail: user.email,
       upiId: upiId || '',
       backupEmail: user.email,
       defaultRate: 2,
