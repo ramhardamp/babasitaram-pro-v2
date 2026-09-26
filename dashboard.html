@@ -135,7 +135,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}
 .loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}
 .loan-status.active{background:#dcfce7;color:#15803d}
-.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;position:relative}
+.txn-history-list{max-height:42vh;overflow-y:auto;overflow-x:hidden;padding-right:3px;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.txn-history-list::-webkit-scrollbar{width:5px}.txn-history-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;position:relative}
 .txn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .txn-icon.udhaar{background:var(--credit-bg)}
 .txn-icon.jama{background:var(--debit-bg)}
@@ -1239,7 +1239,7 @@ function renderCustomerDetail(){
     });
   }
   const txns=transactions.filter(t=>t.partyId===currentCustomerId&&t.type!=='byaj_loan');
-  let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div>`;
+  let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div><div class="txn-history-list">`;
   if(txns.length===0){txnHtml+=`<div class="empty-state" style="padding:20px"><div class="empty-title">${t('No transactions','कोई लेन-देन नहीं')}</div></div>`}
   else{
     const map={udhaar:{icon:'📤',cls:'udhaar',label:t('Udhaar','उधार'),sign:'+'},jama:{icon:'📥',cls:'jama',label:t('Payment','जमा'),sign:'-'},loan_repay:{icon:'💵',cls:'loan_repay',label:t('Loan Repayment','लोन वापसी'),sign:'-'},interest_paid:{icon:'💰',cls:'interest_paid',label:t('Interest Paid','ब्याज भुगतान'),sign:'-'}};
@@ -1253,6 +1253,7 @@ function renderCustomerDetail(){
           <button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button></div></div>`;
     });
   }
+  txnHtml+='</div>';
   document.getElementById('customerDetail').innerHTML=`
     <div class="customer-hero">
       <div class="ch-header"><div class="ch-avatar ch-avatar-brand">${brandLogo}</div>
