@@ -945,7 +945,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
+  document.getElementById('topTitle').textContent=(userData.shopName||'BABASITARAM PRO');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
