@@ -75,13 +75,18 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .cc-info{flex:1;min-width:0}
 .cc-name{font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc-phone{font-size:11px;color:var(--text-muted);margin-top:3px}
-.cc-breakdown{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:9px 10px 10px}
-.cc-box{padding:7px 5px;border-radius:var(--radius-sm);text-align:center;border:1.5px solid var(--border);background:var(--bg);color:var(--text)}
-.cc-box.udhaar,.cc-box.byaj,.cc-box.total{background:var(--bg);border-color:var(--border)}
-.cc-box-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--text-muted)}
-.cc-box-value{font-size:12px;font-weight:900;letter-spacing:-.3px;color:var(--text)}
-.cc-box.total .cc-box-label,.cc-box.total .cc-box-value{color:var(--primary-dark)}
-.cc-header-total{color:var(--text)!important;text-align:right;min-width:62px}
+.cc-breakdown{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0 10px 10px;padding:0;border:1px solid var(--border);border-radius:11px;overflow:hidden;background:var(--bg)}
+.cc-stat{min-width:0;min-height:48px;padding:8px 5px;border:0!important;border-radius:0!important;background:transparent!important;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.cc-stat+.cc-stat{border-left:1px solid var(--border)!important}
+.cc-stat .cc-box-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.45px;margin-bottom:3px;color:var(--text-muted)!important;white-space:nowrap}
+.cc-stat .cc-box-value{font-size:13px;font-weight:900;letter-spacing:-.25px;color:var(--text)!important;white-space:nowrap}
+.cc-stat-total .cc-box-label{color:var(--text-muted)!important}
+.cc-stat-total .cc-box-value{color:var(--text)!important}
+.cc-header-total{display:none!important}
+.dark-mode .cc-breakdown{background:#111b2d!important;border-color:#334155!important}
+.dark-mode .cc-stat+.cc-stat{border-left-color:#334155!important}
+.dark-mode .cc-stat .cc-box-label{color:#94a3b8!important}
+.dark-mode .cc-stat .cc-box-value,.dark-mode .cc-stat-total .cc-box-value{color:#f8fafc!important}
 .detail-wrap{padding:16px}
 .customer-hero{background:var(--gradient-dark);color:#fff;padding:20px;border-radius:var(--radius-lg);margin-bottom:14px;position:relative;overflow:hidden}
 .customer-hero::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
@@ -1749,9 +1754,8 @@ function renderDashboard(){
     const total=s.grandTotal;
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
-        <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
-        <div class="cc-header-total"><div class="cc-header-total-label">${t('Total','कुल')}</div><div class="cc-header-total-value">${fmt(total)}</div></div></div>
-      <div class="cc-breakdown">
+         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div></div>
+       <div class="cc-breakdown">
         <div class="cc-stat"><div class="cc-box-label">${t('Udhaar','उधार')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
         <div class="cc-stat"><div class="cc-box-label">${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
         <div class="cc-stat cc-stat-total"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
