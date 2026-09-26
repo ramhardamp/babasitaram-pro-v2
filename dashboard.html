@@ -906,8 +906,7 @@ function showScreen(name, noPush){
   // FAB visibility
   document.getElementById('fab').classList.toggle('hidden', name !== 'dashboard');
   
-  // Lock button visibility
-  document.getElementById('lockBtn').style.display = (name === 'pin') ? 'none' : 'flex';
+  // Lock control moved into Settings; there is no header lock element to toggle.
   
   // Bottom tab active state
   document.querySelectorAll('.btab').forEach(b => {
