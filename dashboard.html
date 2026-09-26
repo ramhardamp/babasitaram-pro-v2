@@ -605,7 +605,7 @@ function generateToken(){
   return token;
 }
 
-async function updatePublicView(partyId, viewToken, partyData){
+async async function updatePublicView(partyId, viewToken, partyData){
   try{
     const txnSnap=await db.collection('users').doc(currentUser.uid)
       .collection('transactions').where('partyId','==',partyId).get();
@@ -660,7 +660,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
 }
 
 /* ============ FIX ALL BALANCES ============ */
-async function fixAllBalances(){
+async async function fixAllBalances(){
   if(!confirm('सभी ग्राहकों का balance recalculate करें?')) return;
   try {
     toast('⏳ Balance fix हो रहा है...', 'success');
@@ -684,7 +684,7 @@ async function fixAllBalances(){
 }
 
 /* ============ BACKFILL VIEW TOKENS ============ */
-async function backfillViewTokens(){
+async async function backfillViewTokens(){
   if(!confirm('Purane customers ke liye portal link generate karein?')) return;
   try {
     toast('⏳ Links generate ho rahe hain...', 'success');
@@ -1327,7 +1327,7 @@ function openAddCustomer(){
       <button class="btn btn-primary" onclick="saveCustomer()">${t('Save','सेव')}</button></div>`);
   setTimeout(()=>document.getElementById('mName')?.focus(),300);
 }
-async function saveCustomer(){
+async async function saveCustomer(){
   const name=document.getElementById('mName').value.trim();
   const phone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
   const email=document.getElementById('mEmail').value.trim();
