@@ -2141,7 +2141,7 @@ function printExportWindow(title,bodyHtml){
   const fallbackLogoUrl=new URL('assets/babasitaram-pro-logo.svg',window.location.href).href;
   const owner=esc(userData?.ownerName||'');
   const phone=esc(userData?.phone||'');
-  const brandBlock='<div class="brand-head"><img src="assets/guru-shree-logo.svg" onerror="this.onerror=null;this.src=\'assets/babasitaram-pro-logo.svg\'" alt="BABASITARAM PRO logo"><div><div class="brand-name">BABASITARAM PRO</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
+  const brandBlock='<div class="brand-head"><img src="'+logoUrl+'" onerror="this.onerror=null;this.src=\''+fallbackLogoUrl+'\'" alt="BABASITARAM PRO logo"><div><div class="brand-name">BABASITARAM PRO</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
   const html='<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+
     'body{font-family:Arial,"Noto Sans Devanagari",sans-serif;color:#111827;margin:24px;font-size:11px}'+
     '.brand-head{display:flex;align-items:center;gap:14px;padding:0 0 12px;margin-bottom:14px;border-bottom:2px solid #1e1b4b}'+
