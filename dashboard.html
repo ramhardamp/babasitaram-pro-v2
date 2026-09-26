@@ -497,8 +497,7 @@ let userData = null;
 let customers = [];
 let transactions = [];
 let unsubCustomers = null;
-let unsubTransactions = null;
-let ledgerWriteBusy = false;
+let unsubTransactions = null;let ledgerWriteBusy = false;
 
 let storedPIN = null;
 let pendingPIN = '';let pinMode = 'verify';
@@ -759,7 +758,7 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('bottomTabs').classList.add('hidden');
   document.getElementById('fab').classList.add('hidden');
   document.getElementById('topTitle').textContent='🔐 PIN';
-  const canGoBack=mode.startsWith('change-') && !!pinReturnScreen;
+  const canGoBack=!!pinReturnScreen;
   document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
   document.getElementById('lockBtn').style.display='none';
 }
@@ -998,7 +997,6 @@ try{
   if(typeof auth === 'undefined' || typeof db === 'undefined'){
     throw new Error('Firebase configuration load नहीं हुई');
   }
-
   auth.onAuthStateChanged(async(user)=>{
     if(!user){window.location.href='index.html';return}
     currentUser=user;
@@ -1497,8 +1495,7 @@ async function deleteTxn(id){
     }
     toast(t('Deleted','डिलीट हो गया'),'success');
   }catch(e){
-    console.error('deleteTxn failed:',e);
-    toast('Error: '+(e.message||'Delete failed'),'error');
+    console.error('deleteTxn failed:',e);    toast('Error: '+(e.message||'Delete failed'),'error');
   }
 }
 
@@ -1998,7 +1995,6 @@ async function saveIntPaid(){
     });
     committed=true;
     ledgerWriteBusy=false;
-
     const c=customers.find(x=>x.id===currentCustomerId);
     closeModal();
     toast(t('Recorded','दर्ज'),'success');
