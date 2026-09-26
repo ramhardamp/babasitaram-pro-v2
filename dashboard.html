@@ -612,6 +612,20 @@ body.dark-mode{
   border-color:#334155!important;
 }
 
+/* Final customer card cleanup: neutral balance stats, no red/orange/blue blocks. */
+.cc-header-total{color:var(--text)!important;text-align:right}
+.cc-header-total-label{font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase}
+.cc-header-total-value{font-size:16px;font-weight:900;color:var(--text)!important}
+.cc-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.cc-stat{padding:7px 5px;border-radius:var(--radius-sm);text-align:center;border:1px solid var(--border)!important;background:transparent!important}
+.cc-stat .cc-box-label{color:var(--text-muted)!important}
+.cc-stat .cc-box-value{color:var(--text)!important}
+.cc-stat-total{background:transparent!important;border-color:var(--border)!important}
+.cc-stat-total .cc-box-label,.cc-stat-total .cc-box-value{color:var(--text)!important}
+.dark-mode .cc-stat,.dark-mode .cc-stat-total{background:transparent!important;border-color:#334155!important}
+.dark-mode .cc-stat .cc-box-label{color:#cbd5e1!important}
+.dark-mode .cc-stat .cc-box-value,.dark-mode .cc-stat-total .cc-box-value{color:#f8fafc!important}
+.dark-mode .cc-header-total-value{color:#f8fafc!important}
 </style>
 </head>
 <body>
@@ -1614,17 +1628,16 @@ function renderDashboard(){
     const init=(s.name||'?').charAt(0).toUpperCase();
     const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
     const total=s.grandTotal;
-    const totalColor=total>0?'color:var(--credit);':total<0?'color:var(--debit);':'color:var(--text-muted);';
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div>
-        <div class="cc-header-total" style="text-align:right;"><div style="font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">${t('Total','कुल')}</div>
-        <div style="font-size:16px;font-weight:900;color:var(--primary-dark);">${fmt(total)}</div></div></div>
+        <div class="cc-header-total"><div class="cc-header-total-label">${t('Total','कुल')}</div><div class="cc-header-total-value">${fmt(total)}</div></div></div>
       <div class="cc-breakdown">
-        <div class="cc-box udhaar"><div class="cc-box-label">📤 ${t('Udhaar','उधार')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
-        <div class="cc-box byaj"><div class="cc-box-label">📈 ${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
-        <div class="cc-box total"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
+        <div class="cc-stat"><div class="cc-box-label">${t('Udhaar','उधार')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
+        <div class="cc-stat"><div class="cc-box-label">${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
+        <div class="cc-stat cc-stat-total"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
       </div></div>`;
+
   }).join('');
   const more=filtered.length>visible.length
     ? `<div id="customerListTail" class="empty-state" style="padding:18px 12px"><div class="empty-text">${t('Loading more customers…','और ग्राहक लोड हो रहे हैं…')}</div></div>`
