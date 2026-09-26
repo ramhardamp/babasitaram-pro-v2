@@ -25,6 +25,9 @@
 - [ ] Android Autofill source audit — Android source is not in this web repository.
 - [ ] Chrome/domain Autofill verification.
 - [ ] Password SaveRequest new-vs-update verification.
+- [x] Responsive shell hardening: removed centered phone-width shell on desktop/mobile so app uses full viewport width.
+- [x] Dashboard scrolling hardening: dashboard shell is fixed; customer list is the dedicated vertical scroll area and its lazy-load observer now uses the customer list as its scroll root.
+- [x] Supplied Guru Shree logo added to top branding/PIN screen on safe branch.
 - [ ] Full regression test.
 - [ ] Production merge.
 
