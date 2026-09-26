@@ -222,6 +222,8 @@ async function handleLogin() {
     else if (error.code === 'auth/too-many-requests') msg = 'बहुत ज्यादा कोशिशें। कुछ देर बाद करें।';
     errorEl.textContent = msg;
     errorEl.classList.remove('hidden');
+    const btnText = btn.querySelector('.btn-text');
+    if (btnText) btnText.textContent = '🔑 लॉगिन करें';
     setBtnLoading(btn, false);
   }
 }
