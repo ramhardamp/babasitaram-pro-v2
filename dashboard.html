@@ -328,6 +328,28 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 body.settings-panel-open{overflow:hidden!important}
 @keyframes settingsPanelIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
 @media(max-width:600px){.settings-panel-overlay{padding:0;align-items:stretch}.settings-panel{width:100%;max-height:100dvh;height:100dvh;border-radius:0;border:0}.settings-panel-head{min-height:76px;padding:12px 14px}.settings-panel-heading b{font-size:19px}.settings-panel-heading small{font-size:12px}.settings-panel-body{padding:12px 12px}.settings-panel-body .android-sub-row{min-height:68px}.settings-panel-actions{padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px))}}
+
+/* Premium Android-style Settings refinement */
+.android-settings-list{width:min(760px,100%);margin:0 auto}
+#screen-settings.active .android-setting-row{min-height:76px;padding:14px 18px;border-radius:18px}
+#screen-settings.active .android-setting-main b{font-size:15px;font-weight:900;letter-spacing:.1px}
+#screen-settings.active .android-setting-main small{font-size:11px;font-weight:650}
+#screen-settings.active .android-setting-icon{width:40px;height:40px;flex-basis:40px;font-size:21px;border-radius:13px}
+#screen-settings.active .android-setting-chevron{font-size:25px;font-weight:800}
+#screen-settings.active .android-setting-section{margin-bottom:10px}
+.settings-panel-body{padding:16px 14px 18px}
+.settings-profile-form{display:grid;gap:12px}
+.settings-field{padding:13px 14px;border:1px solid var(--border);border-radius:15px;background:var(--white);box-shadow:0 2px 8px rgba(15,23,42,.04)}
+.settings-field label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:13px;font-weight:900;color:var(--text)}
+.settings-field label span{font-size:10px;font-weight:800;color:var(--text-muted)}
+.settings-field .text-input{width:100%;min-height:50px;font-size:15px;font-weight:700}
+.settings-field.locked{background:var(--bg);opacity:.92}
+.settings-locked-value{min-height:44px;display:flex;align-items:center;padding:0 12px;border-radius:11px;background:rgba(100,116,139,.08);color:var(--text-muted);font-size:14px;font-weight:700}
+.settings-form-note{padding:11px 12px;border-radius:12px;background:var(--primary-lighter);color:var(--text-muted);font-size:11px;font-weight:650;line-height:1.5}
+.settings-panel-body .android-sub-row{min-height:70px;padding:13px 14px}
+.settings-panel-body .android-sub-row b{font-size:14px;font-weight:900}
+.settings-panel-body .android-sub-row small{font-size:11px;font-weight:650}
+@media(max-width:600px){#screen-settings.active .android-setting-row{min-height:72px;padding:12px 14px;border-radius:16px}#screen-settings.active .android-setting-main b{font-size:14px}#screen-settings.active .android-setting-main small{font-size:10.5px}#screen-settings.active .android-setting-icon{width:38px;height:38px;flex-basis:38px}.settings-panel-head{min-height:80px}.settings-panel-body{padding:14px 12px 18px}.settings-field{padding:13px}.settings-field .text-input{min-height:52px;font-size:15px}}
 </style>
 </head>
 <body>
@@ -459,8 +481,8 @@ body.settings-panel-open{overflow:hidden!important}
               <span class="android-setting-chevron">⌄</span>
             </button>
             <div class="android-setting-content">
-              <button class="android-sub-row action" type="button" onclick="unlockProfileUpdate()"><span>👤 <b>नाम</b><small>Update करने के लिए यहाँ क्लिक करें</small></span><em id="pOwnerName">-</em><i>✏️</i></button>
-              <button class="android-sub-row action" type="button" onclick="editShop()"><span>🏪 <b>Business Name</b><small>Business का नाम update करें</small></span><em id="sShopName">-</em><i>✏️</i></button>
+              <div class="android-sub-row"><span>👤 <b>नाम</b></span><em id="pOwnerName">-</em></div>
+              <div class="android-sub-row"><span>🏪 <b>Business Name</b></span><em id="sShopName">-</em></div>
               <div class="android-sub-row"><span>📱 <b>मोबाइल</b></span><em id="pPhone">-</em><i>🔒</i></div>
               <div class="android-sub-row"><span>📧 <b>ईमेल आईडी</b></span><em id="pEmail">-</em><i>🔒</i></div>
               <div class="android-setting-note">🔒 मोबाइल और ईमेल locked हैं। नाम और Business Name को उनकी row पर क्लिक करके update किया जा सकता है।</div>
@@ -2356,21 +2378,33 @@ function openSettingsPanel(name){
   const overlay=document.createElement('div');
   overlay.id='settingsPanelOverlay';
   overlay.className='settings-panel-overlay';
+  const hasSave=name==='profile'||name==='advanced';
   overlay.innerHTML=`<div class="settings-panel" role="dialog" aria-modal="true">
     <div class="settings-panel-head">
       <button type="button" class="settings-panel-back" onclick="closeSettingsPanel()" aria-label="Back">‹</button>
       <div class="settings-panel-heading"><b>${esc(title)}</b><small>${esc(subtitle)}</small></div>
     </div>
     <div class="settings-panel-body"></div>
-    <div class="settings-panel-actions">
+    ${hasSave?`<div class="settings-panel-actions">
       <button type="button" class="settings-panel-cancel" onclick="closeSettingsPanel()">Cancel</button>
       <button type="button" class="settings-panel-save" onclick="saveSettingsPanel('${name}')">Save</button>
-    </div>
+    </div>`:''}
   </div>`;
   document.body.appendChild(overlay);
-  overlay.querySelector('.settings-panel-body').appendChild(content);
+  const body=overlay.querySelector('.settings-panel-body');
+  if(name==='profile'){
+    body.innerHTML=`<div class="settings-profile-form">
+      <div class="settings-field"><label>👤 नाम</label><input id="panelProfileName" class="text-input" value="${esc(userData?.profileName||userData?.ownerName||'')}" autocomplete="name"></div>
+      <div class="settings-field"><label>🏪 Business Name</label><input id="panelShopName" class="text-input" value="${esc(userData?.shopName||'')}" autocomplete="organization"></div>
+      <div class="settings-field locked"><label>📱 मोबाइल <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profilePhone||userData?.phone||'-')}</div></div>
+      <div class="settings-field locked"><label>📧 ईमेल आईडी <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profileEmail||currentUser?.email||'-')}</div></div>
+      <div class="settings-form-note">नाम और Business Name को एक साथ Save किया जाएगा। मोबाइल और ईमेल सुरक्षित रूप से locked हैं।</div>
+    </div>`;
+  }else{
+    body.appendChild(content);
+  }
   document.body.classList.add('settings-panel-open');
-  window.__settingsPanelState={section,content,placeholder,overlay};
+  window.__settingsPanelState={section,content,placeholder,overlay,name};
 }
 function closeSettingsPanel(){
   const state=window.__settingsPanelState;
@@ -2381,6 +2415,24 @@ function closeSettingsPanel(){
   window.__settingsPanelState=null;
 }
 async function saveSettingsPanel(name){
+  if(name==='profile'){
+    const profileName=document.getElementById('panelProfileName')?.value.trim();
+    const shopName=document.getElementById('panelShopName')?.value.trim();
+    if(!profileName)return toast('Name required','error');
+    if(!shopName)return toast('Business Name required','error');
+    try{
+      await db.collection('users').doc(currentUser.uid).update({profileName,shopName});
+      userData.profileName=profileName;
+      userData.shopName=shopName;
+      closeSettingsPanel();
+      renderSettings();
+      toast(t('Profile saved','प्रोफाइल सेव'),'success');
+    }catch(e){
+      console.error('Profile settings save failed:',e);
+      toast(t('Save failed','सेव नहीं हुआ'),'error');
+    }
+    return;
+  }
   if(name==='advanced' && document.getElementById('sDefaultRate')) await saveSettings();
   closeSettingsPanel();
 }
