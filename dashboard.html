@@ -220,7 +220,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .settings-icon{font-size:20px;width:26px;text-align:center}
 .settings-label{font-size:14px;font-weight:700}
 .settings-sublabel{font-size:11px;color:var(--text-muted);margin-top:2px}
-.settings-arrow{color:var(--text-light);font-size:18px;margin-left:8px}
+.settings-arrow{color:var(--text-light);font-size:18px;margin-left:8px}.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}.export-card{border:2px solid var(--border);background:var(--white);border-radius:12px;padding:13px 10px;text-align:left;cursor:pointer;font-family:inherit;color:var(--text);min-height:78px}.export-card:active{transform:scale(.98);background:var(--bg)}.export-card-icon{font-size:22px;margin-bottom:5px}.export-card-title{font-size:12px;font-weight:900}.export-card-sub{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.35}.export-card.primary{border-color:var(--primary-light);background:var(--primary-lighter)}.export-note{font-size:10px;color:var(--text-muted);padding:0 12px 12px;line-height:1.5}
 .settings-header{font-size:11px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;padding:16px 4px 8px}
 .hidden{display:none!important}
 .spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
@@ -409,10 +409,16 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             </div>
             <div class="settings-arrow">›</div>
           </div>
-          <div class="settings-item" onclick="exportData()">
-            <div class="settings-left"><div class="settings-icon">📤</div><div class="settings-label" id="sExport">डेटा एक्सपोर्ट (JSON)</div></div>
-            <div class="settings-arrow">›</div>
+          <div class="settings-item">
+            <div class="settings-left"><div class="settings-icon">💾</div><div><div class="settings-label">Backup & Export</div><div class="settings-sublabel">Recovery, Excel, PDF और CSV</div></div></div>
           </div>
+          <div class="export-grid">
+            <button class="export-card primary" onclick="exportData()"><div class="export-card-icon">🔐</div><div class="export-card-title">Full Backup</div><div class="export-card-sub">Complete recovery JSON + checksum</div></button>
+            <button class="export-card" onclick="exportExcelData()"><div class="export-card-icon">📊</div><div class="export-card-title">Excel Workbook</div><div class="export-card-sub">Customers, transactions, loans, summary</div></button>
+            <button class="export-card" onclick="exportBusinessPdf()"><div class="export-card-icon">📄</div><div class="export-card-title">Business PDF</div><div class="export-card-sub">Printable report / Save as PDF</div></button>
+            <button class="export-card" onclick="exportCsvData()"><div class="export-card-icon">📋</div><div class="export-card-title">CSV Data</div><div class="export-card-sub">Excel-compatible customers + transactions</div></button>
+          </div>
+          <div class="export-note">🔒 Export read-only है। Firebase में कोई customer, transaction या balance modify नहीं होता।</div>
           <div class="settings-item" onclick="showLogoutConfirm()">
             <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label" id="sLogout" style="color:var(--credit)">लॉगआउट</div></div>
             <div class="settings-arrow">›</div>
@@ -1163,7 +1169,8 @@ function renderCustomerDetail(){
       <button class="action-btn loan wide" onclick="openLoanModal()"><div class="action-icon">📈</div><div><div class="action-title">${t('Give Loan with Interest','ब्याज पर लोन दें')}</div><div class="action-sub">${t('Set rate, auto-calculate','दर तय करें, ऑटो ब्याज')}</div></div></button>
       <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
       <button class="action-btn interest" onclick="openIntPaidModal()"><div class="action-icon">💰</div><div><div class="action-title">${t('Interest Paid','ब्याज भुगतान')}</div><div class="action-sub">${t('Byaj received','ब्याज मिला')}</div></div></button>
-      <button class="action-btn share wide" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Customer Portal Link','ग्राहक को लिंक भेजें')}</div><div class="action-sub">${t('Customer can view their khata','ग्राहक अपना खाता देख सकेंगे')}</div></div></button>
+      <button class="action-btn share" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Portal','पोर्टल लिंक')}</div><div class="action-sub">${t('Customer view link','ग्राहक लिंक')}</div></div></button>
+      <button class="action-btn edit" onclick="exportCustomerStatementPdf('${c.id}')"><div class="action-icon">📄</div><div><div class="action-title">${t('Statement PDF','स्टेटमेंट PDF')}</div><div class="action-sub">${t('Print / save PDF','PDF सेव करें')}</div></div></button>
       <button class="action-btn edit wide" onclick="openEditCustomer()"><div class="action-icon">✏️</div><div><div class="action-title">${t('Edit Customer','ग्राहक एडिट करें')}</div><div class="action-sub">${t('Name, phone, email','नाम, फोन, ईमेल')}</div></div></button>
     </div>
     ${loansHtml}${txnHtml}`;
@@ -1942,6 +1949,89 @@ function toggleDarkMode(){
   const state=document.getElementById('darkModeState');
   if(state)state.textContent=enabled?'ON':'OFF';
   toast(enabled?t('Dark mode enabled','डार्क मोड चालू'):t('Dark mode disabled','डार्क मोड बंद'),'success');
+}
+function exportScalar(value){
+  if(value==null)return '';
+  if(value instanceof Date)return value.toISOString();
+  if(typeof value?.toDate==='function'){try{return value.toDate().toISOString()}catch(_){}}
+  if(typeof value==='object')return JSON.stringify(value);
+  return String(value);
+}
+function exportRowsFromObjects(rows){
+  const keys=[];const seen=new Set();
+  rows.forEach(row=>Object.keys(row||{}).forEach(k=>{if(!seen.has(k)){seen.add(k);keys.push(k)}}));
+  return [keys,...rows.map(row=>keys.map(k=>exportScalar(row?.[k])))];
+}
+function downloadTextFile(text,filename,type){
+  const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function csvEscape(v){const s=exportScalar(v);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function rowsToCsv(rows){return rows.map(row=>row.map(csvEscape).join(',')).join('\r\n')}
+async function loadExportLibrary(url,globalName){
+  if(window[globalName])return window[globalName];
+  if(window.__bspExportLibraries?.[globalName])return window.__bspExportLibraries[globalName];
+  window.__bspExportLibraries=window.__bspExportLibraries||{};
+  const p=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=url;script.async=true;
+    script.onload=()=>window[globalName]?resolve(window[globalName]):reject(new Error(globalName+' unavailable'));
+    script.onerror=()=>reject(new Error('Export library load failed'));document.head.appendChild(script)});
+  window.__bspExportLibraries[globalName]=p;try{return await p}catch(e){delete window.__bspExportLibraries[globalName];throw e}
+}
+function buildExportTables(data){
+  const customerRows=customers.map(c=>{const s=getSummary(c.id)||{};return {...c,udhaarBalance:s.udhaarBalance||0,byajBalance:s.byajBalance||0,grandTotal:s.grandTotal||0,activeLoans:(s.loans||[]).length}});
+  const transactionRows=transactions.map(tx=>{const c=customers.find(x=>x.id===tx.partyId);return {...tx,customerName:c?.name||'',customerPhone:c?.phone||''}});
+  const loanRows=transactions.filter(tx=>tx.type==='byaj_loan').map(loan=>{const c=customers.find(x=>x.id===loan.partyId);const m=calcLoan(loan);return {...loan,customerName:c?.name||'',customerPhone:c?.phone||'',currentPrincipal:m.currentPrincipal,interestAccrued:m.interestAccrued,interestPaidCalculated:m.interestPaid,interestOutstanding:m.interestOutstanding,loanTotal:m.loanTotal,progress:m.progress}});
+  const totals=getTotals();
+  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'BABASITARAM PRO'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
+  return {customerRows,transactionRows,loanRows,summaryRows};
+}
+async function exportExcelData(){
+  try{
+    toast('📊 Excel backup तैयार हो रहा है...','success');const data=await buildBackupPayload();const tables=buildExportTables(data);let XLSX;
+    try{XLSX=await loadExportLibrary('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','XLSX')}
+    catch(libErr){await exportCsvData(data);toast('Excel library उपलब्ध नहीं थी — CSV fallback निकाला गया','error');return}
+    const wb=XLSX.utils.book_new();
+    const addSheet=(name,rows)=>{const ws=XLSX.utils.aoa_to_sheet(rows);if(rows[0])ws['!cols']=rows[0].map((_,i)=>({wch:Math.min(36,Math.max(12,...rows.slice(0,100).map(r=>String(r[i]??'').length+2)))}));XLSX.utils.book_append_sheet(wb,ws,name)};
+    addSheet('Summary',tables.summaryRows);addSheet('Customers',exportRowsFromObjects(tables.customerRows));addSheet('Transactions',exportRowsFromObjects(tables.transactionRows));addSheet('Loans',exportRowsFromObjects(tables.loanRows));addSheet('Integrity',[['Check','Value'],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]]);
+    XLSX.writeFile(wb,'babasitaram_business_'+new Date().toISOString().slice(0,10)+'.xlsx',{compression:true});toast('✅ Excel workbook तैयार हो गया','success');
+  }catch(e){console.error('Excel export failed:',e);toast('Excel export failed: '+(e.message||'Unknown error'),'error')}
+}
+async function exportCsvData(existingData){
+  try{
+    const data=existingData||await buildBackupPayload();const tables=buildExportTables(data);const date=new Date().toISOString().slice(0,10);
+    downloadTextFile('\ufeff'+rowsToCsv(exportRowsFromObjects(tables.customerRows)),'babasitaram_customers_'+date+'.csv','text/csv;charset=utf-8');
+    setTimeout(()=>downloadTextFile('\ufeff'+rowsToCsv(exportRowsFromObjects(tables.transactionRows)),'babasitaram_transactions_'+date+'.csv','text/csv;charset=utf-8'),300);
+    toast('✅ Customers और Transactions CSV export हो गए','success');
+  }catch(e){console.error('CSV export failed:',e);toast('CSV export failed: '+(e.message||'Unknown error'),'error')}
+}
+function printExportWindow(title,bodyHtml){
+  const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
+  const safeTitle=esc(title);
+  const html='<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+
+    'body{font-family:Arial,"Noto Sans Devanagari",sans-serif;color:#111827;margin:24px;font-size:11px}h1{font-size:22px;margin:0 0 4px}h2{font-size:14px;margin:18px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}'+
+    '.meta{color:#4b5563;margin-bottom:14px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 18px}.box{border:1px solid #ddd;border-radius:8px;padding:8px}.label{font-size:9px;color:#6b7280}.value{font-size:14px;font-weight:800;margin-top:3px}'+
+    'table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #d1d5db;padding:5px 6px;text-align:left;vertical-align:top}th{background:#f3f4f6;font-weight:800}.right{text-align:right}'+
+    '@media print{body{margin:10mm}.no-print{display:none!important}table{page-break-inside:auto}tr{page-break-inside:avoid;page-break-after:auto}thead{display:table-header-group}}</style></head><body>'+bodyHtml+'<div class="no-print" style="margin-top:20px;color:#6b7280">Generated by BABASITARAM PRO</div></body></html>';
+  w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),350);
+}
+function exportBusinessPdf(){
+  try{
+    const totals=getTotals();const sorted=buildExportTables({integrity:{orphanTransactions:0,balanceMismatches:0}}).customerRows.slice().sort((a,b)=>(Number(b.grandTotal)||0)-(Number(a.grandTotal)||0));
+    const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
+    const body='<h1>'+esc(userData?.shopName||'BABASITARAM PRO')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
+      '<div class="summary"><div class="box"><div class="label">Customers</div><div class="value">'+customers.length+'</div></div><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(totals.udhaar)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(totals.byaj)+'</div></div><div class="box"><div class="label">Outstanding</div><div class="value">'+fmt(totals.total)+'</div></div></div>'+
+      '<h2>Customer Balance</h2><table><thead><tr><th>Customer</th><th>Phone</th><th>Udhaar</th><th>Interest</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<h2>Transaction Summary</h2><div>Transactions: <b>'+transactions.length+'</b> &nbsp; Payments: <b>'+fmt(totals.paid)+'</b> &nbsp; Interest income: <b>'+fmt(totals.income)+'</b></div>';
+    printExportWindow('BABASITARAM PRO Business Report',body);
+  }catch(e){console.error('PDF report failed:',e);toast('PDF report failed: '+(e.message||'Unknown error'),'error')}
+}
+function exportCustomerStatementPdf(id){
+  const c=customers.find(x=>x.id===id);if(!c)return;const s=getSummary(id);const txns=getPartyTransactions(id).slice().sort((a,b)=>sortableDateValue(a.date)-sortableDateValue(b.date));let running=0;
+  const rows=txns.map(tx=>{const amt=Number(tx.amount)||0;if(tx.type==='udhaar'||tx.type==='byaj_loan')running+=amt;else if(['jama','loan_repay','interest_paid'].includes(tx.type))running-=amt;return '<tr><td>'+esc(dateStr(tx.date))+'</td><td>'+esc(tx.type)+'</td><td>'+esc(tx.note||'-')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(running)+'</td></tr>'}).join('');
+  const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(c.phone||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(userData?.shopName||'BABASITARAM PRO')+' • '+dateStr(new Date())+'</div>'+
+    '<div class="summary"><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(s?.udhaarBalance||0)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(s?.byajBalance||0)+'</div></div><div class="box"><div class="label">Total Due</div><div class="value">'+fmt(s?.grandTotal||0)+'</div></div></div>'+
+    '<h2>Ledger History</h2><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th>Running Balance</th></tr></thead><tbody>'+(rows||'<tr><td colspan="5">No transactions</td></tr>')+'</tbody></table>';
+  printExportWindow((c.name||'Customer')+' Statement',body);
 }
 async function buildBackupPayload(){
   await dataReady;
