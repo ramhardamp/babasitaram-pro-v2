@@ -77,3 +77,15 @@ Passing workflow:
 
 ## Final status
 Production code is audited and the current web + Android packaging pipeline has a passing CI build/runtime smoke test. Real customer-data backup/restore against production data was not performed; no such destructive test is appropriate without a separately supplied test dataset.
+
+
+## Customer Hisaab sharing — 2026-09-26
+- [x] Customer detail now has a dedicated **Share Hisaab** action.
+- [x] Reminder message uses the customer name plus the business profile name, owner name and business phone; app/developer branding is excluded from the outgoing reminder text.
+- [x] WhatsApp reminder opens the customer’s saved number with a pre-filled, review-before-send message.
+- [x] SMS reminder opens the device SMS composer with the customer number and pre-filled message where supported.
+- [x] Optional photo reminder card is generated locally as PNG and can be shared through the device Web Share sheet when file sharing is supported; otherwise WhatsApp text fallback is used. The Web Share API is feature-detected because file sharing is not available on every browser/device. citeturn3search0turn3search1
+- [x] Share card uses an available profile photo from existing profile/Auth fields when present, otherwise a profile initial is shown.
+- [x] Loan + Udhaar balances are distinguished in the reminder text; portal link is included when the customer already has a public view token.
+- [x] Existing portal sharing was also corrected so its WhatsApp signature uses business/owner/phone instead of the app name.
+- [x] Share operations are read-only and do not modify customer, transaction or balance data.
