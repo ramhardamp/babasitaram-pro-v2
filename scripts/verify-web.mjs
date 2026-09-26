@@ -3,6 +3,7 @@ const dashboard=await readFile('dashboard.html','utf8');
 const index=await readFile('index.html','utf8');
 const prep=await readFile('scripts/prepare-web.mjs','utf8');
 const guruLogo=await readFile('assets/guru-shree-logo.svg','utf8');
+const brandLogo=await readFile('assets/babasitaram-pro-logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
 ['Total Income is interest-only',dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
@@ -40,6 +41,8 @@ const checks=[
 
 ['atomic customer/payment writes',dashboard.includes('const batch=db.batch()')&&dashboard.includes('db.runTransaction(async transaction=>')],
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
+['Reliable brand logo fallback exists',brandLogo.includes('<svg')&&dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&index.includes("this.src='assets/babasitaram-pro-logo.svg'")&&prep.includes("'assets/babasitaram-pro-logo.svg'")],
+['Branded PDF header includes logo and business identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BABASITARAM PRO')&&dashboard.includes('assets/babasitaram-pro-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
 let failed=0;
