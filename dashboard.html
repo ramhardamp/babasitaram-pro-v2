@@ -1233,6 +1233,11 @@ async function saveEditedLoan(id){
   if(!newP||newP<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!newR||newR<=0)return toast(t('Enter rate','दर डालें'),'error');
   try{
+    const existingRepayments=Array.isArray(loan.repayments)?loan.repayments:[];
+    const principalChanged=Number(loan.principal)!==Number(newP);
+    if(principalChanged&&existingRepayments.length>0){
+      return toast(t('Principal cannot be changed after repayment.','वापसी होने के बाद मूलधन नहीं बदला जा सकता।'),'error');
+    }
     const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
@@ -1243,12 +1248,35 @@ async function saveEditedLoan(id){
 
 async function deleteLoan(id){
   const loan=transactions.find(t=>t.id===id);if(!loan)return;
+  const repayments=Array.isArray(loan.repayments)?loan.repayments:[];
+  const interestPaid=Number(loan.interestPaid)||0;
+  if(repayments.length>0||interestPaid>0){
+    return toast(t('Loan with payment history cannot be deleted. Reverse/correct it instead.','जिस लोन में भुगतान इतिहास है उसे डिलीट नहीं किया जा सकता। पहले सुधार/रिवर्सल करें।'),'error');
+  }
   try{
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
+    const uid=currentUser.uid;
+    const loanRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    await db.runTransaction(async transaction=>{
+      const snap=await transaction.get(loanRef);
+      if(!snap.exists)throw new Error('Loan not found');
+      const fresh=snap.data()||{};
+      if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0){
+        throw new Error('Loan has payment history');
+      }
+      transaction.delete(loanRef);
+    });
     const c=customers.find(x=>x.id===loan.partyId);
-    if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+    if(c?.viewToken){
+      try{await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+      catch(viewErr){console.warn('Public view update failed after loan delete:',viewErr);}
+    }
     toast(t('Loan deleted','लोन डिलीट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){
+    console.error('deleteLoan failed:',e);
+    toast(e.message==='Loan has payment history'
+      ? t('Loan with payment history cannot be deleted.','भुगतान इतिहास वाला लोन डिलीट नहीं किया जा सकता।')
+      : 'Error: '+(e.message||'Delete failed'),'error');
+  }
 }
 
 function showModal(html){
