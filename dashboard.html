@@ -985,21 +985,35 @@ function handleAppBack(){
   return false;
 }
 
-/* Physical Android back from Capacitor/WebView. At dashboard root, let the
-   native container exit; otherwise consume it inside the app. */
+/* Physical Android back. The native Activity calls this synchronous bridge.
+   It returns true when the app consumed Back; false means the Activity may exit. */
+window.__nativeAndroidBack = function(){
+  try{
+    const consumed=handleAppBack();
+    if(consumed){
+      replaceAppHistory('screen',currentScreen);
+      return true;
+    }
+    return false;
+  }catch(e){
+    console.warn('[BACK] Native bridge failed:',e);
+    return false;
+  }
+};
+
+/* Capacitor App plugin remains a secondary bridge for environments where the
+   native Activity delegates Back through @capacitor/app. */
 function setupNativeBackHandler(){
   const App=window.Capacitor?.Plugins?.App;
   if(!App?.addListener)return;
   try{
     App.addListener('backButton',()=>{
-      const consumed=handleAppBack();
-      if(consumed){
-        replaceAppHistory('screen',currentScreen);
-        return;
+      const consumed=window.__nativeAndroidBack();
+      if(!consumed && typeof App.exitApp==='function'){
+        try{App.exitApp()}catch(e){}
       }
-      try{ if(typeof App.exitApp==='function') App.exitApp(); }catch(e){}
     });
-  }catch(e){console.warn('[BACK] Native handler unavailable:',e);}
+  }catch(e){console.warn('[BACK] Capacitor App handler unavailable:',e);}
 }
 
 window.addEventListener('popstate',event=>{
