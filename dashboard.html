@@ -685,8 +685,6 @@ body.dark-mode{
 
     <div id="screen-dashboard" class="screen">
       <div class="dash-hero">
-        <div class="dash-total-label" id="dTotalLbl">कुल बकाया</div>
-        <div class="dash-total-amount" id="dTotal">₹0</div>
         <div class="dash-split">
           <div class="dash-split-item">
             <div class="dash-split-label">📤 <span id="dLblU">उधार</span></div>
@@ -1396,7 +1394,6 @@ function setLang(lang){
 }
 function updateTexts(){
   const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt};
-  set('dTotalLbl',t('TOTAL DUE','कुल बकाया'));
   set('dLblU',t('Udhaar','उधार'));set('dLblB',t('Byaj','ब्याज'));set('dLblP',t('Paid','जमा'));set('dLblI',t('Total Income','कुल आय'));
 
   set('fAll',t('All','सभी'));set('fU',t('Udhaar','उधार'));set('fB',t('Byaj','ब्याज'));set('fC',t('Clear','साफ'));
@@ -1691,7 +1688,6 @@ function renderDashboard(){
 
   const list=document.getElementById('customerList');
   if(!initialCustomersReady || !initialTransactionsReady){
-    document.getElementById('dTotal').textContent='—';
     document.getElementById('dUdhaar').textContent='—';
     document.getElementById('dByaj').textContent='—';
     document.getElementById('dPaid').textContent='—';
@@ -1718,7 +1714,6 @@ function renderDashboard(){
   }
 
   const totals=getTotals();
-  document.getElementById('dTotal').textContent=fmt(totals.total);
   document.getElementById('dUdhaar').textContent=fmt(totals.udhaar);
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
