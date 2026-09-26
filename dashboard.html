@@ -607,13 +607,13 @@ async function updatePublicView(partyId, viewToken, partyData){
     });
     txns.sort((a,b)=>new Date(b.date)-new Date(a.date));
     // 👈 यहाँ JSON ट्रिक लगाई गई है
-    const publicViewData = JSON.parse(JSON.stringify({
-      businessUid:currentUser.uid, partyId,
+    const publicViewData = {
+      businessUid:currentUser.uid, partyId:String(partyId),
       shopName:userData.shopName||'BABASITARAM PRO',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       customerName:partyData.name, customerPhone:partyData.phone||'',
-      balance:partyData.balance||0, totalUdhaar, totalJama, transactions:txns
-    }));
+      balance:Number(partyData.balance)||0, totalUdhaar, totalJama, transactions:txns
+    };
     await db.collection('publicViews').doc(viewToken).set(publicViewData);
     console.log('✅ Public view updated:', viewToken);
   }catch(e){console.error('❌ updatePublicView error:', e)}
@@ -1103,7 +1103,7 @@ async function saveEditedTxn(id){
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   try{
     const c=customers.find(x=>x.id===txn.partyId);if(!c)return;
-    const updateData = JSON.parse(JSON.stringify({amount:newAmt,note:newNote,date:newDate}));
+    const updateData = {amount:newAmt,note:newNote,date:newDate};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     let newBal = 0;
     const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
@@ -1170,7 +1170,7 @@ async function saveEditedLoan(id){
   if(!newP||newP<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!newR||newR<=0)return toast(t('Enter rate','दर डालें'),'error');
   try{
-    const updateData = JSON.parse(JSON.stringify({principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart}));
+    const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
     if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
@@ -1228,12 +1228,12 @@ async function saveCustomer(){
     const batch=db.batch();
     
     // 👈 JSON ट्रिक लगाई गई है
-    const partyData = JSON.parse(JSON.stringify({name,phone,email,balance:bal,viewToken}));
+    const partyData = {name,phone,email,balance:bal,viewToken};
     batch.set(partyRef, partyData);
     
     if(bal !== 0){
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      const txnData = JSON.parse(JSON.stringify({partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]}));
+      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]};
       batch.set(txnRef, txnData);
     }
     await batch.commit();
@@ -1269,7 +1269,7 @@ async function updateCustomer(){
     const c=customers.find(x=>x.id===currentCustomerId);
     const newPhone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
     const newEmail=document.getElementById('mEmail').value.trim();
-    const updateData = JSON.parse(JSON.stringify({name,phone:newPhone,email:newEmail}));
+    const updateData = {name,phone:newPhone,email:newEmail};
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}
     closeModal();toast(t('Updated','अपडेट'),'success');
@@ -1313,31 +1313,62 @@ async function saveTxn(type){
   const note=document.getElementById('mNote').value.trim();
   const date=document.getElementById('mDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
-  const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
+
+  // Firestore document IDs are always handled as plain strings.
+  const customerId=String(currentCustomerId||'').trim();
+  const c=customers.find(x=>String(x.id)===customerId);
+  if(!customerId||!c)return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
+  if(type!=='udhaar'&&type!=='jama')return toast(t('Invalid transaction type','लेन-देन प्रकार गलत है'),'error');
+
   try{
-    const result=await db.runTransaction(async transaction=>{
-      const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId);
-      const partySnap=await transaction.get(partyRef);
-      if(!partySnap.exists)throw new Error('Customer not found');
-      const txnQuery=db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',currentCustomerId);
-      const txnSnap=await transaction.get(txnQuery);
-      let newBal=0;
-      txnSnap.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0)});
-      if(type==='udhaar')newBal+=amt; else if(type==='jama')newBal-=amt;
-      const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      
-      // 👈 JSON ट्रिक लगाई गई है
-      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:type,amount:amt,note:note,date:date}));
-      transaction.set(txnRef, txnData);
-      
-      transaction.update(partyRef,{balance:newBal});
-      return newBal;
+    const partyRef=db.collection('users').doc(currentUser.uid)
+      .collection('parties').doc(customerId);
+    const txCol=db.collection('users').doc(currentUser.uid)
+      .collection('transactions');
+    const txnRef=txCol.doc();
+
+    // Atomically create the transaction and update the customer's balance.
+    // This removes the previous transaction-query path that caused the
+    // "Expected type 'Object' ... custom Id object" Firestore error.
+    const delta=type==='udhaar'?amt:-amt;
+    const batch=db.batch();
+
+    batch.set(txnRef,{
+      partyId:customerId,
+      type:type,
+      amount:amt,
+      note:note,
+      date:date
     });
-    const newBal=result;
-    if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
-    closeModal();toast(t('Saved','सेव हो गया'),'success');
-    if(c.email){const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200)}
-  }catch(e){console.error(e);toast('Error','error')}
+
+    batch.update(partyRef,{
+      balance:firebase.firestore.FieldValue.increment(delta)
+    });
+
+    await batch.commit();
+
+    // Read the committed balance for public-view/email updates.
+    const freshParty=await partyRef.get();
+    if(!freshParty.exists)throw new Error('Customer not found after save');
+    const newBal=Number(freshParty.data().balance)||0;
+
+    if(c.viewToken){
+      await updatePublicView(customerId,c.viewToken,{
+        name:c.name,phone:c.phone,balance:newBal
+      });
+    }
+
+    closeModal();
+    toast(t('Saved','सेव हो गया'),'success');
+
+    if(c.email){
+      const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
+      if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
+    }
+  }catch(e){
+    console.error('saveTxn failed:',e);
+    toast('Error: '+(e.message||'Save failed'),'error');
+  }
 }
 
 function openLoanModal(){
@@ -1366,7 +1397,7 @@ async function saveLoan(){
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
     // 👈 JSON ट्रिक लगाई गई है
-    const loanData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note:note,status:'active',interestPaid:0,repayments:[],date:sd}));
+    const loanData = {partyId:String(currentCustomerId),type:'byaj_loan',principal:p,rate:r,startDate:sd,note:note,status:'active',interestPaid:0,repayments:[],date:sd};
     await db.collection('users').doc(currentUser.uid).collection('transactions').add(loanData);
     
     if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
@@ -1411,8 +1442,7 @@ async function saveRepay(){
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
       
-      // 👈 JSON ट्रिक लगाई गई है
-      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate}));
+      const txnData = {partyId:String(currentCustomerId),type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate};
       transaction.set(txnRef, txnData);
       
       return true;
@@ -1455,8 +1485,7 @@ async function saveIntPaid(){
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
       
-      // 👈 JSON ट्रिक लगाई गई है
-      const txnData = JSON.parse(JSON.stringify({partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate}));
+      const txnData = {partyId:String(currentCustomerId),type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate};
       transaction.set(txnRef, txnData);
       
     });
@@ -1519,7 +1548,7 @@ async function saveShop(){
   const phone=document.getElementById('mShopPhone').value.trim();
   if(!shopName)return toast('Name required','error');
   try{
-    const updateData = JSON.parse(JSON.stringify({shopName,phone}));
+    const updateData = {shopName,phone};
     await db.collection('users').doc(currentUser.uid).update(updateData);
     userData.shopName=shopName;userData.phone=phone;
     closeModal();renderSettings();toast(t('Saved','सेव'),'success');
@@ -1528,7 +1557,7 @@ async function saveShop(){
 async function saveSettings(){
   const rate=parseFloat(document.getElementById('sDefaultRate').value)||2;
   try{
-    const updateData = JSON.parse(JSON.stringify({defaultRate:rate}));
+    const updateData = {defaultRate:rate};
     await db.collection('users').doc(currentUser.uid).update(updateData);
     userData.defaultRate=rate;toast(t('Settings saved','सेटिंग सेव'),'success')
   }catch(e){console.error(e)}
