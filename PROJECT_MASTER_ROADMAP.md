@@ -75,8 +75,20 @@ Passing workflow:
 - Destructive backup restore/import.
 - A speculative offline transaction queue.
 
+## Login / Dashboard loading optimization — 2026-09-26
+- [x] Removed the ledger preload from the Login critical path.
+- [x] Removed the extra blocking `users/{uid}` profile read before Dashboard navigation.
+- [x] Removed the email-verification 700ms artificial redirect delay and duplicate profile read.
+- [x] Removed the auto-login blocking profile read.
+- [x] Dashboard starts customer and transaction listeners immediately and in parallel.
+- [x] Dashboard uses Firestore local profile cache as a fast paint path, followed by authoritative server profile hydration.
+- [x] Added `[LOGIN-TIMING]` and `[DASH-BOOT]` instrumentation to identify the exact remaining latency stage instead of guessing.
+- [x] Pages deployment passed for the latest loading-flow commit `ae5892ed920b2d400e9f2e455c9efcf89e7707e1` (workflow `36245048127`).
+- [ ] Real-device timing check: confirm login-to-dashboard first meaningful paint on the user's actual device/network and record the measured stages.
+- [ ] Rebuild the Android APK from the latest app-code commit after the web loading optimization; the previous APK release predates this optimization.
+
 ## Final status
-Production code is audited and the current web + Android packaging pipeline has a passing CI build/runtime smoke test. Real customer-data backup/restore against production data was not performed; no such destructive test is appropriate without a separately supplied test dataset.
+Production code is audited. Web loading optimization is deployed and the latest Pages build passed. Android packaging/runtime smoke has passed on the previous app-code release; a fresh Android build is still required after the latest web loading changes, and physical SIM SMS testing remains the final device-only validation. Real customer-data backup/restore against production data was not performed; no such destructive test is appropriate without a separately supplied test dataset.
 
 
 ## Customer Hisaab sharing — 2026-09-26
