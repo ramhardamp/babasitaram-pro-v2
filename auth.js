@@ -130,8 +130,8 @@ async function loginWithPassword() {
 
     if (error.code === 'auth/user-not-found') {
       msg = t('User not found. Please sign up.', 'यूजर नहीं मिला। कृपया साइन अप करें।');
-    } else if (error.code === 'auth/wrong-password') {
-      msg = t('Wrong password', 'गलत पासवर्ड');
+    } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      msg = t('Wrong email or password', 'ईमेल या पासवर्ड गलत है');
     } else if (error.code === 'auth/invalid-email') {
       msg = t('Invalid email', 'ईमेल सही नहीं');
     }
@@ -201,8 +201,7 @@ async function handleSuccessfulLogin(user) {
     }
   } catch (error) {
     console.error('Firestore error:', error);
-    // Agar Firestore me issue hai, to bhi setup par bhejo
-    showScreen('setup');
+    showToast(t('Could not verify account data. Please check your connection and try again.', 'अकाउंट डेटा सत्यापित नहीं हो सका। इंटरनेट कनेक्शन जांचें और दोबारा कोशिश करें।'), 'error');
   }
 }
 
@@ -269,7 +268,10 @@ auth.onAuthStateChanged((user) => {
         } else {
           showScreen('setup');
         }
-      }).catch(() => showScreen('setup'));
+      }).catch((error) => {
+        console.error('Auto-login profile check failed:', error);
+        showToast(t('Could not load your account. Please check your connection.', 'अकाउंट लोड नहीं हो सका। इंटरनेट कनेक्शन जांचें।'), 'error');
+      });
     }
   }
 });
