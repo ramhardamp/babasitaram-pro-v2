@@ -231,7 +231,28 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .dark-mode{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}.dark-mode body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.dark-mode .text-input,.dark-mode .select-input{color:var(--text)}.dark-mode .top-bar,.dark-mode .bottom-tabs{background:rgba(30,27,75,.95)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--credit-bg:#450a0a;--debit-bg:#052e16;--interest-bg:#451a03;--info-bg:#172554;--violet-bg:#2e1065;--error-bg:#450a0a;--success-bg:#052e16}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.select-input{color:var(--text)}.top-bar,.bottom-tabs{background:rgba(30,27,75,.95)}}
 .customer-search-wrap{padding:0 12px 7px}.customer-search{width:100%;height:42px;border:2px solid var(--border);border-radius:14px;background:var(--white);color:var(--text);font:700 14px/1.2 inherit;padding:0 14px;outline:none}.customer-search:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
-.settings-logout-last{margin-bottom:18px!important}.settings-logout-last:active{background:var(--bg)!important}.sms-toggle{width:46px;height:26px;border-radius:20px;border:0;background:#cbd5e1;position:relative;cursor:pointer;flex:0 0 46px}.sms-toggle.on{background:#22c55e}.sms-toggle:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .18s}.sms-toggle.on:after{transform:translateX(20px)}.sms-status{font-size:11px;font-weight:800}.sms-note{font-size:10px;color:var(--text-muted);line-height:1.45;padding:0 12px 12px}</style>
+.settings-logout-last{margin-bottom:18px!important}.settings-logout-last:active{background:var(--bg)!important}.sms-toggle{width:46px;height:26px;border-radius:20px;border:0;background:#cbd5e1;position:relative;cursor:pointer;flex:0 0 46px}.sms-toggle.on{background:#22c55e}.sms-toggle:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .18s}.sms-toggle.on:after{transform:translateX(20px)}.sms-status{font-size:11px;font-weight:800}.sms-note{font-size:10px;color:var(--text-muted);line-height:1.45;padding:0 12px 12px}
+/* Settings polish — organized, compact and touch-friendly */
+.settings-wrap{padding:14px 14px calc(132px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto}
+.settings-hero{background:var(--gradient-dark);color:#fff;border-radius:18px;padding:16px;margin-bottom:16px;box-shadow:0 10px 28px rgba(30,27,75,.18);display:flex;align-items:center;gap:12px}
+.settings-hero-logo{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#fff;padding:2px;flex:0 0 48px}
+.settings-hero-title{font-size:17px;font-weight:900;line-height:1.2}.settings-hero-sub{font-size:10px;opacity:.78;margin-top:3px}
+.settings-group{margin:0 0 16px}.settings-header{font-size:11px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.15px;padding:0 4px 7px;display:flex;align-items:center;gap:7px}.settings-header::before{content:'';width:4px;height:14px;border-radius:4px;background:var(--primary);display:block}
+.settings-section{background:var(--white);border:1px solid var(--border);border-radius:16px;margin-bottom:0;overflow:hidden;box-shadow:0 2px 8px rgba(15,23,42,.04)}
+.settings-item{min-height:60px;display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;gap:12px}.settings-item:last-child{border-bottom:none}.settings-item:active{background:var(--bg)}
+.settings-left{display:flex;align-items:center;gap:11px;flex:1;min-width:0}.settings-icon{font-size:19px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex:0 0 28px}.settings-icon img{width:28px;height:28px;border-radius:8px;object-fit:cover}
+.settings-label{font-size:13px;font-weight:800}.settings-sublabel{font-size:10.5px;color:var(--text-muted);margin-top:2px;line-height:1.35}.settings-arrow{color:var(--text-light);font-size:20px;margin-left:8px;flex:0 0 auto}
+.settings-description{padding:9px 14px 11px;font-size:10px;color:var(--text-muted);line-height:1.5;background:var(--bg);border-top:1px solid var(--border)}
+.settings-inline-input{width:76px;height:38px;padding:6px 8px;border:1.5px solid var(--border);border-radius:10px;text-align:center;font-weight:800;font-size:14px;font-family:inherit;background:var(--white);color:var(--text);outline:none}.settings-inline-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.settings-pill{font-size:10px;font-weight:900;padding:5px 9px;border-radius:999px;background:var(--primary-lighter);color:var(--primary);flex:0 0 auto}.settings-pill.off{background:var(--bg);color:var(--text-muted)}
+.settings-danger{color:var(--credit)!important}.settings-warning-row{background:var(--interest-bg)}
+.settings-subsection{padding:12px;border-top:1px solid var(--border)}.settings-subsection-title{font-size:10px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.export-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 12px 12px}.export-card{border:1.5px solid var(--border);background:var(--white);border-radius:12px;padding:11px 10px;text-align:left;cursor:pointer;font-family:inherit;color:var(--text);min-height:76px}.export-card:active{transform:scale(.98);background:var(--bg)}.export-card-icon{font-size:20px;margin-bottom:4px}.export-card-title{font-size:11.5px;font-weight:900}.export-card-sub{font-size:9.5px;color:var(--text-muted);margin-top:2px;line-height:1.35}.export-card.primary{border-color:var(--primary-light);background:var(--primary-lighter)}.export-note{font-size:9.5px;color:var(--text-muted);padding:0 12px 12px;line-height:1.5}
+.sms-note{font-size:9.5px;color:var(--text-muted);line-height:1.45;padding:10px 14px;background:var(--bg);border-top:1px solid var(--border)}
+.settings-logout-last{margin:12px 0 0!important;border:1.5px solid #fecaca!important;border-radius:12px!important;background:var(--credit-bg)!important}.settings-logout-last:active{background:var(--credit-bg)!important}
+@media(min-width:700px){.settings-wrap{padding-left:24px;padding-right:24px}.settings-grid-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.settings-group{margin-bottom:0}.settings-group.full{grid-column:1/-1}}
+@media(max-width:380px){.settings-wrap{padding-left:10px;padding-right:10px}.settings-item{padding-left:11px;padding-right:11px}.export-grid{gap:6px;padding-left:10px;padding-right:10px}}
+</style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
@@ -352,130 +373,128 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-settings" class="screen">
       <div class="settings-wrap">
-        <div class="settings-header">प्रोफाइल</div>
-        <div class="settings-section">
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">👤</div><div><div class="settings-label">नाम</div><div class="settings-sublabel" id="pOwnerName">-</div></div></div>
-            <div class="settings-arrow" title="Locked">🔒</div>
-          </div>
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📱</div><div><div class="settings-label">मोबाइल</div><div class="settings-sublabel" id="pPhone">-</div></div></div>
-            <div class="settings-arrow" title="Locked">🔒</div>
-          </div>
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label">ईमेल आईडी</div><div class="settings-sublabel" id="pEmail">-</div></div></div>
-            <div class="settings-arrow" title="Locked">🔒</div>
-          </div>
-          <div style="padding:9px 16px 12px;font-size:10px;color:var(--text-muted);line-height:1.45">🔒 अकाउंट बनाते समय सेव हुई पहचान की जानकारी यहाँ केवल दिखाई जाती है। इसे व्यवसाय सेटिंग्स से बदला नहीं जा सकता।</div>
-        </div>
-
-        <div class="settings-header" id="sH1">व्यवसाय</div>
-        <div class="settings-section">
-          <div class="settings-item" onclick="editShop()">
-            <div class="settings-left"><div class="settings-icon">🏪</div><div><div class="settings-label" id="sShopLbl">व्यवसाय का नाम</div><div class="settings-sublabel" id="sShopName">-</div></div></div>
-            <div class="settings-arrow">›</div>
-          </div>
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📱</div><div><div class="settings-label" id="sPhoneLbl">मोबाइल</div><div class="settings-sublabel" id="sPhone">-</div></div></div>
+        <div class="settings-hero">
+          <img class="settings-hero-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="Guru Shree">
+          <div>
+            <div class="settings-hero-title">Settings / सेटिंग्स</div>
+            <div class="settings-hero-sub">अकाउंट, व्यवसाय, सुरक्षा और डेटा — सब एक जगह</div>
           </div>
         </div>
 
-        <div class="settings-header" id="sH2">ब्याज सेटिंग्स</div>
-        <div class="settings-section">
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📈</div><div><div class="settings-label" id="sRateLbl">डिफ़ॉल्ट ब्याज दर</div><div class="settings-sublabel" id="sRateSub">प्रति माह (%)</div></div></div>
-            <input type="number" id="sDefaultRate" value="2" step="0.1" style="width:70px;height:36px;padding:6px;border:2px solid var(--border);border-radius:8px;text-align:center;font-weight:800;font-size:14px;font-family:inherit;background:var(--white);color:var(--text)" onchange="saveSettings()">
-          </div>
-        </div>
-
-        <div class="settings-header">सुरक्षा</div>
-        <div class="settings-section">
-          <div class="settings-item" onclick="toggleDarkMode()">
-            <div class="settings-left"><div class="settings-icon">🌙</div><div><div class="settings-label" id="sDarkLbl">Dark Mode</div><div class="settings-sublabel" id="sDarkSub">पूरे ऐप का dark mode</div></div></div>
-            <div class="settings-arrow" id="darkModeState">OFF</div>
-          </div>
-          <div class="settings-item" onclick="changePIN()">
-            <div class="settings-left"><div class="settings-icon">🔐</div><div><div class="settings-label">PIN / Security</div><div class="settings-sublabel">PIN बदलें</div></div></div>
-            <div class="settings-arrow">›</div>
-          </div>
-          <div class="settings-item" style="cursor:default">
-            <div class="settings-left"><div class="settings-icon">🌐</div><div><div class="settings-label">Language</div><div class="settings-sublabel">English / हिंदी</div></div></div>
-            <div class="lang-toggle" style="flex-shrink:0">
-              <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
-              <button class="lang-btn" data-lang="hi" onclick="setLang('hi')">हिंदी</button>
+        <div class="settings-grid-two">
+          <div class="settings-group">
+            <div class="settings-header">प्रोफाइल</div>
+            <div class="settings-section">
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon">👤</div><div><div class="settings-label">नाम</div><div class="settings-sublabel" id="pOwnerName">-</div></div></div><div class="settings-pill">🔒 Locked</div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon">📱</div><div><div class="settings-label">मोबाइल</div><div class="settings-sublabel" id="pPhone">-</div></div></div><div class="settings-pill">🔒 Locked</div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label">ईमेल आईडी</div><div class="settings-sublabel" id="pEmail">-</div></div></div><div class="settings-pill">🔒 Locked</div>
+              </div>
+              <div class="settings-description">🔒 अकाउंट बनाते समय सेव हुई पहचान केवल यहाँ दिखाई जाती है। इससे लॉगिन पहचान सुरक्षित रहती है।</div>
             </div>
           </div>
-        </div>
 
-        <div class="settings-header">📱 SMS Reminder</div>
-        <div class="settings-section">
-          <div class="settings-item" onclick="toggleSmsSetting('enabled')">
-            <div class="settings-left"><div class="settings-icon">📲</div><div><div class="settings-label">Automatic SMS</div><div class="settings-sublabel sms-status" id="smsPermissionState">OFF</div></div></div>
-            <button type="button" class="sms-toggle" id="smsEnabledToggle" onclick="event.stopPropagation();toggleSmsSetting('enabled')"></button>
-          </div>
-          <div class="settings-item" onclick="toggleSmsSetting('transactionSms')">
-            <div class="settings-left"><div class="settings-icon">🧾</div><div><div class="settings-label">Transaction Update SMS</div><div class="settings-sublabel">Udhaar / payment save होने पर</div></div></div>
-            <button type="button" class="sms-toggle" id="smsTxnToggle" onclick="event.stopPropagation();toggleSmsSetting('transactionSms')"></button>
-          </div>
-          <div class="settings-item" onclick="toggleSmsSetting('reminderSms')">
-            <div class="settings-left"><div class="settings-icon">⏰</div><div><div class="settings-label">7-Day Reminder</div><div class="settings-sublabel">उधार के 7 दिन बाद reminder</div></div></div>
-            <button type="button" class="sms-toggle" id="smsReminderToggle" onclick="event.stopPropagation();toggleSmsSetting('reminderSms')"></button>
-          </div>
-          <div class="sms-note">SMS केवल Android APK में native SMS permission मिलने पर अपने-आप भेजा जाएगा। Browser/PWA में message composer fallback रहेगा।</div>
-        </div>
-
-        <div class="settings-header" id="sH3">डेटा</div>
-        <div class="settings-section">
-          <div class="settings-item" onclick="verifyDataIntegrity()"><div class="settings-left"><div class="settings-icon">🛡️</div><div><div class="settings-label">Data Integrity Check</div><div class="settings-sublabel">बिना data बदले customer/transaction consistency check</div></div></div><div class="settings-arrow">›</div></div>
-          <div class="settings-item" onclick="fixAllBalances()">
-            <div class="settings-left">
-              <div class="settings-icon">🔧</div>
-              <div>
-                <div class="settings-label" style="color:var(--interest)">Fix All Balances</div>
-                <div class="settings-sublabel">पुराना गलत data recalculate करें</div>
+          <div class="settings-group">
+            <div class="settings-header" id="sH1">व्यवसाय</div>
+            <div class="settings-section">
+              <div class="settings-item" onclick="editShop()">
+                <div class="settings-left"><div class="settings-icon">🏪</div><div><div class="settings-label" id="sShopLbl">व्यवसाय का नाम</div><div class="settings-sublabel" id="sShopName">-</div></div></div><div class="settings-arrow">›</div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon">📱</div><div><div class="settings-label" id="sPhoneLbl">मोबाइल</div><div class="settings-sublabel" id="sPhone">-</div></div></div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon">📈</div><div><div class="settings-label" id="sRateLbl">डिफ़ॉल्ट ब्याज दर</div><div class="settings-sublabel" id="sRateSub">प्रति माह (%)</div></div></div>
+                <input class="settings-inline-input" type="number" id="sDefaultRate" value="2" step="0.1" onchange="saveSettings()">
               </div>
             </div>
-            <div class="settings-arrow">›</div>
           </div>
-          <div class="settings-item" onclick="backfillViewTokens()">
-            <div class="settings-left">
-              <div class="settings-icon">🔗</div>
-              <div>
-                <div class="settings-label" style="color:var(--primary)">Generate Portal Links</div>
-                <div class="settings-sublabel">Purane customers ke liye link banao</div>
+
+          <div class="settings-group">
+            <div class="settings-header">सुरक्षा और पसंद</div>
+            <div class="settings-section">
+              <div class="settings-item" onclick="changePIN()">
+                <div class="settings-left"><div class="settings-icon">🔐</div><div><div class="settings-label">PIN / Security</div><div class="settings-sublabel">PIN बदलें</div></div></div><div class="settings-arrow">›</div>
+              </div>
+              <div class="settings-item" onclick="toggleDarkMode()">
+                <div class="settings-left"><div class="settings-icon">🌙</div><div><div class="settings-label" id="sDarkLbl">Dark Mode</div><div class="settings-sublabel" id="sDarkSub">पूरे ऐप का dark mode</div></div></div><div class="settings-pill off" id="darkModeState">OFF</div>
+              </div>
+              <div class="settings-item" style="cursor:default">
+                <div class="settings-left"><div class="settings-icon">🌐</div><div><div class="settings-label">Language</div><div class="settings-sublabel">English / हिंदी</div></div></div>
+                <div class="lang-toggle" style="flex-shrink:0"><button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button><button class="lang-btn" data-lang="hi" onclick="setLang('hi')">हिंदी</button></div>
               </div>
             </div>
-            <div class="settings-arrow">›</div>
           </div>
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">💾</div><div><div class="settings-label">Backup & Export</div><div class="settings-sublabel">Recovery, Excel, PDF और CSV</div></div></div>
-          </div>
-          <div class="export-grid">
-            <button class="export-card primary" onclick="exportData()"><div class="export-card-icon">🔐</div><div class="export-card-title">Full Backup</div><div class="export-card-sub">Complete recovery JSON + checksum</div></button>
-            <button class="export-card" onclick="exportExcelData()"><div class="export-card-icon">📊</div><div class="export-card-title">Excel Workbook</div><div class="export-card-sub">Customers, transactions, loans, summary</div></button>
-            <button class="export-card" onclick="exportBusinessPdf()"><div class="export-card-icon">📄</div><div class="export-card-title">Business PDF</div><div class="export-card-sub">Printable report / Save as PDF</div></button>
-            <button class="export-card" onclick="exportCsvData()"><div class="export-card-icon">📋</div><div class="export-card-title">CSV Data</div><div class="export-card-sub">Excel-compatible customers + transactions</div></button>
-          </div>
-          <div class="export-note">🔒 Export read-only है। Firebase में कोई customer, transaction या balance modify नहीं होता।</div>
-        </div>
 
-        <div class="settings-header" id="sH4">ऐप के बारे में</div>
-        <div class="settings-section">
-          <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
+          <div class="settings-group">
+            <div class="settings-header">SMS और Notifications</div>
+            <div class="settings-section">
+              <div class="settings-item" onclick="toggleSmsSetting('enabled')">
+                <div class="settings-left"><div class="settings-icon">📲</div><div><div class="settings-label">Automatic SMS</div><div class="settings-sublabel sms-status" id="smsPermissionState">OFF</div></div></div><button type="button" class="sms-toggle" id="smsEnabledToggle" onclick="event.stopPropagation();toggleSmsSetting('enabled')"></button>
+              </div>
+              <div class="settings-item" onclick="toggleSmsSetting('transactionSms')">
+                <div class="settings-left"><div class="settings-icon">🧾</div><div><div class="settings-label">Transaction Update SMS</div><div class="settings-sublabel">उधार / payment save होने पर</div></div></div><button type="button" class="sms-toggle" id="smsTxnToggle" onclick="event.stopPropagation();toggleSmsSetting('transactionSms')"></button>
+              </div>
+              <div class="settings-item" onclick="toggleSmsSetting('reminderSms')">
+                <div class="settings-left"><div class="settings-icon">⏰</div><div><div class="settings-label">7-Day Reminder</div><div class="settings-sublabel">उधार के 7 दिन बाद reminder</div></div></div><button type="button" class="sms-toggle" id="smsReminderToggle" onclick="event.stopPropagation();toggleSmsSetting('reminderSms')"></button>
+              </div>
+              <div class="sms-note">SMS केवल Android APK में native permission मिलने पर अपने-आप भेजा जाएगा। Browser/PWA में message composer fallback रहेगा।</div>
+            </div>
           </div>
-          <a class="settings-item" href="mailto:babasitaram@gmail.com" style="text-decoration:none;color:inherit">
-            <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">babasitaram@gmail.com</div></div></div>
-            <div class="settings-arrow">›</div>
-          </a>
-          <div class="settings-item settings-logout-last" onclick="showLogoutConfirm()" style="margin-top:8px;border:2px solid var(--border);border-radius:12px;background:var(--white)">
-            <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label" id="sLogout" style="color:var(--credit)">लॉगआउट</div></div>
-            <div class="settings-arrow">›</div>
+
+          <div class="settings-group full">
+            <div class="settings-header" id="sH3">डेटा और Backup</div>
+            <div class="settings-section">
+              <div class="settings-item" onclick="verifyDataIntegrity()">
+                <div class="settings-left"><div class="settings-icon">🛡️</div><div><div class="settings-label">Data Integrity Check</div><div class="settings-sublabel">बिना data बदले consistency check</div></div></div><div class="settings-arrow">›</div>
+              </div>
+              <div class="settings-subsection">
+                <div class="settings-subsection-title">Backup & Export</div>
+                <div class="export-grid">
+                  <button class="export-card primary" onclick="exportData()"><div class="export-card-icon">🔐</div><div class="export-card-title">Full Backup</div><div class="export-card-sub">Complete recovery JSON + checksum</div></button>
+                  <button class="export-card" onclick="exportExcelData()"><div class="export-card-icon">📊</div><div class="export-card-title">Excel Workbook</div><div class="export-card-sub">Customers, transactions, loans, summary</div></button>
+                  <button class="export-card" onclick="exportBusinessPdf()"><div class="export-card-icon">📄</div><div class="export-card-title">Business PDF</div><div class="export-card-sub">Printable report / Save as PDF</div></button>
+                  <button class="export-card" onclick="exportCsvData()"><div class="export-card-icon">📋</div><div class="export-card-title">CSV Data</div><div class="export-card-sub">Excel-compatible data</div></button>
+                </div>
+                <div class="export-note">🔒 Export read-only है। Firebase में कोई customer, transaction या balance modify नहीं होता।</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group full">
+            <div class="settings-header">Advanced Data Tools</div>
+            <div class="settings-section">
+              <div class="settings-item settings-warning-row" onclick="fixAllBalances()">
+                <div class="settings-left"><div class="settings-icon">🔧</div><div><div class="settings-label settings-danger">Fix All Balances</div><div class="settings-sublabel">पुराने गलत balance को recalculate करने का advanced tool</div></div></div><div class="settings-arrow">›</div>
+              </div>
+              <div class="settings-item" onclick="backfillViewTokens()">
+                <div class="settings-left"><div class="settings-icon">🔗</div><div><div class="settings-label">Generate Portal Links</div><div class="settings-sublabel">पुराने customers के लिए public view link बनाएं</div></div></div><div class="settings-arrow">›</div>
+              </div>
+              <div class="settings-description">⚠️ ये tools सामान्य रोज़ के काम के लिए नहीं हैं। इन्हें केवल आवश्यकता होने पर चलाएँ।</div>
+            </div>
+          </div>
+
+          <div class="settings-group full">
+            <div class="settings-header" id="sH4">ऐप के बारे में और सहायता</div>
+            <div class="settings-section">
+              <div class="settings-item">
+                <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
+              </div>
+              <a class="settings-item" href="mailto:babasitaram@gmail.com" style="text-decoration:none;color:inherit">
+                <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">babasitaram@gmail.com</div></div></div><div class="settings-arrow">›</div>
+              </a>
+              <div class="settings-item settings-logout-last" onclick="showLogoutConfirm()">
+                <div class="settings-left"><div class="settings-icon">🚪</div><div class="settings-label settings-danger" id="sLogout">लॉगआउट</div></div><div class="settings-arrow settings-danger">›</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
   <button class="fab hidden" id="fab" onclick="openAddCustomer()">+</button>
