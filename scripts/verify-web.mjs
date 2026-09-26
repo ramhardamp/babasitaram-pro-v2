@@ -56,7 +56,7 @@ checks.push(['Settings shows locked profile identity',dashboard.includes('id="pO
 checks.push(['Business edit cannot change profile mobile',dashboard.includes('const updateData = {shopName}')&&!dashboard.includes('const updateData = {shopName,phone}')]);
 checks.push(['Existing users get non-destructive profile fields',dashboard.includes('const profilePatch={}')&&dashboard.includes('set(profilePatch,{merge:true})')&&dashboard.includes('if(!userData.profilePhone && userData.phone)')]);
 
-checks.push(['Login preloads dashboard data before redirect',index.includes('preloadDashboardData(user.uid)')&&index.includes('sessionStorage.setItem(\'bsp_dashboard_prefetched\'')&&index.includes('डेटा तैयार हो रहा है')]);
+checks.push(['Login preloads dashboard data before redirect',index.includes('preloadDashboardData(user.uid)')&&index.includes('sessionStorage.setItem(\'bsp_dashboard_prefetched\'')&&index.includes('डेटा तैयार है')]);
 checks.push(['Dashboard primes initial data before first render',dashboard.includes('async function primeDashboardData()')&&dashboard.includes('await primeDashboardData();')&&dashboard.includes('source:\'cache\'')&&dashboard.includes('initialCustomersReady=true')&&dashboard.includes('initialTransactionsReady=true')]);
 checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/jpeg;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
 checks.push(['PIN change has return target and visible back',dashboard.includes("pinReturnScreen='settings'")&&dashboard.includes('const canGoBack=!!pinReturnScreen')&&dashboard.includes("if(currentScreen==='pin' && pinReturnScreen)")]);
