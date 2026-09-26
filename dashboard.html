@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
 <title>BABASITARAM PRO - Dashboard</title>
-<link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml"><text y='.9em' font-size='90'>📒</text></svg>">
+<link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}
 html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:var(--text);font-size:16px;line-height:1.5;overflow-x:hidden}
 body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
-.app-shell{width:100%;max-width:480px;height:100dvh;min-height:100dvh;max-height:100dvh;background:var(--bg);position:relative;box-shadow:0 0 80px rgba(0,0,0,.3);overflow:hidden;display:flex;flex-direction:column}
-@media(min-width:500px){body{padding:24px 0}.app-shell{height:calc(100vh - 48px);min-height:0;max-height:940px;border-radius:32px}}
+.app-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;max-height:100dvh;background:var(--bg);position:relative;box-shadow:none;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:500px){body{padding:0}.app-shell{height:100dvh;min-height:100dvh;max-height:none;border-radius:0}}
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.3);position:sticky;top:0;z-index:50;flex-shrink:0}
-.top-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.top-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}.brand-logo{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:0 0 34px;box-shadow:0 2px 8px rgba(30,27,75,.18)}
 .top-title{font-size:15px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .back-btn:active{background:rgba(99,102,241,.2)}
@@ -25,12 +25,12 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .screen-container{flex:1 1 auto;height:0;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable;contain:layout style}.screen-container>.screen{width:100%;min-height:100%}
 .screen-container::-webkit-scrollbar{width:0}
 .screen{display:none;min-height:0}
-.screen.active{display:block}
+.screen.active{display:block}.screen#screen-dashboard.active{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
 .loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .pin-screen{padding:40px 20px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pin-logo{width:100px;height:100px;margin:0 auto 20px;background:var(--gradient);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 12px 40px rgba(99,102,241,.4)}
+.pin-logo{width:100px;height:100px;margin:0 auto 20px;background:var(--gradient);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 12px 40px rgba(99,102,241,.4);overflow:hidden}.pin-logo img{width:100%;height:100%;object-fit:cover}
 .pin-title{font-size:22px;font-weight:900;margin-bottom:8px}
 .pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:30px;line-height:1.5}
 .pin-dots{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
@@ -58,7 +58,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 14px;border-radius:var(--radius-full);background:var(--white);border:2px solid var(--border);font-size:12px;font-weight:800;color:var(--text-muted);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
 .tab.active{background:var(--primary-lighter);color:var(--primary);border-color:var(--primary)}
-.customer-list{padding:0 16px}
+.customer-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 16px calc(112px + env(safe-area-inset-bottom, 0px));overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .customer-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
 .customer-card:active{border-color:var(--primary);transform:scale(.99)}
 .customer-card{content-visibility:auto;contain-intrinsic-size:0 150px;contain:layout paint style;}
@@ -232,7 +232,9 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
   <div class="top-bar">
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
-      <div class="top-title" id="topTitle">📒 Loading...</div>
+      
+      <img class="brand-logo" src="assets/guru-shree-logo.svg" alt="Guru Shree">
+      <div class="top-title" id="topTitle">Loading...</div>
     </div>
     <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
     <div class="lang-toggle">
@@ -245,7 +247,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg" alt="Guru Shree" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg" alt="Guru Shree"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots">
@@ -416,7 +418,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
         <div class="settings-header" id="sH4">ऐप के बारे में</div>
         <div class="settings-section">
           <div class="settings-item">
-            <div class="settings-left"><div class="settings-icon">📒</div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
+            <div class="settings-left"><div class="settings-icon"><img src="assets/guru-shree-logo.svg" alt="Guru Shree"></div><div><div class="settings-label">BABASITARAM PRO</div><div class="settings-sublabel">Version 6.8 (Stable Mobile)</div></div></div>
           </div>
           <div class="settings-item">
             <div class="settings-left"><div class="settings-icon">📧</div><div><div class="settings-label" id="sSupport">सहायता</div><div class="settings-sublabel">ramhardamp@gmail.com</div></div></div>
@@ -482,6 +484,7 @@ let customers = [];
 let transactions = [];
 let unsubCustomers = null;
 let unsubTransactions = null;
+let ledgerWriteBusy = false;
 
 let storedPIN = null;
 let pendingPIN = '';
@@ -525,13 +528,25 @@ function monthsBetween(start, end) {
 }
 
 function calcLoan(loan){
-  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
-  const currentP=Math.max(0,loan.principal-repaid);
-  const months=monthsBetween(loan.startDate,new Date());
-  const interestAccr=Math.round((currentP*loan.rate*months)/100);
-  const intPaid=loan.interestPaid||0;
+  const principal=Math.max(0,Number(loan.principal)||0);
+  const rate=Math.max(0,Number(loan.rate)||0);
+  const repaid=(Array.isArray(loan.repayments)?loan.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
+  const currentP=Math.max(0,principal-repaid);
+  const monthsRaw=monthsBetween(loan.startDate,new Date());
+  const months=Number.isFinite(monthsRaw)?monthsRaw:0;
+  const interestAccr=Math.round((currentP*rate*months)/100);
+  const intPaid=Math.max(0,Number(loan.interestPaid)||0);
   const intOut=Math.max(0,interestAccr-intPaid);
-  return{repaidPrincipal:repaid,currentPrincipal:Math.round(currentP),months:Math.round(months*10)/10,interestAccrued:interestAccr,interestPaid:Math.round(intPaid),interestOutstanding:Math.round(intOut),loanTotal:Math.round(currentP+intOut),progress:loan.principal>0?Math.round((repaid/loan.principal)*100):0};
+  return{
+    repaidPrincipal:Math.round(repaid),
+    currentPrincipal:Math.round(currentP),
+    months:Math.round(months*10)/10,
+    interestAccrued:interestAccr,
+    interestPaid:Math.round(intPaid),
+    interestOutstanding:Math.round(intOut),
+    loanTotal:Math.round(currentP+intOut),
+    progress:principal>0?Math.min(100,Math.round((repaid/principal)*100)):0
+  };
 }
 function getPartyTransactions(cid){return txnIndex.get(cid)||[]}
 function rebuildTxnIndex(){txnIndex.clear();for(const tx of transactions){if(!tx.partyId)continue;const list=txnIndex.get(tx.partyId)||[];list.push(tx);txnIndex.set(tx.partyId,list)}}
@@ -562,7 +577,7 @@ function observeCustomerListTail(filteredLength){
       customerRenderLimit=Math.min(customerRenderLimit+CUSTOMER_RENDER_CHUNK,filteredLength);
       renderDashboard();
     }
-  },{root:document.getElementById('screenContainer'),rootMargin:'500px 0px',threshold:0});
+  ],{root:document.getElementById('customerList'),rootMargin:'500px 0px',threshold:0});
   customerListObserver.observe(tail);
 }
 function getTotals(){
@@ -592,6 +607,23 @@ function generateToken(){
   return token;
 }
 
+function sortableDateValue(value){
+  try{
+    if(value==null)return 0;
+    if(typeof value==='number')return Number.isFinite(value)?value:0;
+    if(value instanceof Date)return value.getTime()||0;
+    if(typeof value?.toDate==='function'){
+      const d=value.toDate();
+      return d instanceof Date?(d.getTime()||0):0;
+    }
+    if(typeof value==='object'&&typeof value.seconds==='number'){
+      return value.seconds*1000+(Number(value.nanoseconds)||0)/1000000;
+    }
+    const ms=Date.parse(String(value));
+    return Number.isNaN(ms)?0:ms;
+  }catch(_){return 0;}
+}
+
 async function updatePublicView(partyId, viewToken, partyData){
   try{
     const txnSnap=await db.collection('users').doc(currentUser.uid)
@@ -605,8 +637,7 @@ async function updatePublicView(partyId, viewToken, partyData){
       if(t.type==='udhaar'||t.type==='byaj_loan')totalUdhaar+=amt;
       else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
     });
-    txns.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    // 👈 यहाँ JSON ट्रिक लगाई गई है
+    txns.sort((a,b)=>sortableDateValue(b.date)-sortableDateValue(a.date));
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
       shopName:userData.shopName||'BABASITARAM PRO',
@@ -616,7 +647,10 @@ async function updatePublicView(partyId, viewToken, partyData){
     };
     await db.collection('publicViews').doc(viewToken).set(publicViewData);
     console.log('✅ Public view updated:', viewToken);
-  }catch(e){console.error('❌ updatePublicView error:', e)}
+  }catch(e){
+    console.error('❌ updatePublicView error:', e);
+    throw e;
+  }
 }
 
 function getCustomerViewLink(token){return CUSTOMER_VIEW_BASE_URL + '?token=' + token;}
@@ -842,7 +876,7 @@ function showScreen(name, noPush){
   
   // Top title
   const titles = {
-    dashboard: '📒 ' + (userData?.shopName || 'BABASITARAM PRO'),
+    dashboard: (userData?.shopName || 'BABASITARAM PRO'),
     customer: '← ' + (customers.find(c => c.id === currentCustomerId)?.name || ''),
     reports: '📊 ' + t('Reports', 'रिपोर्ट'),
     settings: '⚙️ ' + t('Settings', 'सेटिंग्स'),
@@ -928,7 +962,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
+  document.getElementById('topTitle').textContent=(userData.shopName||'BABASITARAM PRO');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1067,16 +1101,22 @@ function shareCustomerLinkWhatsApp(id){
 
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
+  const derivedMessage=txn.type==='loan_repay'
+    ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
+    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।');
+  const actionHtml=isDerivedLoanTxn
+    ? `<div style="padding:12px;background:var(--interest-bg);border:1px solid var(--interest);border-radius:12px;margin-bottom:12px;color:#92400e;font-size:13px;font-weight:700;text-align:center">${derivedMessage}</div>`
+    : `<button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
+       <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>`;
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
     <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
       <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
       <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
       <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div></div>
-    <button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
-    <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>
-    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Cancel','रद्द')}</button>`);
+    ${actionHtml}
+    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);
 }
-
 function editTxnConfirm(id){requirePIN(()=>{const txn=transactions.find(t=>t.id===id);if(!txn){toast('Transaction not found','error');return}openEditTxnModal(txn)})}
 function deleteTxnConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this transaction?','यह लेन-देन डिलीट करें?')))return;deleteTxn(id)})}
 
@@ -1097,37 +1137,109 @@ function openEditTxnModal(txn){
 
 async function saveEditedTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
-  const newAmt=parseFloat(document.getElementById('mAmt').value);
-  const newNote=document.getElementById('mNote').value.trim();
-  const newDate=document.getElementById('mDate').value;
+  const newAmt=parseFloat(document.getElementById('mAmt')?.value);
+  const newNote=document.getElementById('mNote')?.value.trim()||'';
+  const newDate=document.getElementById('mDate')?.value||'';
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
+  if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
+
   try{
-    const c=customers.find(x=>x.id===txn.partyId);if(!c)return;
-    const updateData = {amount:newAmt,note:newNote,date:newDate};
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
-    let newBal = 0;
-    const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
-    allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0);});
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
-    if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
-    closeModal();toast(t('Updated','अपडेट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error: '+e.message,'error')}
+    const uid=currentUser.uid;
+    const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
+    const c=customers.find(x=>String(x.id)===String(txn.partyId));
+
+    await db.runTransaction(async(transaction)=>{
+      const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
+      if(!txSnap.exists)throw new Error('Transaction not found');
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const current=txSnap.data()||{};
+      const oldAmt=Number(current.amount)||0;
+      const oldType=String(current.type||'');
+
+      // Derived loan-payment records must remain aligned with parent-loan history.
+      if(oldType==='loan_repay'||oldType==='interest_paid'){
+        throw new Error('Derived loan transaction cannot be edited independently');
+      }
+
+      // Only normal Udhaar/Jama transactions affect the party balance.
+      let balanceDelta=0;
+      if(oldType==='udhaar')balanceDelta-=oldAmt;
+      else if(oldType==='jama')balanceDelta+=oldAmt;
+      if(oldType==='udhaar')balanceDelta+=newAmt;
+      else if(oldType==='jama')balanceDelta-=newAmt;
+
+      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate});
+      if(balanceDelta!==0)transaction.update(partyRef,{
+        balance:firebase.firestore.FieldValue.increment(balanceDelta)
+      });
+    });
+
+    const freshParty=await partyRef.get();
+    const newBal=Number(freshParty.data()?.balance)||0;
+    if(c?.viewToken){
+      try{
+        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+      }catch(viewErr){console.warn('Public view update failed after transaction edit:',viewErr);}
+    }
+    closeModal();
+    toast(t('Updated','अपडेट हो गया'),'success');
+  }catch(e){
+    console.error('saveEditedTxn failed:',e);
+    toast('Error: '+(e.message||'Update failed'),'error');
+  }
 }
 
 async function deleteTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
+
   try{
-    const c=customers.find(x=>x.id===txn.partyId);
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
-    let newBal = 0;
-    const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
-    allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0);});
-    if(c){
-      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
-      if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    const uid=currentUser.uid;
+    const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
+    const c=customers.find(x=>String(x.id)===String(txn.partyId));
+
+    await db.runTransaction(async(transaction)=>{
+      const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
+      if(!txSnap.exists)throw new Error('Transaction already deleted');
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const current=txSnap.data()||{};
+      const amount=Number(current.amount)||0;
+      const type=String(current.type||'');
+
+      // Derived loan-payment records cannot be deleted independently because
+      // their parent loan history would remain inconsistent.
+      if(type==='loan_repay'||type==='interest_paid'){
+        throw new Error('Derived loan transaction cannot be deleted independently');
+      }
+
+      // Reverse only the balance effect of the transaction being removed.
+      let reverseDelta=0;
+      if(type==='udhaar')reverseDelta=-amount;
+      else if(type==='jama')reverseDelta=amount;
+
+      transaction.delete(txRef);
+      if(reverseDelta!==0)transaction.update(partyRef,{
+        balance:firebase.firestore.FieldValue.increment(reverseDelta)
+      });
+    });
+
+    const freshParty=await partyRef.get();
+    const newBal=Number(freshParty.data()?.balance)||0;
+    if(c?.viewToken){
+      try{
+        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+      }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
     }
     toast(t('Deleted','डिलीट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){
+    console.error('deleteTxn failed:',e);
+    toast('Error: '+(e.message||'Delete failed'),'error');
+  }
 }
 
 function showLoanMenu(id){
@@ -1170,6 +1282,11 @@ async function saveEditedLoan(id){
   if(!newP||newP<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!newR||newR<=0)return toast(t('Enter rate','दर डालें'),'error');
   try{
+    const existingRepayments=Array.isArray(loan.repayments)?loan.repayments:[];
+    const principalChanged=Number(loan.principal)!==Number(newP);
+    if(principalChanged&&existingRepayments.length>0){
+      return toast(t('Principal cannot be changed after repayment.','वापसी होने के बाद मूलधन नहीं बदला जा सकता।'),'error');
+    }
     const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
@@ -1180,12 +1297,35 @@ async function saveEditedLoan(id){
 
 async function deleteLoan(id){
   const loan=transactions.find(t=>t.id===id);if(!loan)return;
+  const repayments=Array.isArray(loan.repayments)?loan.repayments:[];
+  const interestPaid=Number(loan.interestPaid)||0;
+  if(repayments.length>0||interestPaid>0){
+    return toast(t('Loan with payment history cannot be deleted. Reverse/correct it instead.','जिस लोन में भुगतान इतिहास है उसे डिलीट नहीं किया जा सकता। पहले सुधार/रिवर्सल करें।'),'error');
+  }
   try{
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
+    const uid=currentUser.uid;
+    const loanRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    await db.runTransaction(async transaction=>{
+      const snap=await transaction.get(loanRef);
+      if(!snap.exists)throw new Error('Loan not found');
+      const fresh=snap.data()||{};
+      if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0){
+        throw new Error('Loan has payment history');
+      }
+      transaction.delete(loanRef);
+    });
     const c=customers.find(x=>x.id===loan.partyId);
-    if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+    if(c?.viewToken){
+      try{await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
+      catch(viewErr){console.warn('Public view update failed after loan delete:',viewErr);}
+    }
     toast(t('Loan deleted','लोन डिलीट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){
+    console.error('deleteLoan failed:',e);
+    toast(e.message==='Loan has payment history'
+      ? t('Loan with payment history cannot be deleted.','भुगतान इतिहास वाला लोन डिलीट नहीं किया जा सकता।')
+      : 'Error: '+(e.message||'Delete failed'),'error');
+  }
 }
 
 function showModal(html){
@@ -1227,7 +1367,6 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     
-    // 👈 JSON ट्रिक लगाई गई है
     const partyData = {name,phone,email,balance:bal,viewToken};
     batch.set(partyRef, partyData);
     
@@ -1237,10 +1376,10 @@ async function saveCustomer(){
       batch.set(txnRef, txnData);
     }
     await batch.commit();
-    await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal});
     closeModal();
-    if(bal>0){await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
+    try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
+    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
@@ -1271,27 +1410,65 @@ async function updateCustomer(){
     const newEmail=document.getElementById('mEmail').value.trim();
     const updateData = {name,phone:newPhone,email:newEmail};
     await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}
     closeModal();toast(t('Updated','अपडेट'),'success');
+    if(c&&c.viewToken){try{await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}catch(viewErr){console.warn('Public view sync failed after customer update:',viewErr)}}
   }catch(e){console.error(e);toast('Error','error')}
 }
 async function deleteCustomer(){
   if(!confirm(t('Delete customer?','ग्राहक डिलीट करें?')))return;
   try{
-    const c=customers.find(x=>x.id===currentCustomerId);
-    const txns=transactions.filter(t=>t.partyId===currentCustomerId);
-    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
-    for(let i=0;i<txns.length;i+=450){
-      const batch=db.batch();
-      txns.slice(i,i+450).forEach(t2=>batch.delete(txCol.doc(t2.id)));
-      await batch.commit();
+    const uid=currentUser.uid;
+    const customerId=String(currentCustomerId||'').trim();
+    if(!uid||!customerId)throw new Error('Invalid customer');
+
+    // Never destructively delete a customer that has ledger history.
+    // The previous implementation deleted transactions in batches first,
+    // which could leave permanent partial deletion if a later write failed.
+    const txCol=db.collection('users').doc(uid).collection('transactions');
+    const txSnap=await txCol.where('partyId','==',customerId).limit(1).get();
+    if(!txSnap.empty){
+      return toast(
+        t('Customer has transaction history. Delete is blocked to protect data.',
+          'इस ग्राहक का लेन-देन इतिहास मौजूद है। डेटा सुरक्षित रखने के लिए डिलीट रोक दिया गया है।'),
+        'error'
+      );
     }
-    if(c&&c.viewToken){try{await db.collection('publicViews').doc(c.viewToken).delete()}catch(e){console.warn('Public view cleanup failed',e)}}
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).delete();
+
+    const c=customers.find(x=>String(x.id)===customerId);
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(customerId);
+    const publicRef=c?.viewToken
+      ? db.collection('publicViews').doc(String(c.viewToken))
+      : null;
+
+    // No ledger history exists, so remove the party and public view together.
+    await db.runTransaction(async(transaction)=>{
+      const partySnap=await transaction.get(partyRef);
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const liveTx=await transaction.get(
+        txCol.where('partyId','==',customerId).limit(1)
+      );
+      if(!liveTx.empty)throw new Error('Customer gained transaction history');
+
+      transaction.delete(partyRef);
+      if(publicRef){
+        const publicSnap=await transaction.get(publicRef);
+        if(publicSnap.exists)transaction.delete(publicRef);
+      }
+    });
+
     closeModal();currentCustomerId=null;screenHistory=[];
     showScreen('dashboard',true);
-    toast(t('Deleted','डिलीट'),'success');
-  }catch(e){console.error(e);toast(t('Delete failed — data was not partially committed. Please retry.','डिलीट विफल — डेटा आंशिक रूप से सेव नहीं किया गया। फिर कोशिश करें।'),'error')}
+    toast(t('Deleted','डिलीट हो गया'),'success');
+  }catch(e){
+    console.error('deleteCustomer failed:',e);
+    toast(
+      e.message==='Customer gained transaction history'
+        ? t('Delete cancelled because transaction history was created.','लेन-देन इतिहास बन जाने के कारण डिलीट रद्द हुआ।')
+        : 'Error: '+(e.message||'Delete failed'),
+      'error'
+    );
+  }
 }
 
 function openTxnModal(type){
@@ -1313,64 +1490,63 @@ async function saveTxn(type){
   const note=document.getElementById('mNote').value.trim();
   const date=document.getElementById('mDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
 
-  // Firestore document IDs are always handled as plain strings.
   const customerId=String(currentCustomerId||'').trim();
   const c=customers.find(x=>String(x.id)===customerId);
   if(!customerId||!c)return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
   if(type!=='udhaar'&&type!=='jama')return toast(t('Invalid transaction type','लेन-देन प्रकार गलत है'),'error');
 
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const partyRef=db.collection('users').doc(currentUser.uid)
       .collection('parties').doc(customerId);
     const txCol=db.collection('users').doc(currentUser.uid)
       .collection('transactions');
     const txnRef=txCol.doc();
-
-    // Atomically create the transaction and update the customer's balance.
-    // This removes the previous transaction-query path that caused the
-    // "Expected type 'Object' ... custom Id object" Firestore error.
     const delta=type==='udhaar'?amt:-amt;
     const batch=db.batch();
 
-    batch.set(txnRef,{
-      partyId:customerId,
-      type:type,
-      amount:amt,
-      note:note,
-      date:date
-    });
-
-    batch.update(partyRef,{
-      balance:firebase.firestore.FieldValue.increment(delta)
-    });
+    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date});
+    batch.update(partyRef,{balance:firebase.firestore.FieldValue.increment(delta)});
 
     await batch.commit();
-
-    // Read the committed balance for public-view/email updates.
-    const freshParty=await partyRef.get();
-    if(!freshParty.exists)throw new Error('Customer not found after save');
-    const newBal=Number(freshParty.data().balance)||0;
-
-    if(c.viewToken){
-      await updatePublicView(customerId,c.viewToken,{
-        name:c.name,phone:c.phone,balance:newBal
-      });
-    }
+    committed=true;
+    ledgerWriteBusy=false;
 
     closeModal();
     toast(t('Saved','सेव हो गया'),'success');
 
-    if(c.email){
-      const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
-      if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
+    // Financial write is already committed. Public view/email are secondary;
+    // their failure must never make the user retry the ledger write.
+    try{
+      const freshParty=await partyRef.get();
+      if(!freshParty.exists)throw new Error('Customer not found after save');
+      const newBal=Number(freshParty.data().balance)||0;
+      if(c.viewToken){
+        try{
+          await updatePublicView(customerId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+        }catch(viewErr){console.warn('Public view update failed after transaction save:',viewErr);}
+      }
+      if(c.email){
+        const sent=await sendTransactionEmail(c,type,amt,note,date,newBal);
+        if(sent)setTimeout(()=>toast('📧 Email भेज दिया गया','success'),1200);
+      }
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after transaction save:',syncErr);
     }
   }catch(e){
+    ledgerWriteBusy=false;
     console.error('saveTxn failed:',e);
-    toast('Error: '+(e.message||'Save failed'),'error');
+    if(committed){
+      closeModal();
+      toast(t('Saved, but sync is pending','सेव हो गया, sync बाकी है'),'success');
+    }else{
+      toast('Error: '+(e.message||'Save failed'),'error');
+    }
   }
 }
-
 function openLoanModal(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">📈 ${t('New Loan','नया लोन')}</div>
     <div class="input-group"><label class="input-label">${t('Principal','मूलधन')} *</label>
@@ -1394,17 +1570,54 @@ async function saveLoan(){
   const note=document.getElementById('mNote').value.trim();
   if(!p||p<=0)return toast(t('Enter principal','मूलधन डालें'),'error');
   if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
-    // 👈 JSON ट्रिक लगाई गई है
-    const loanData = {partyId:String(currentCustomerId),type:'byaj_loan',principal:p,rate:r,startDate:sd,note:note,status:'active',interestPaid:0,repayments:[],date:sd};
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add(loanData);
-    
-    if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Loan created','लोन बनाया'),'success');
-    if(c.email){await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0)}
-  }catch(e){console.error(e);toast('Error','error')}
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    const loanRef=txCol.doc();
+    const loanData={
+      partyId:String(currentCustomerId),
+      type:'byaj_loan',
+      principal:p,
+      rate:r,
+      startDate:sd,
+      note:note,
+      status:'active',
+      interestPaid:0,
+      repayments:[],
+      date:sd,
+      loanId:loanRef.id
+    };
+    await loanRef.set(loanData);
+    committed=true;
+    ledgerWriteBusy=false;
+
+    closeModal();
+    toast(t('Loan created','लोन बनाया'),'success');
+
+    try{
+      if(c.viewToken){
+        await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      }
+      if(c.email)await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after loan creation:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Loan created, but sync is pending','लोन बन गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast('Error','error');
+    }
+  }
 }
+
 
 function openRepayModal(){
   const loans=getLoans(currentCustomerId);
@@ -1425,35 +1638,61 @@ async function saveRepay(){
   const amt=parseFloat(document.getElementById('mRepay').value);
   const rdate=document.getElementById('mRepayDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
-  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
-  if(amt>loan.principal-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
+  const repaid=(Array.isArray(loan.repayments)?loan.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
+  if(amt>Number(loan.principal||0)-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc(id);
-    const result=await db.runTransaction(async transaction=>{
+    await db.runTransaction(async transaction=>{
       const loanSnap=await transaction.get(loanRef);
       if(!loanSnap.exists)throw new Error('Loan not found');
       const fresh=loanSnap.data();
-      const freshRepaid=(fresh.repayments||[]).reduce((sum,r)=>sum+(Number(r.amount)||0),0);
+      if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
+      const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
-      const newRepayments=[...(fresh.repayments||[]),{date:rdate,amount:amt}];
+      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
-      
-      const txnData = {partyId:String(currentCustomerId),type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate};
-      transaction.set(txnRef, txnData);
-      
-      return true;
+      transaction.set(txnRef,{
+        partyId:String(currentCustomerId),
+        type:'loan_repay',
+        amount:amt,
+        note:t('Loan repayment','लोन वापसी'),
+        date:rdate,
+        loanId:String(id)
+      });
     });
-    if(!result)return;
+    committed=true;
+    ledgerWriteBusy=false;
+
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Recorded','दर्ज'),'success');
-    if(c&&c.email){await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0)}
-  }catch(e){console.error(e);toast(e.message==='Exceeds principal'?t('Exceeds principal','मूलधन से ज्यादा'):t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
+    closeModal();
+    toast(t('Recorded','दर्ज'),'success');
+
+    try{
+      if(c?.viewToken)await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      if(c?.email)await sendTransactionEmail(c,'loan_repay',amt,'Loan repayment',rdate,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after loan repayment:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Recorded, but sync is pending','दर्ज हो गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast(e.message==='Exceeds principal'?t('Exceeds principal','मूलधन से ज्यादा'):t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error');
+    }
+  }
 }
+
 
 function openIntPaidModal(){
   const loans=getLoans(currentCustomerId);
@@ -1474,7 +1713,11 @@ async function saveIntPaid(){
   const amt=parseFloat(document.getElementById('mIntAmt').value);
   const idate=document.getElementById('mIntDate').value;
   if(!amt||amt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(ledgerWriteBusy)return toast(t('Please wait…','कृपया प्रतीक्षा करें…'),'error');
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
+
+  ledgerWriteBusy=true;
+  let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc(id);
@@ -1482,19 +1725,43 @@ async function saveIntPaid(){
       const loanSnap=await transaction.get(loanRef);
       if(!loanSnap.exists)throw new Error('Loan not found');
       const fresh=loanSnap.data();
+      if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
-      
-      const txnData = {partyId:String(currentCustomerId),type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate};
-      transaction.set(txnRef, txnData);
-      
+      transaction.set(txnRef,{
+        partyId:String(currentCustomerId),
+        type:'interest_paid',
+        amount:amt,
+        note:t('Interest received','ब्याज मिला'),
+        date:idate,
+        loanId:String(id)
+      });
     });
+    committed=true;
+    ledgerWriteBusy=false;
+
     const c=customers.find(x=>x.id===currentCustomerId);
-    if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-    closeModal();toast(t('Recorded','दर्ज'),'success');
-    if(c&&c.email){await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0)}
-  }catch(e){console.error(e);toast(t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error')}
+    closeModal();
+    toast(t('Recorded','दर्ज'),'success');
+
+    try{
+      if(c?.viewToken)await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+      if(c?.email)await sendTransactionEmail(c,'interest_paid',amt,'Interest received',idate,c.balance||0);
+    }catch(syncErr){
+      console.warn('Post-commit sync failed after interest payment:',syncErr);
+    }
+  }catch(e){
+    ledgerWriteBusy=false;
+    console.error(e);
+    if(committed){
+      closeModal();
+      toast(t('Recorded, but sync is pending','दर्ज हो गया, लेकिन sync बाकी है'),'success');
+    }else{
+      toast(t('Error — nothing was partially saved.','त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।'),'error');
+    }
+  }
 }
+
 
 function renderReports(){
   if(!userData){showScreen('dashboard',true);return}
