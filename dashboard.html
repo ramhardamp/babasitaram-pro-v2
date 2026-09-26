@@ -612,7 +612,7 @@ async function updatePublicView(partyId, viewToken, partyData){
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       customerName:partyData.name, customerPhone:partyData.phone||'',
       balance:partyData.balance||0, totalUdhaar, totalJama, transactions:txns,
-      updatedAt: new Date() // 👈 यहाँ बदलाव किया गया है
+      updatedAt: firebase.firestore.Timestamp.now() // 👈 यहाँ बदलाव किया गया है
     });
     console.log('✅ Public view updated:', viewToken);
   }catch(e){console.error('❌ updatePublicView error:', e)}
@@ -1224,11 +1224,11 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     // 👇 यहाँ बदलाव किया गया है
-    batch.set(partyRef,{name,phone,email,balance:bal,viewToken,createdAt:new Date()});
+    batch.set(partyRef,{name,phone,email,balance:bal,viewToken,createdAt:firebase.firestore.Timestamp.now()});
     if(bal !== 0){
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
       // 👇 यहाँ भी बदलाव किया गया है
-      batch.set(txnRef,{partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0],createdAt:new Date()});
+      batch.set(txnRef,{partyId:partyRef.id,type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.Timestamp.now()});
     }
     await batch.commit();
     await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal});
@@ -1319,7 +1319,7 @@ async function saveTxn(type){
       if(type==='udhaar')newBal+=amt; else if(type==='jama')newBal-=amt;
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
       // 👇 यहाँ बदलाव किया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type,amount:amt,note,date,createdAt:new Date()});
+      transaction.set(txnRef,{partyId:currentCustomerId,type,amount:amt,note,date,createdAt:firebase.firestore.Timestamp.now()});
       transaction.update(partyRef,{balance:newBal});
       return newBal;
     });
@@ -1356,7 +1356,7 @@ async function saveLoan(){
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
     // 👇 यहाँ बदलाव किया गया है
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note,status:'active',interestPaid:0,repayments:[],date:sd,createdAt:new Date()});
+    await db.collection('users').doc(currentUser.uid).collection('transactions').add({partyId:currentCustomerId,type:'byaj_loan',principal:p,rate:r,startDate:sd,note,status:'active',interestPaid:0,repayments:[],date:sd,createdAt:firebase.firestore.Timestamp.now()});
     if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Loan created','लोन बनाया'),'success');
     if(c.email){await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0)}
@@ -1399,7 +1399,7 @@ async function saveRepay(){
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
       // 👇 यहाँ बदलाव किया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:new Date()});
+      transaction.set(txnRef,{partyId:currentCustomerId,type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate,createdAt:firebase.firestore.Timestamp.now()});
       return true;
     });
     if(!result)return;
@@ -1440,7 +1440,7 @@ async function saveIntPaid(){
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
       // 👇 यहाँ बदलाव किया गया है
-      transaction.set(txnRef,{partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:new Date()});
+      transaction.set(txnRef,{partyId:currentCustomerId,type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate,createdAt:firebase.firestore.Timestamp.now()});
     });
     const c=customers.find(x=>x.id===currentCustomerId);
     if(c&&c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
