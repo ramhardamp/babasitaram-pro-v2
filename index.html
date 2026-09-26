@@ -60,7 +60,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
 @media(prefers-color-scheme:dark){:root{--text:#f1f5f9;--text-muted:#94a3b8;--text-light:#64748b;--border:#334155;--bg:#0f172a;--white:#1e293b;--primary-lighter:#1e1b4b;--primary-light:#312e81;--error-bg:#450a0a;--success-bg:#052e16;--info-bg:#172554}body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%)}.text-input,.email-input,.password-input{color:var(--text);background:var(--white)}}
-</style>
+.login-data-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.78);backdrop-filter:blur(8px);padding:20px}.login-data-loading.hidden{display:none!important}.login-data-loading-card{width:min(420px,92vw);background:var(--white);border:2px solid var(--border);border-radius:22px;padding:28px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}.login-data-loading .loading-spinner{margin:0 auto 16px;width:42px;height:42px}.login-data-loading-title{font-size:20px;font-weight:900;color:var(--text)}.login-data-loading-text{margin-top:8px;font-size:13px;line-height:1.6;color:var(--text-muted)}.login-data-loading-step{margin-top:12px;font-size:12px;font-weight:800;color:var(--primary)}</style>
 </head>
 <body>
 <div class="app-shell">
@@ -68,6 +68,15 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
     <div class="brand-logo-top"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree" style="width:100%;height:100%;object-fit:cover;border-radius:18px"></div>
     <div class="brand-title">BABASITARAM PRO<span class="brand-title-line2">DIGITAL KHATA</span></div>
     <div class="brand-newtagline">आपका हिसाब, हमेशा सुरक्षित</div>
+  </div>
+
+  <div id="loginDataLoading" class="login-data-loading hidden" aria-live="polite">
+    <div class="login-data-loading-card">
+      <div class="loading-spinner"></div>
+      <div class="login-data-loading-title">लॉगिन हो रहा है...</div>
+      <div class="login-data-loading-text">आपका डेटा लोड हो रहा है। कृपया इस स्क्रीन को बंद न करें।</div>
+      <div class="login-data-loading-step" id="loginDataLoadingStep">ग्राहक और लेन-देन तैयार हो रहे हैं...</div>
+    </div>
   </div>
 
   <div class="screen-container">
@@ -176,56 +185,80 @@ async function handleLogin() {
   }
 
   setBtnLoading(btn, true);
+  showLoginDataLoading('लॉगिन हो रहा है...', 'ग्राहक और लेन-देन तैयार हो रहे हैं...');
 
   try {
     const result = await auth.signInWithEmailAndPassword(email, password);
     const user = result.user;
 
-    // Email verified check
     if (!user.emailVerified) {
+      hideLoginDataLoading();
       document.getElementById('verifyEmailDisplay').textContent = user.email;
       showScreen('verify');
       setBtnLoading(btn, false);
       return;
     }
 
-    // Firestore check
     const userDoc = await db.collection('users').doc(user.uid).get();
 
     if (!userDoc.exists) {
-      // Naya user — setup (signup.html par bhejo)
+      hideLoginDataLoading();
       window.location.href = 'signup.html';
       return;
     }
 
-    // Dashboard खोलने से पहले initial Firestore data warm करें.
-    // इससे login थोड़ा समय लेगा, लेकिन dashboard पर अलग "Data load ho raha hai..."
-    // screen दिखने की जरूरत नहीं पड़ेगी.
-    setBtnLoading(btn, true);
-    const btnText = btn.querySelector('.btn-text');
-    if (btnText) btnText.textContent = '⏳ डेटा तैयार हो रहा है...';
+    if (!userDoc.data().shopName) {
+      hideLoginDataLoading();
+      window.location.href = 'signup.html';
+      return;
+    }
+
+    setLoginDataLoadingStep('ग्राहक और लेन-देन का डेटा लोड हो रहा है...');
     await preloadDashboardData(user.uid);
 
+    // Login is considered successful only after the initial data preload completes.
     localStorage.setItem('bsp_userId', user.uid);
     sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
       uid: user.uid,
       at: Date.now()
     }));
+    setLoginDataLoadingStep('डेटा तैयार है — Dashboard खोला जा रहा है...');
     window.location.replace('dashboard.html');
 
   } catch (error) {
     console.error('Login error:', error);
+    hideLoginDataLoading();
     let msg = 'लॉगिन विफल';
     if (error.code === 'auth/user-not-found') msg = 'यूजर नहीं मिला। पहले साइनअप करें।';
     else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') msg = 'गलत पासवर्ड या ईमेल।';
     else if (error.code === 'auth/invalid-email') msg = 'ईमेल सही नहीं है।';
     else if (error.code === 'auth/too-many-requests') msg = 'बहुत ज्यादा कोशिशें। कुछ देर बाद करें।';
+    else if (error?.message) msg = error.message;
     errorEl.textContent = msg;
     errorEl.classList.remove('hidden');
     const btnText = btn.querySelector('.btn-text');
     if (btnText) btnText.textContent = '🔑 लॉगिन करें';
     setBtnLoading(btn, false);
   }
+}
+
+function showLoginDataLoading(title, step) {
+  const overlay = document.getElementById('loginDataLoading');
+  if (!overlay) return;
+  const titleEl = overlay.querySelector('.login-data-loading-title');
+  if (titleEl) titleEl.textContent = title || 'लॉगिन हो रहा है...';
+  setLoginDataLoadingStep(step || 'डेटा लोड हो रहा है...');
+  overlay.classList.remove('hidden');
+}
+
+function setLoginDataLoadingStep(step) {
+  const el = document.getElementById('loginDataLoadingStep');
+  if (el) el.textContent = step;
+}
+
+function hideLoginDataLoading() {
+  const overlay = document.getElementById('loginDataLoading');
+  if (overlay) overlay.classList.add('hidden');
 }
 
 async function preloadDashboardData(uid) {
@@ -339,6 +372,7 @@ auth.onAuthStateChanged(async (user) => {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data().shopName) {
         try {
+          showLoginDataLoading('लॉगिन हो रहा है...', 'आपका डेटा लोड हो रहा है...');
           await preloadDashboardData(user.uid);
           sessionStorage.setItem('bsp_dashboard_prefetched', JSON.stringify({
             uid: user.uid,
