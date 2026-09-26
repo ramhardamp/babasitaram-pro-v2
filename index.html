@@ -179,8 +179,8 @@ async function handleLogin() {
   if (loginBtnText) loginBtnText.textContent = 'लॉगिन हो रहा है...';
 
   try {
-    markLogin('auth sign-in complete');
     const result = await auth.signInWithEmailAndPassword(email, password);
+    markLogin('auth sign-in complete');
     const user = result.user;
     markLogin('auth user received');
 
