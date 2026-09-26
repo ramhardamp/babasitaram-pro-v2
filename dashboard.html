@@ -607,6 +607,23 @@ function generateToken(){
   return token;
 }
 
+function sortableDateValue(value){
+  try{
+    if(value==null)return 0;
+    if(typeof value==='number')return Number.isFinite(value)?value:0;
+    if(value instanceof Date)return value.getTime()||0;
+    if(typeof value?.toDate==='function'){
+      const d=value.toDate();
+      return d instanceof Date?(d.getTime()||0):0;
+    }
+    if(typeof value==='object'&&typeof value.seconds==='number'){
+      return value.seconds*1000+(Number(value.nanoseconds)||0)/1000000;
+    }
+    const ms=Date.parse(String(value));
+    return Number.isNaN(ms)?0:ms;
+  }catch(_){return 0;}
+}
+
 async function updatePublicView(partyId, viewToken, partyData){
   try{
     const txnSnap=await db.collection('users').doc(currentUser.uid)
@@ -620,7 +637,7 @@ async function updatePublicView(partyId, viewToken, partyData){
       if(t.type==='udhaar'||t.type==='byaj_loan')totalUdhaar+=amt;
       else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
     });
-    txns.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    txns.sort((a,b)=>sortableDateValue(b.date)-sortableDateValue(a.date));
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
       shopName:userData.shopName||'BABASITARAM PRO',
