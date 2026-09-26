@@ -22,6 +22,7 @@
 - [x] Customer save/edit post-commit hardening: customer writes remain successful when public-view/email secondary synchronization fails, reducing duplicate-retry risk.
 - [x] Final code-cleanup pass: removed obsolete JSON-trick comments and verified no legacy JSON.parse path or old 📒 branding remains in dashboard.html.
 - [ ] Email flow audit (secondary delivery/retry reconciliation still pending).
+- [x] Web packaging audit: prepare-web now copies the Guru Shree logo asset and verify-web checks that the branded asset is packaged.
 - [ ] API v1 design + read-only implementation.
 - [ ] API write/idempotency implementation.
 - [ ] Android Autofill source audit — Android source is not in this web repository.
