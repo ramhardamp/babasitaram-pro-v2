@@ -15,7 +15,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 @media(min-width:500px){body{padding:0}.app-shell{height:100dvh;min-height:100dvh;max-height:none;border-radius:0}}
 .top-bar{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.3);position:sticky;top:0;z-index:50;flex-shrink:0}
 .top-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}.brand-logo{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:0 0 34px;box-shadow:0 2px 8px rgba(30,27,75,.18)}
-.top-title{font-size:15px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-title-wrap{flex:1;min-width:0}.top-title{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top-title-wrap .sync-status{font-size:10px;margin-top:1px;line-height:1.2}.settings-header-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 36px}.settings-header-btn:active{background:rgba(99,102,241,.2)}
 .back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .back-btn:active{background:rgba(99,102,241,.2)}
 .lang-toggle{display:flex;background:rgba(99,102,241,.1);border-radius:20px;padding:3px;gap:2px}
@@ -240,14 +240,12 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
       <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="BABASITARAM PRO">
-      <div class="top-title" id="topTitle">Loading...</div>
-      <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
+      <div class="top-title-wrap">
+        <div class="top-title" id="topTitle">Loading...</div>
+        <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
+      </div>
     </div>
-    <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
-    <div class="lang-toggle">
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-      <button class="lang-btn active" data-lang="hi" onclick="setLang('hi')">हिं</button>
-    </div>
+    <button class="settings-header-btn" id="settingsHeaderBtn" onclick="switchTab('settings')" title="Settings">⚙️</button>
   </div>
 
   <div class="screen-container" id="screenContainer">
@@ -394,8 +392,15 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
             <div class="settings-arrow" id="darkModeState">OFF</div>
           </div>
           <div class="settings-item" onclick="changePIN()">
-            <div class="settings-left"><div class="settings-icon">🔐</div><div class="settings-label">PIN बदलें</div></div>
+            <div class="settings-left"><div class="settings-icon">🔐</div><div><div class="settings-label">PIN / Security</div><div class="settings-sublabel">PIN बदलें</div></div></div>
             <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" style="cursor:default">
+            <div class="settings-left"><div class="settings-icon">🌐</div><div><div class="settings-label">Language</div><div class="settings-sublabel">English / हिंदी</div></div></div>
+            <div class="lang-toggle" style="flex-shrink:0">
+              <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
+              <button class="lang-btn" data-lang="hi" onclick="setLang('hi')">हिंदी</button>
+            </div>
           </div>
         </div>
 
