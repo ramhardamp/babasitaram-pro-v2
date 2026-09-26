@@ -42,6 +42,8 @@ const checks=[
 ['atomic customer/payment writes',dashboard.includes('const batch=db.batch()')&&dashboard.includes('db.runTransaction(async transaction=>')],
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
 ['Reliable brand logo fallback exists',brandLogo.includes('<svg')&&dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&index.includes("this.src='assets/babasitaram-pro-logo.svg'")&&prep.includes("'assets/babasitaram-pro-logo.svg'")],
+['Customer avatars use brand logo',dashboard.includes('cc-avatar-brand')&&dashboard.includes('cc-avatar-logo')&&dashboard.includes('assets/guru-shree-logo.svg')],
+['PDF logo uses absolute live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg',window.location.href).href")&&dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
 ['Branded PDF header includes logo and business identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BABASITARAM PRO')&&dashboard.includes('assets/babasitaram-pro-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
