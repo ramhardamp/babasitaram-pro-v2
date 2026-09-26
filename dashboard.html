@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
 <title>BABASITARAM PRO - Dashboard</title>
-<link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}
@@ -232,7 +232,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
   <div class="top-bar">
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
-      <img class="brand-logo" src="assets/guru-shree-logo.svg" alt="Guru Shree">
+      
       <div class="top-title" id="topTitle">Loading...</div>
     </div>
     <button class="lock-btn" id="lockBtn" onclick="lockApp()" title="Lock">🔒</button>
@@ -246,7 +246,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg" alt="Guru Shree"></div>
+        <div class="pin-logo">📒</div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots">
@@ -945,7 +945,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent=(userData.shopName||'BABASITARAM PRO');
+  document.getElementById('topTitle').textContent='📒 '+(userData.shopName||'BABASITARAM PRO');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1748,7 +1748,7 @@ function renderReports(){
   document.getElementById('repB').textContent=fmt(totals.byaj);
   document.getElementById('repJ').textContent=fmt(totals.paid);
   document.getElementById('repD').textContent=fmt(totals.total);
-  document.getElementById('topTitle').textContent=t('Reports','रिपोर्ट');
+  document.getElementById('topTitle').textContent='📊 '+t('Reports','रिपोर्ट');
   const buckets=[];
   for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*86400000);const key=d.toISOString().split('T')[0];
     buckets.push({key,label:d.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit'}),udhaar:0,byaj:0,jama:0})}
@@ -1777,7 +1777,7 @@ function renderSettings(){
   document.getElementById('sShopName').textContent=userData.shopName||'-';
   document.getElementById('sPhone').textContent=userData.phone||'-';
   document.getElementById('sDefaultRate').value=userData.defaultRate||2;
-  document.getElementById('topTitle').textContent=t('Settings','सेटिंग्स');
+  document.getElementById('topTitle').textContent='⚙️ '+t('Settings','सेटिंग्स');
 }
 function editShop(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Edit Business','व्यवसाय एडिट')}</div>
