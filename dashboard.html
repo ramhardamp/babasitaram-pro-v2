@@ -1097,37 +1097,100 @@ function openEditTxnModal(txn){
 
 async function saveEditedTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
-  const newAmt=parseFloat(document.getElementById('mAmt').value);
-  const newNote=document.getElementById('mNote').value.trim();
-  const newDate=document.getElementById('mDate').value;
+  const newAmt=parseFloat(document.getElementById('mAmt')?.value);
+  const newNote=document.getElementById('mNote')?.value.trim()||'';
+  const newDate=document.getElementById('mDate')?.value||'';
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
+  if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
+  if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
+
   try{
-    const c=customers.find(x=>x.id===txn.partyId);if(!c)return;
-    const updateData = {amount:newAmt,note:newNote,date:newDate};
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
-    let newBal = 0;
-    const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
-    allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0);});
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
-    if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
-    closeModal();toast(t('Updated','अपडेट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error: '+e.message,'error')}
+    const uid=currentUser.uid;
+    const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
+    const c=customers.find(x=>String(x.id)===String(txn.partyId));
+
+    await db.runTransaction(async(transaction)=>{
+      const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
+      if(!txSnap.exists)throw new Error('Transaction not found');
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const current=txSnap.data()||{};
+      const oldAmt=Number(current.amount)||0;
+      const oldType=String(current.type||'');
+      const newType=String(current.type||'');
+
+      // Only normal Udhaar/Jama transactions affect the party balance.
+      // Loan/interest records have their own accounting and are not rewritten here.
+      let balanceDelta=0;
+      if(oldType==='udhaar')balanceDelta-=oldAmt;
+      else if(oldType==='jama')balanceDelta+=oldAmt;
+      if(newType==='udhaar')balanceDelta+=newAmt;
+      else if(newType==='jama')balanceDelta-=newAmt;
+
+      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate});
+      if(balanceDelta!==0)transaction.update(partyRef,{
+        balance:firebase.firestore.FieldValue.increment(balanceDelta)
+      });
+    });
+
+    const freshParty=await partyRef.get();
+    const newBal=Number(freshParty.data()?.balance)||0;
+    if(c?.viewToken){
+      try{
+        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+      }catch(viewErr){console.warn('Public view update failed after transaction edit:',viewErr);}
+    }
+    closeModal();
+    toast(t('Updated','अपडेट हो गया'),'success');
+  }catch(e){
+    console.error('saveEditedTxn failed:',e);
+    toast('Error: '+(e.message||'Update failed'),'error');
+  }
 }
 
 async function deleteTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
+
   try{
-    const c=customers.find(x=>x.id===txn.partyId);
-    await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete();
-    let newBal = 0;
-    const allTxns = await db.collection('users').doc(currentUser.uid).collection('transactions').where('partyId','==',txn.partyId).get();
-    allTxns.forEach(d=>{const t2=d.data();if(t2.type==='udhaar')newBal+=(t2.amount||0);else if(t2.type==='jama')newBal-=(t2.amount||0);});
-    if(c){
-      await db.collection('users').doc(currentUser.uid).collection('parties').doc(txn.partyId).update({balance:newBal});
-      if(c.viewToken){await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}
+    const uid=currentUser.uid;
+    const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
+    const c=customers.find(x=>String(x.id)===String(txn.partyId));
+
+    await db.runTransaction(async(transaction)=>{
+      const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
+      if(!txSnap.exists)throw new Error('Transaction already deleted');
+      if(!partySnap.exists)throw new Error('Customer not found');
+
+      const current=txSnap.data()||{};
+      const amount=Number(current.amount)||0;
+      const type=String(current.type||'');
+
+      // Reverse only the balance effect of the transaction being removed.
+      let reverseDelta=0;
+      if(type==='udhaar')reverseDelta=-amount;
+      else if(type==='jama')reverseDelta=amount;
+
+      transaction.delete(txRef);
+      if(reverseDelta!==0)transaction.update(partyRef,{
+        balance:firebase.firestore.FieldValue.increment(reverseDelta)
+      });
+    });
+
+    const freshParty=await partyRef.get();
+    const newBal=Number(freshParty.data()?.balance)||0;
+    if(c?.viewToken){
+      try{
+        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
+      }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
     }
     toast(t('Deleted','डिलीट हो गया'),'success');
-  }catch(e){console.error(e);toast('Error','error')}
+  }catch(e){
+    console.error('deleteTxn failed:',e);
+    toast('Error: '+(e.message||'Delete failed'),'error');
+  }
 }
 
 function showLoanMenu(id){
