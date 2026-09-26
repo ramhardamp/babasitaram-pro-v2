@@ -73,6 +73,8 @@ checks.push(['SMS settings are persisted non-destructively',dashboard.includes('
 checks.push(['Transaction update triggers automatic SMS',dashboard.includes('smsMessageForTransaction(c,type,amt,newBal)')&&dashboard.includes('type===\'udhaar\'')&&dashboard.includes('type===\'jama\'')]);
 checks.push(['Seven-day reminder is scheduled from udhaar date',dashboard.includes('7*24*60*60*1000')&&dashboard.includes("id:'udhaar7:'")&&dashboard.includes('scheduleReminder')]);
 checks.push(['Payment cancels duplicate customer reminders',dashboard.includes('cancelCustomerSmsReminders(customerId)')]);
+checks.push(['Android SMS preparation script exists',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('BsrSmsSchedulerPlugin.java')&&x.includes('SEND_SMS')&&x.includes('BsrSmsAlarmReceiver'))]);
+checks.push(['Android workflow prepares native SMS layer',await readFile('.github/workflows/android-build.yml','utf8').then(x=>x.includes('node scripts/prepare-android.mjs'))]);
 
 
 
