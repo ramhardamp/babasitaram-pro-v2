@@ -67,7 +67,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .customer-card{box-sizing:border-box;width:100%;background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;content-visibility:auto;contain-intrinsic-size:0 150px;contain:layout paint style}
 .customer-card:active{border-color:var(--primary);transform:scale(.99)}
 .cc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.cc-avatar{width:42px;height:42px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.3)}
+.cc-avatar{width:42px;height:42px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,.3);overflow:hidden}.cc-avatar-brand{background:#fff;padding:3px}.cc-avatar-logo{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
 .cc-info{flex:1;min-width:0}
 .cc-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc-phone{font-size:11px;color:var(--text-muted);margin-top:2px}
@@ -88,7 +88,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .customer-hero{background:var(--gradient-dark);color:#fff;padding:20px;border-radius:var(--radius-lg);margin-bottom:14px;position:relative;overflow:hidden}
 .customer-hero::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%);border-radius:50%}
 .ch-header{display:flex;align-items:center;gap:12px;position:relative;margin-bottom:16px}
-.ch-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0}
+.ch-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0;overflow:hidden}.ch-avatar-brand{background:#fff;padding:3px}.ch-avatar-brand .cc-avatar-logo{border-radius:50%}
 .ch-name{font-size:18px;font-weight:900}
 .ch-meta{font-size:12px;opacity:.85;margin-top:2px}
 .ch-total-label{font-size:11px;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;position:relative}
