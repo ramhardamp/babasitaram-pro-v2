@@ -2706,7 +2706,9 @@ function renderReports(){
       <span style="font-size:14px;font-weight:900;color:${cls}">${fmt(s.grandTotal)}</span></div>`}).join('')}
 }
 
-setupNativeBackHandler();\n\nfunction getSmsPlugin(){
+setupNativeBackHandler();
+
+function getSmsPlugin(){
   return window.Capacitor?.Plugins?.BsrSmsScheduler || null;
 }
 function getSmsSettings(){
