@@ -16,7 +16,8 @@
 - [x] Production Firestore Rules captured from Firebase Console and added to safe branch.
 - [x] PublicViews security baseline tightened: public read retained; writes/deletes restricted to owning business UID.
 - [x] Customer deletion hardened: customers with ledger history are never destructively deleted; zero-history deletion is transaction-protected.
-- [ ] Balance engine full audit.
+- [x] Balance engine audit: party.balance is intentionally normal Udhaar/Jama only; loan principal/interest is calculated separately from loan records. Added numeric normalization in calcLoan to prevent legacy string/invalid-number drift.
+- [x] Loan accounting hardening: new loan repayment/interest transactions now carry loanId and validate the selected loan belongs to the current customer; legacy derived records remain untouched.
 - [ ] Email flow audit.
 - [ ] API v1 design + read-only implementation.
 - [ ] API write/idempotency implementation.
@@ -37,6 +38,7 @@
 2. Android Autofill cannot be fully verified from this repository because Android source is absent.
 3. Balance engine, loan accounting, email, API, and regression testing remain pending.
 4. Production merge remains blocked until backup/data-integrity and live regression checks pass.
+5. Legacy loan-payment records without loanId remain protected from independent edit/delete; no destructive backfill is performed.
 
 ## Working rule for future chats
 Continue from this file and the branch state. Do not restart the audit or assume production is safe merely because the branch passes static checks.
