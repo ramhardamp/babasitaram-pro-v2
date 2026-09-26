@@ -525,13 +525,25 @@ function monthsBetween(start, end) {
 }
 
 function calcLoan(loan){
-  const repaid=(loan.repayments||[]).reduce((s,r)=>s+r.amount,0);
-  const currentP=Math.max(0,loan.principal-repaid);
-  const months=monthsBetween(loan.startDate,new Date());
-  const interestAccr=Math.round((currentP*loan.rate*months)/100);
-  const intPaid=loan.interestPaid||0;
+  const principal=Math.max(0,Number(loan.principal)||0);
+  const rate=Math.max(0,Number(loan.rate)||0);
+  const repaid=(Array.isArray(loan.repayments)?loan.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
+  const currentP=Math.max(0,principal-repaid);
+  const monthsRaw=monthsBetween(loan.startDate,new Date());
+  const months=Number.isFinite(monthsRaw)?monthsRaw:0;
+  const interestAccr=Math.round((currentP*rate*months)/100);
+  const intPaid=Math.max(0,Number(loan.interestPaid)||0);
   const intOut=Math.max(0,interestAccr-intPaid);
-  return{repaidPrincipal:repaid,currentPrincipal:Math.round(currentP),months:Math.round(months*10)/10,interestAccrued:interestAccr,interestPaid:Math.round(intPaid),interestOutstanding:Math.round(intOut),loanTotal:Math.round(currentP+intOut),progress:loan.principal>0?Math.round((repaid/loan.principal)*100):0};
+  return{
+    repaidPrincipal:Math.round(repaid),
+    currentPrincipal:Math.round(currentP),
+    months:Math.round(months*10)/10,
+    interestAccrued:interestAccr,
+    interestPaid:Math.round(intPaid),
+    interestOutstanding:Math.round(intOut),
+    loanTotal:Math.round(currentP+intOut),
+    progress:principal>0?Math.min(100,Math.round((repaid/principal)*100)):0
+  };
 }
 function getPartyTransactions(cid){return txnIndex.get(cid)||[]}
 function rebuildTxnIndex(){txnIndex.clear();for(const tx of transactions){if(!tx.partyId)continue;const list=txnIndex.get(tx.partyId)||[];list.push(tx);txnIndex.set(tx.partyId,list)}}
@@ -1534,9 +1546,22 @@ async function saveLoan(){
   if(!r||r<=0)return toast(t('Enter rate','दर डालें'),'error');
   const c=customers.find(x=>x.id===currentCustomerId);if(!c)return;
   try{
-    // 👈 JSON ट्रिक लगाई गई है
-    const loanData = {partyId:String(currentCustomerId),type:'byaj_loan',principal:p,rate:r,startDate:sd,note:note,status:'active',interestPaid:0,repayments:[],date:sd};
-    await db.collection('users').doc(currentUser.uid).collection('transactions').add(loanData);
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    const loanRef=txCol.doc();
+    const loanData = {
+      partyId:String(currentCustomerId),
+      type:'byaj_loan',
+      principal:p,
+      rate:r,
+      startDate:sd,
+      note:note,
+      status:'active',
+      interestPaid:0,
+      repayments:[],
+      date:sd,
+      loanId:loanRef.id
+    };
+    await loanRef.set(loanData);
     
     if(c.viewToken){await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
     closeModal();toast(t('Loan created','लोन बनाया'),'success');
@@ -1573,14 +1598,22 @@ async function saveRepay(){
       const loanSnap=await transaction.get(loanRef);
       if(!loanSnap.exists)throw new Error('Loan not found');
       const fresh=loanSnap.data();
-      const freshRepaid=(fresh.repayments||[]).reduce((sum,r)=>sum+(Number(r.amount)||0),0);
+      if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
+      const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
       const newRepayments=[...(fresh.repayments||[]),{date:rdate,amount:amt}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
       
-      const txnData = {partyId:String(currentCustomerId),type:'loan_repay',amount:amt,note:t('Loan repayment','लोन वापसी'),date:rdate};
+      const txnData = {
+        partyId:String(currentCustomerId),
+        type:'loan_repay',
+        amount:amt,
+        note:t('Loan repayment','लोन वापसी'),
+        date:rdate,
+        loanId:String(id)
+      };
       transaction.set(txnRef, txnData);
       
       return true;
@@ -1620,10 +1653,18 @@ async function saveIntPaid(){
       const loanSnap=await transaction.get(loanRef);
       if(!loanSnap.exists)throw new Error('Loan not found');
       const fresh=loanSnap.data();
+      if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
       
-      const txnData = {partyId:String(currentCustomerId),type:'interest_paid',amount:amt,note:t('Interest received','ब्याज मिला'),date:idate};
+      const txnData = {
+        partyId:String(currentCustomerId),
+        type:'interest_paid',
+        amount:amt,
+        note:t('Interest received','ब्याज मिला'),
+        date:idate,
+        loanId:String(id)
+      };
       transaction.set(txnRef, txnData);
       
     });
