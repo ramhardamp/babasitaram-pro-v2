@@ -1807,7 +1807,7 @@ function renderCustomerDetail(){
   txnHtml+='</div>';
   document.getElementById('customerDetail').innerHTML=`
      <div class="action-grid">
-      <button class="action-btn udhaar" onclick="openTxnModal('udhaar')"><div class="action-icon">📤</div><div><div class="action-title">${t('Give Udhaar','उधार दें')}</div><div class="action-sub">${t('No interest','बिना ब्याज')}</div></div></button>
+      <button class="action-btn udhaar" onclick="openTxnModal('udhaar')"><div class="action-icon">📤</div><div><div class="action-title">${t('Give Udhaar','उधार दें')}</div></div></button>
       <button class="action-btn jama" onclick="openTxnModal('jama')"><div class="action-icon">📥</div><div><div class="action-title">${t('Take Payment','भुगतान लें')}</div><div class="action-sub">${t('Udhaar payment','उधार का पैसा')}</div></div></button>
       <button class="action-btn loan wide" onclick="openLoanModal()"><div class="action-icon">📈</div><div><div class="action-title">${t('Give Loan with Interest','ब्याज पर लोन दें')}</div><div class="action-sub">${t('Set rate, auto-calculate','दर तय करें, ऑटो ब्याज')}</div></div></button>
       <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
