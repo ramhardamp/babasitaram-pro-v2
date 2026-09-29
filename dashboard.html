@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
-<title>BABASITARAM PRO - Dashboard</title>
-<link rel="icon" href="assets/babasitaram-pro-logo.svg" type="image/svg+xml">
+<title>Guru Shree - Digital Khata</title>
+<link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}
@@ -627,7 +628,7 @@ body.dark-mode{
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="BABASITARAM PRO">
+      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree">
       <div class="top-title-wrap">
         <div class="top-title" id="topTitle">Loading...</div>
         <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
@@ -640,7 +641,7 @@ body.dark-mode{
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots" aria-hidden="true">
@@ -827,13 +828,13 @@ body.dark-mode{
 
           <section class="android-setting-section" data-settings-section="about">
             <button class="android-setting-row" type="button" onclick="openSettingsPanel('about')">
-              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="Guru Shree"></span>
+              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree"></span>
               <span class="android-setting-main"><b>About & Support</b><small>Version और सहायता</small></span>
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>🕉️ <b>BABASITARAM PRO</b><small>Version 6.8 (Stable Mobile)</small></span></div>
-              <a class="android-sub-row action" href="mailto:babasitarampro@gmail.com"><span>📧 <b>Support</b><small>babasitarampro@gmail.com</small></span><i>›</i></a>
+              <div class="android-sub-row"><span>🕉️ <b>Guru Shree</b><small>Version 6.8 (Stable Mobile)</small></span></div>
+              <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitarampro@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
 
@@ -1094,7 +1095,7 @@ function calcLoan(loan){
     progress:principal>0?Math.min(100,Math.round((repaid/principal)*100)):0
   };
 }
-function getPartyTransactions(cid){return txnIndex.get(cid)||[]}
+function getPartyTransactions(cid){return (txnIndex.get(cid)||[]).filter(tx=>tx.status!=='deleted'&&!tx.deletedAt)}
 function rebuildTxnIndex(){txnIndex.clear();for(const tx of transactions){if(!tx.partyId)continue;const list=txnIndex.get(tx.partyId)||[];list.push(tx);txnIndex.set(tx.partyId,list)}}
 function getLoans(cid){return getPartyTransactions(cid).filter(t=>t.type==='byaj_loan'&&t.status==='active')}
 
@@ -1183,6 +1184,7 @@ async function updatePublicView(partyId, viewToken, partyData){
     const txns=[];
     txnSnap.forEach(doc=>{
       const t=doc.data();
+      if(t.status==='deleted'||t.deletedAt) return;
       const amt=t.amount||t.principal||0;
       txns.push({type:t.type,amount:amt,date:t.date,note:t.note||''});
       if(t.type==='udhaar'||t.type==='byaj_loan')totalUdhaar+=amt;
@@ -1191,7 +1193,7 @@ async function updatePublicView(partyId, viewToken, partyData){
     txns.sort((a,b)=>sortableDateValue(b.date)-sortableDateValue(a.date));
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
-      shopName:userData.shopName||'BABASITARAM PRO',
+      shopName:userData.shopName||'Guru Shree',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       customerName:partyData.name, customerPhone:partyData.phone||'',
       balance:Number(partyData.balance)||0, totalUdhaar, totalJama, transactions:txns
@@ -1718,7 +1720,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent=(userData.shopName||'BABASITARAM PRO');
+  document.getElementById('topTitle').textContent=(userData.shopName||'Guru Shree');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1732,7 +1734,7 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
-    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
+    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
     const total=s.grandTotal;
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
@@ -1765,7 +1767,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
-  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/babasitaram-pro-logo.svg'" alt="BABASITARAM PRO">`;
+  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -1813,7 +1815,7 @@ function renderCustomerDetail(){
       <button class="action-btn repay" onclick="openRepayModal()"><div class="action-icon">💵</div><div><div class="action-title">${t('Loan Repayment','लोन वापसी')}</div><div class="action-sub">${t('Principal back','मूलधन')}</div></div></button>
       <button class="action-btn interest" onclick="openIntPaidModal()"><div class="action-icon">💰</div><div><div class="action-title">${t('Interest Paid','ब्याज भुगतान')}</div><div class="action-sub">${t('Byaj received','ब्याज मिला')}</div></div></button>
       <button class="action-btn share-reminder wide" onclick="openShareHisaab('${c.id}')"><div class="action-icon">📤</div><div><div class="action-title">${t('Share Hisaab','हिसाब शेयर करें')}</div><div class="action-sub">${t('WhatsApp / SMS / photo','WhatsApp / SMS / फोटो')}</div></div></button>
-      <button class="action-btn share" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Portal','पोर्टल लिंक')}</div><div class="action-sub">${t('Customer view link','ग्राहक लिंक')}</div></div></button>
+      <button class="action-btn share" onclick="shareCustomerViewLink('${c.id}')"><div class="action-icon">🔗</div><div><div class="action-title">${t('Share Portal','पोर्टल लिंक')}</div><div class="action-sub">${t('Customer view link','ग्राहक लिंक')}</div></div></button><button class="action-btn jama wide" onclick="openUpiPayment(currentCustomerId)"><div class="action-icon">💳</div><div><div class="action-title">UPI से भुगतान लें</div><div class="action-sub">Open UPI payment app</div></div></button>
       <button class="action-btn edit" onclick="exportCustomerStatementPdf('${c.id}')"><div class="action-icon">📄</div><div><div class="action-title">${t('Statement PDF','स्टेटमेंट PDF')}</div><div class="action-sub">${t('Print / save PDF','PDF सेव करें')}</div></div></button>
       <button class="action-btn edit wide" onclick="openEditCustomer()"><div class="action-icon">✏️</div><div><div class="action-title">${t('Edit Customer','ग्राहक एडिट करें')}</div><div class="action-sub">${t('Name, phone, email','नाम, फोन, ईमेल')}</div></div></button>
     </div>
@@ -1855,6 +1857,17 @@ function getCustomerShareMessage(c,s){
 }
 function getShareCardData(c,s){
   return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):''};
+}
+function buildUpiPaymentUrl(customer,amount){
+  const upi=String(userData?.upiId||'').trim();if(!upi||!amount||amount<=0)return '';
+  const params=new URLSearchParams({pa:upi,pn:String(userData?.shopName||'Guru Shree'),am:Number(amount).toFixed(2),cu:'INR',tn:'Khata payment - '+String(customer?.name||'Customer')});
+  return 'upi://pay?'+params.toString();
+}
+function openUpiPayment(id){
+  const c=customers.find(x=>String(x.id)===String(id));if(!c)return;
+  const sum=getSummary(id),amount=Math.max(0,Number(sum?.grandTotal)||0),url=buildUpiPaymentUrl(c,amount);
+  if(!url)return toast(t('Add your UPI ID in Settings first.','पहले Settings में अपना UPI ID जोड़ें।'),'error');
+  window.location.href=url;
 }
 function openShareHisaab(id){
   const c=customers.find(x=>x.id===id);if(!c)return;
@@ -2064,7 +2077,7 @@ async function saveEditedTxn(id){
     }
     if(c&&getSmsSettings().enabled){
       if(getSmsSettings().transactionSms){
-        const smsSent=await sendNativeSms(c,'नमस्ते '+(c.name||'ग्राहक')+', आपका '+(txn.type==='jama'?'भुगतान':'उधार')+' लेन-देन अपडेट किया गया है। वर्तमान बकाया ₹'+newBal.toLocaleString('en-IN')+' है। — '+(userData?.shopName||'Rajput Mobile and Photocopy'));
+        const smsSent=await sendNativeSms(c,'नमस्ते '+(c.name||'ग्राहक')+', आपका '+(txn.type==='jama'?'भुगतान':'उधार')+' लेन-देन अपडेट किया गया है। वर्तमान बकाया ₹'+newBal.toLocaleString('en-IN')+' है। — '+(userData?.shopName||'आपका व्यवसाय'));
         if(smsSent)setTimeout(()=>toast('📱 SMS भेज दिया गया','success'),1200);
       }
       if(txn.type==='udhaar'){
@@ -2085,51 +2098,28 @@ async function saveEditedTxn(id){
 async function deleteTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
-
+  if(!confirm(t('Delete this transaction? The record will be kept in audit history.','यह लेन-देन हटाएँ? रिकॉर्ड audit history में सुरक्षित रहेगा।')))return;
+  const reason=prompt(t('Optional deletion reason','हटाने का कारण (वैकल्पिक)'),'') ?? '';
   try{
     const uid=currentUser.uid;
     const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
     const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
-    const c=customers.find(x=>String(x.id)===String(txn.partyId));
-
     await db.runTransaction(async(transaction)=>{
       const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
-      if(!txSnap.exists)throw new Error('Transaction already deleted');
+      if(!txSnap.exists)throw new Error('Transaction not found');
       if(!partySnap.exists)throw new Error('Customer not found');
-
-      const current=txSnap.data()||{};
-      const amount=Number(current.amount)||0;
-      const type=String(current.type||'');
-
-      // Derived loan-payment records cannot be deleted independently because
-      // their parent loan history would remain inconsistent.
-      if(type==='loan_repay'||type==='interest_paid'){
-        throw new Error('Derived loan transaction cannot be deleted independently');
-      }
-
-      // Reverse only the balance effect of the transaction being removed.
-      let reverseDelta=0;
-      if(type==='udhaar')reverseDelta=-amount;
-      else if(type==='jama')reverseDelta=amount;
-
-      transaction.delete(txRef);
-      if(reverseDelta!==0)transaction.update(partyRef,{
-        balance:firebase.firestore.FieldValue.increment(reverseDelta)
-      });
+      const current=txSnap.data()||{}, amount=Number(current.amount)||0, type=String(current.type||'');
+      if(current.status==='deleted'||current.deletedAt)throw new Error('Transaction already deleted');
+      if(type==='loan_repay'||type==='interest_paid')throw new Error('Derived loan transaction cannot be deleted independently');
+      let reverseDelta=0;if(type==='udhaar')reverseDelta=-amount;else if(type==='jama')reverseDelta=amount;
+      transaction.update(txRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      if(reverseDelta!==0)transaction.update(partyRef,{balance:firebase.firestore.FieldValue.increment(reverseDelta),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     });
-
-    const freshParty=await partyRef.get();
-    const newBal=Number(freshParty.data()?.balance)||0;
-    if(c?.viewToken){
-      try{
-        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
-      }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
-    }
-    if(getSmsSettings().enabled) await cancelCustomerSmsReminders(txn.partyId);
-    toast(t('Deleted','डिलीट हो गया'),'success');
-  }catch(e){
-    console.error('deleteTxn failed:',e);    toast('Error: '+(e.message||'Delete failed'),'error');
-  }
+    const freshParty=await partyRef.get(),newBal=Number(freshParty.data()?.balance)||0,c=customers.find(x=>String(x.id)===String(txn.partyId));
+    if(c?.viewToken){try{await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal})}catch(viewErr){console.warn('Public view update failed after transaction soft-delete:',viewErr);}}
+    if(getSmsSettings().enabled)await cancelCustomerSmsReminders(txn.partyId);
+    toast(t('Deleted safely; history retained','सुरक्षित रूप से हटाया गया; history सुरक्षित है'),'success');
+  }catch(e){console.error('deleteTxn failed:',e);toast('Error: '+(e.message||'Delete failed'),'error');}
 }
 
 function showLoanMenu(id){
@@ -2186,35 +2176,21 @@ async function saveEditedLoan(id){
 
 async function deleteLoan(id){
   const loan=transactions.find(t=>t.id===id);if(!loan)return;
-  const repayments=Array.isArray(loan.repayments)?loan.repayments:[];
-  const interestPaid=Number(loan.interestPaid)||0;
-  if(repayments.length>0||interestPaid>0){
-    return toast(t('Loan with payment history cannot be deleted. Reverse/correct it instead.','जिस लोन में भुगतान इतिहास है उसे डिलीट नहीं किया जा सकता। पहले सुधार/रिवर्सल करें।'),'error');
-  }
+  if(!currentUser?.uid||!loan.partyId)return toast(t('Invalid loan','लोन गलत है'),'error');
+  if(!confirm(t('Delete this loan? The record will be retained in audit history.','यह लोन हटाएँ? रिकॉर्ड audit history में सुरक्षित रहेगा।')))return;
+  const reason=prompt(t('Optional deletion reason','हटाने का कारण (वैकल्पिक)'),'') ?? '';
   try{
-    const uid=currentUser.uid;
-    const loanRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
-    await db.runTransaction(async transaction=>{
-      const snap=await transaction.get(loanRef);
-      if(!snap.exists)throw new Error('Loan not found');
-      const fresh=snap.data()||{};
-      if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0){
-        throw new Error('Loan has payment history');
-      }
-      transaction.delete(loanRef);
+    const uid=currentUser.uid,loanRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
+    await db.runTransaction(async(transaction)=>{
+      const snap=await transaction.get(loanRef);if(!snap.exists)throw new Error('Loan not found');
+      const fresh=snap.data()||{};if(fresh.status==='deleted'||fresh.deletedAt)throw new Error('Loan already deleted');
+      if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0)throw new Error('Loan has payment history');
+      transaction.update(loanRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     });
     const c=customers.find(x=>x.id===loan.partyId);
-    if(c?.viewToken){
-      try{await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
-      catch(viewErr){console.warn('Public view update failed after loan delete:',viewErr);}
-    }
-    toast(t('Loan deleted','लोन डिलीट हो गया'),'success');
-  }catch(e){
-    console.error('deleteLoan failed:',e);
-    toast(e.message==='Loan has payment history'
-      ? t('Loan with payment history cannot be deleted.','भुगतान इतिहास वाला लोन डिलीट नहीं किया जा सकता।')
-      : 'Error: '+(e.message||'Delete failed'),'error');
-  }
+    if(c?.viewToken){try{await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}catch(viewErr){console.warn('Public view update failed after loan soft-delete:',viewErr);}}
+    toast(t('Loan deleted safely; history retained','लोन सुरक्षित रूप से हटाया गया; history सुरक्षित है'),'success');
+  }catch(e){console.error('deleteLoan failed:',e);toast(e.message==='Loan has payment history'?t('Loan with payment history cannot be deleted.','भुगतान इतिहास वाला लोन डिलीट नहीं किया जा सकता।'):'Error: '+(e.message||'Delete failed'),'error');}
 }
 
 function showModal(html){
@@ -2240,7 +2216,7 @@ function openAddCustomer(){
       <input type="text" id="mName" class="text-input" placeholder="${t('Vikram Singh Rajput','विक्रम सिंह राजपूत')}"></div>
     <div class="input-group"><label class="input-label">${t('Mobile','मोबाइल')}</label>
       <input type="tel" id="mPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric"></div>
-    <div class="input-group"><label class="input-label">${t('Email','ईमेल')} <span style="color:var(--credit);font-size:11px">*</span></label>
+    <div class="input-group"><label class="input-label">${t('Email','ईमेल')} <span style="color:var(--text-muted);font-size:11px">(optional)</span></label>
       <input type="email" id="mEmail" class="text-input" placeholder="customer@email.com" inputmode="email">
       <div class="helper-text">📧 इस ईमेल पर notification जाएगी</div></div>
     <div class="input-group"><label class="input-label">${t('Opening Udhaar','शुरुआती उधार')}</label>
@@ -2256,8 +2232,7 @@ async function saveCustomer(){
   const email=document.getElementById('mEmail').value.trim();
   const bal=parseFloat(document.getElementById('mBal').value)||0;
   if(!name)return toast(t('Enter name','नाम डालें'),'error');
-  if(!email)return toast(t('Email required','ईमेल ज़रूरी है'),'error');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast(t('Invalid email','ईमेल सही नहीं'),'error');
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast(t('Invalid email','ईमेल सही नहीं'),'error');
   try{
     const viewToken=generateToken();
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
@@ -2755,7 +2730,7 @@ async function sendNativeSms(customer,message){
   try{if(!(await ensureSmsPermission()))return false;await plugin.sendSms({phone:String(customer?.phone||'').trim(),message});return true}catch(e){console.warn('Automatic SMS failed:',e);return false}
 }
 function smsMessageForTransaction(customer,type,amount,balance){
-  const name=customer?.name||'ग्राहक',shop=userData?.shopName||'Rajput Mobile and Photocopy';
+  const name=customer?.name||'ग्राहक',shop=userData?.shopName||'आपका व्यवसाय';
   const a=Number(amount||0).toLocaleString('en-IN'),b=Number(balance||0).toLocaleString('en-IN');
   return type==='jama'
     ? 'नमस्ते '+name+', आपके खाते में ₹'+a+' भुगतान अपडेट किया गया है। वर्तमान बकाया ₹'+b+' है। — '+shop
@@ -2770,7 +2745,7 @@ async function scheduleUdhaarReminder(customer,txn,balance){
   if(triggerAt<=Date.now())return false;
   try{
     if(!(await ensureSmsPermission()))return false;
-    await plugin.scheduleReminder({id:'udhaar7:'+customer.id+':'+txn.id,phone:String(customer.phone).trim(),message:'नमस्ते '+(customer.name||'ग्राहक')+', आपके खाते में ₹'+Number(balance||0).toLocaleString('en-IN')+' की राशि अभी बाकी है। कृपया भुगतान करें। — '+(userData?.shopName||'Rajput Mobile and Photocopy'),triggerAt});
+    await plugin.scheduleReminder({id:'udhaar7:'+customer.id+':'+txn.id,phone:String(customer.phone).trim(),message:'नमस्ते '+(customer.name||'ग्राहक')+', आपके खाते में ₹'+Number(balance||0).toLocaleString('en-IN')+' की राशि अभी बाकी है। कृपया भुगतान करें। — '+(userData?.shopName||'आपका व्यवसाय'),triggerAt});
     return true;
   }catch(e){console.warn('7-day SMS schedule failed:',e);return false}
 }
@@ -2952,7 +2927,7 @@ function buildExportTables(data){
   const transactionRows=transactions.map(tx=>{const c=customers.find(x=>x.id===tx.partyId);return {...tx,customerName:c?.name||'',customerPhone:c?.phone||''}});
   const loanRows=transactions.filter(tx=>tx.type==='byaj_loan').map(loan=>{const c=customers.find(x=>x.id===loan.partyId);const m=calcLoan(loan);return {...loan,customerName:c?.name||'',customerPhone:c?.phone||'',currentPrincipal:m.currentPrincipal,interestAccrued:m.interestAccrued,interestPaidCalculated:m.interestPaid,interestOutstanding:m.interestOutstanding,loanTotal:m.loanTotal,progress:m.progress}});
   const totals=getTotals();
-  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'BABASITARAM PRO'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
+  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'Guru Shree'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
   return {customerRows,transactionRows,loanRows,summaryRows};
 }
 async function exportExcelData(){
@@ -2977,12 +2952,12 @@ async function exportCsvData(existingData){
 function printExportWindow(title,bodyHtml){
   const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
   const safeTitle=esc(title);
-  const shop=esc(userData?.shopName||'BABASITARAM PRO');
+  const shop=esc(userData?.shopName||'Guru Shree');
   const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href;
   const fallbackLogoUrl=new URL('assets/babasitaram-pro-logo.svg',window.location.href).href;
   const owner=esc(userData?.ownerName||'');
   const phone=esc(userData?.phone||'');
-  const brandBlock='<div class="brand-head"><img src="'+logoUrl+'" onerror="this.onerror=null;this.src=\''+fallbackLogoUrl+'\'" alt="BABASITARAM PRO logo"><div><div class="brand-name">BABASITARAM PRO</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
+  const brandBlock='<div class="brand-head"><img src="'+logoUrl+'" onerror="this.onerror=null;this.src=\''+fallbackLogoUrl+'\'" alt="Guru Shree logo"><div><div class="brand-name">Guru Shree</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
   const html='<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+
     'body{font-family:Arial,"Noto Sans Devanagari",sans-serif;color:#111827;margin:24px;font-size:11px}'+
     '.brand-head{display:flex;align-items:center;gap:14px;padding:0 0 12px;margin-bottom:14px;border-bottom:2px solid #1e1b4b}'+
@@ -3000,7 +2975,7 @@ function exportBusinessPdf(){
   try{
     const totals=getTotals();const sorted=buildExportTables({integrity:{orphanTransactions:0,balanceMismatches:0}}).customerRows.slice().sort((a,b)=>(Number(b.grandTotal)||0)-(Number(a.grandTotal)||0));
     const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
-    const body='<h1>'+esc(userData?.shopName||'BABASITARAM PRO')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
+    const body='<h1>'+esc(userData?.shopName||'Guru Shree')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
       '<div class="summary"><div class="box"><div class="label">Customers</div><div class="value">'+customers.length+'</div></div><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(totals.udhaar)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(totals.byaj)+'</div></div><div class="box"><div class="label">Outstanding</div><div class="value">'+fmt(totals.total)+'</div></div></div>'+
       '<h2>Customer Balance</h2><table><thead><tr><th>Customer</th><th>Phone</th><th>Udhaar</th><th>Interest</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<h2>Transaction Summary</h2><div>Transactions: <b>'+transactions.length+'</b> &nbsp; Payments: <b>'+fmt(totals.paid)+'</b> &nbsp; Interest income: <b>'+fmt(totals.income)+'</b></div>';
@@ -3021,7 +2996,7 @@ function exportCustomerStatementPdf(id){
     if(debit)running+=amt;else if(credit)running-=amt;
     return '<tr><td>'+esc(dateStr(tx.date||tx.startDate))+'</td><td>'+esc(typeLabels[tx.type]||tx.type)+'</td><td>'+esc(tx.note||'-')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(running)+'</td></tr>';
   }).join('');
-  const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(c.phone||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(userData?.shopName||'BABASITARAM PRO')+' • '+dateStr(new Date())+'</div>'+
+  const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(c.phone||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(userData?.shopName||'Guru Shree')+' • '+dateStr(new Date())+'</div>'+
     '<div class="summary"><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(s?.udhaarBalance||0)+'</div></div><div class="box"><div class="label">Interest / Loan Due</div><div class="value">'+fmt(s?.byajBalance||0)+'</div></div><div class="box"><div class="label">Total Due</div><div class="value">'+fmt(s?.grandTotal||0)+'</div></div></div>'+
     '<h2>Ledger History</h2><table><thead><tr><th>Date</th><th>Type</th><th>Note</th><th>Amount</th><th>Running Balance</th></tr></thead><tbody>'+(rows||'<tr><td colspan="5">No transactions</td></tr>')+'</tbody></table>'+
     '<div class="meta" style="margin-top:12px">Statement is generated from the saved ledger records. Interest outstanding shown above is calculated from active loan terms.</div>';
@@ -3056,5 +3031,6 @@ function toast(msg,type){
 window.addEventListener('load',()=>{applyDarkMode();setLang(currentLang);updateTexts()});
 </script>
 
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(e=>console.warn('Service worker unavailable:',e)));}</script>
 </body>
 </html>
