@@ -2954,7 +2954,7 @@ function printExportWindow(title,bodyHtml){
   const safeTitle=esc(title);
   const shop=esc(userData?.shopName||'Guru Shree');
   const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href;
-  const fallbackLogoUrl=new URL('assets/babasitaram-pro-logo.svg',window.location.href).href;
+  const fallbackLogoUrl=new URL('assets/guru-shree-logo.jpg',window.location.href).href;
   const owner=esc(userData?.ownerName||'');
   const phone=esc(userData?.phone||'');
   const brandBlock='<div class="brand-head"><img src="'+logoUrl+'" onerror="this.onerror=null;this.src=\''+fallbackLogoUrl+'\'" alt="Guru Shree logo"><div><div class="brand-name">Guru Shree</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
