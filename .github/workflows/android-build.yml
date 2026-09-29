@@ -2,6 +2,9 @@ name: BABASITARAM PRO Android Build
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - production-okcredit-safety-fix-20260929
 
 permissions:
   contents: write
