@@ -2058,21 +2058,48 @@ function showDeletedTxnDetails(id){
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   if(txn.status==='deleted'||txn.deletedAt){showDeletedTxnDetails(id);return}
+  const typeMap={
+    udhaar:{title:t('Udhaar','उधार'),icon:'📤',color:'var(--credit)',bg:'var(--credit-bg)',sign:'+'},
+    jama:{title:t('Payment','भुगतान'),icon:'📥',color:'var(--debit)',bg:'var(--debit-bg)',sign:'-'},
+    byaj_loan:{title:t('Loan','लोन'),icon:'📈',color:'var(--interest)',bg:'var(--interest-bg)',sign:'+'},
+    loan_repay:{title:t('Loan Repayment','लोन वापसी'),icon:'💵',color:'var(--info)',bg:'var(--info-bg)',sign:'-'},
+    interest_paid:{title:t('Interest Paid','ब्याज भुगतान'),icon:'💰',color:'var(--violet)',bg:'var(--violet-bg)',sign:'-'}
+  };
+  const m=typeMap[txn.type]||typeMap.udhaar;
+  const amount=txn.type==='byaj_loan'?(Number(txn.principal)||Number(txn.amount)||0):(Number(txn.amount)||0);
   const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
   const derivedMessage=txn.type==='loan_repay'
     ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
-    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।');
+    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होती है।');
   const actionHtml=isDerivedLoanTxn
-    ? `<div style="padding:12px;background:var(--interest-bg);border:1px solid var(--interest);border-radius:12px;margin-bottom:12px;color:#92400e;font-size:13px;font-weight:700;text-align:center">${derivedMessage}</div>`
-    : `<button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
-       <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>`;
-  showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
-    <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
-      <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
-      <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div></div>
+    ? `<div style="padding:12px;background:${m.bg};border:1px solid ${m.color};border-radius:12px;margin-bottom:12px;color:var(--text);font-size:12px;font-weight:700;text-align:center">${derivedMessage}</div>`
+    : `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+        <button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')">✏️ ${t('Edit','एडिट')}</button>
+        <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>
+      </div>`;
+  const dt=txnDateTimeStr(txn);
+  showModal(`<div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 2px 14px;border-bottom:1px solid var(--border)">
+      <div style="width:46px;height:46px;border-radius:50%;background:${m.bg};display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 46px">${m.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:18px;font-weight:900;color:var(--text)">${m.title}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${dt}</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px 10px 16px">
+      <div style="font-size:11px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.6px">${t('Transaction Amount','लेन-देन राशि')}</div>
+      <div style="font-size:34px;font-weight:900;letter-spacing:-1px;color:${m.color};margin-top:4px">${m.sign}₹${fmt(amount)}</div>
+    </div>
+    <div style="background:var(--bg);border-radius:14px;padding:12px">
+      <div style="font-size:11px;color:var(--text-muted);font-weight:800;text-transform:uppercase;margin-bottom:8px">${t('Details','विवरण')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><span style="display:block;font-size:10px;color:var(--text-muted);font-weight:700">${t('Date','तारीख')}</span><b style="font-size:13px">${dateStr(txn.date)}</b></div>
+        <div><span style="display:block;font-size:10px;color:var(--text-muted);font-weight:700">${t('Time','समय')}</span><b style="font-size:13px">${txn.time||'—'}</b></div>
+        <div style="grid-column:1/-1"><span style="display:block;font-size:10px;color:var(--text-muted);font-weight:700">${t('Note','नोट')}</span><b style="font-size:13px;word-break:break-word">${esc(txn.note||'—')}</b></div>
+      </div>
+    </div>
     ${actionHtml}
-    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);
+    <button class="btn btn-secondary" onclick="closeModal()" style="width:100%;margin-top:10px">${t('Close','बंद करें')}</button>`);
 }
 function editTxnConfirm(id){requirePIN(()=>{const txn=transactions.find(t=>t.id===id);if(!txn){toast('Transaction not found','error');return}openEditTxnModal(txn)})}
 function deleteTxnConfirm(id){requirePIN(()=>{if(!confirm(t('Delete this transaction?','यह लेन-देन डिलीट करें?')))return;deleteTxn(id)})}
