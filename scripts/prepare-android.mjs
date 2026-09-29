@@ -4,10 +4,10 @@ import path from 'node:path';
 const root = process.cwd();
 const android = path.join(root, 'android');
 const app = path.join(android, 'app');
-const src = path.join(app, 'src', 'main', 'java', 'com', 'babasitaram', 'pro');
+const src = path.join(app, 'src', 'main', 'java', 'com', 'gurushree', 'digital', 'khata');
 fs.mkdirSync(src, {recursive:true});
 
-const plugin = `package com.babasitaram.pro;
+const plugin = `package com.gurushree.digital.khata;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -162,7 +162,7 @@ public class BsrSmsSchedulerPlugin extends Plugin {
 }
 `;
 
-const receiver = `package com.babasitaram.pro;
+const receiver = `package com.gurushree.digital.khata;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -197,7 +197,7 @@ public class BsrSmsAlarmReceiver extends BroadcastReceiver {
 }
 `;
 
-const boot = `package com.babasitaram.pro;
+const boot = `package com.gurushree.digital.khata;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
