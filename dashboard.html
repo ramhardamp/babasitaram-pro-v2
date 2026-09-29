@@ -1909,9 +1909,8 @@ function getCustomerShareMessage(c,s){
     lines.push('आपका हिसाब अभी साफ है।');
   }
   if(c?.viewToken)lines.push('',`पूरा हिसाब: ${getCustomerViewLink(c.viewToken)}`);
-  const upiUrl=buildUpiPaymentUrl(c,total);
-  if(upiUrl)lines.push(`💳 UPI से सीधे भुगतान: ${upiUrl}`);
-  if(total>0)lines.push('QR/UPI payment में यही बकाया amount भरा रहेगा।');
+  const upiId=String(userData?.upiId||'').trim();
+  if(upiId&&total>0)lines.push('',`💳 UPI ID: ${upiId}`,'इस UPI ID पर PhonePe, Google Pay या Paytm से भुगतान करें।',`भुगतान राशि: ₹${total.toLocaleString('en-IN')}`);
   lines.push('');
   if(shop)lines.push(`— ${shop}`);
   if(owner)lines.push(owner);
@@ -1988,24 +1987,84 @@ async function buildShareReminderImage(id){
   const d=getShareCardData(c,s);
   const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;
   const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas unavailable');
-  const bg=ctx.createLinearGradient(0,0,1080,1350);bg.addColorStop(0,'#0f8f3e');bg.addColorStop(1,'#137333');ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1350);
+
+  // OkCredit-style compact payment reminder: app branding + saved profile/business identity.
+  const bg=ctx.createLinearGradient(0,0,1080,1350);
+  bg.addColorStop(0,'#0f8f3e');bg.addColorStop(1,'#137333');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1350);
+
+  const logoUrl=new URL('assets/guru-shree-logo.svg',location.href).href;
+  const logo=await loadShareCardImage(logoUrl);
   const photo=await loadShareCardImage(getProfilePhotoUrl());
-  ctx.fillStyle='#fff';ctx.font='700 44px Arial,sans-serif';ctx.textAlign='left';ctx.fillText(d.shop||'Business',250,115);
-  ctx.font='600 28px Arial,sans-serif';ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillText(d.owner||'',250,160);
-  ctx.font='500 27px Arial,sans-serif';ctx.fillText(d.phone?'📞 '+d.phone:'',250,202);
-  ctx.save();ctx.beginPath();ctx.arc(140,145,72,0,Math.PI*2);ctx.closePath();ctx.clip();
-  if(photo)ctx.drawImage(photo,68,73,144,144);else{ctx.fillStyle='rgba(255,255,255,.2)';ctx.fillRect(68,73,144,144);ctx.fillStyle='#fff';ctx.font='900 56px Arial,sans-serif';ctx.textAlign='center';ctx.fillText((d.owner||d.shop||'?').charAt(0).toUpperCase(),140,165);}
+
+  // Header: own logo on the left, then the saved profile name and business name.
+  ctx.save();
+  ctx.beginPath();ctx.arc(140,145,72,0,Math.PI*2);ctx.closePath();ctx.clip();
+  if(logo)ctx.drawImage(logo,68,73,144,144);
+  else if(photo)ctx.drawImage(photo,68,73,144,144);
+  else{
+    ctx.fillStyle='rgba(255,255,255,.20)';ctx.fillRect(68,73,144,144);
+    ctx.fillStyle='#fff';ctx.font='900 56px Arial,sans-serif';ctx.textAlign='center';
+    ctx.fillText((d.owner||d.shop||'G').charAt(0).toUpperCase(),140,165);
+  }
   ctx.restore();
+
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff';
+  ctx.font='800 43px Arial,sans-serif';
+  ctx.fillText(d.owner||'Profile',250,112);
+  ctx.font='700 34px Arial,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.96)';
+  ctx.fillText(d.shop||'Business',250,158);
+  if(d.phone){
+    ctx.font='500 27px Arial,sans-serif';
+    ctx.fillStyle='rgba(255,255,255,.90)';
+    ctx.fillText('📞 '+d.phone,250,202);
+  }
+
+  // Main reminder card.
   roundRect(ctx,28,260,1024,310,28);ctx.fillStyle='#fff';ctx.fill();
-  ctx.fillStyle='#475569';ctx.font='700 32px Arial,sans-serif';ctx.textAlign='center';ctx.fillText(d.amount>0?'Payment Due Reminder!':'Hisaab Clear',540,330);
-  ctx.fillStyle='#111827';ctx.font='900 88px Arial,sans-serif';ctx.fillText('₹'+d.amount.toLocaleString('en-IN'),540,445);
-  ctx.fillStyle='#64748b';ctx.font='600 27px Arial,sans-serif';ctx.fillText('Customer: '+d.name,540,515);
-  roundRect(ctx,28,610,1024,610,28);ctx.fillStyle='#fff';ctx.fill();
-  ctx.fillStyle='#111827';ctx.textAlign='left';ctx.font='600 31px Arial,sans-serif';
-  const msgLines=getCustomerShareMessage(c,s).split('\n').filter(x=>!x.startsWith('पूरा हिसाब:'));
-  let y=680;for(const line of msgLines){const chunks=[];let current='';for(const word of line.split(' ')){const test=current?current+' '+word:word;if(ctx.measureText(test)>900){chunks.push(current);current=word}else current=test}if(current)chunks.push(current);for(const chunk of chunks.slice(0,2)){ctx.fillText(chunk,85,y);y+=48}y+=8;if(y>1110)break;}
-  if(d.link){ctx.fillStyle='#0f8f3e';ctx.font='700 27px Arial,sans-serif';ctx.fillText('पूरा हिसाब: Portal Link',85,1155);}
-  ctx.fillStyle='#64748b';ctx.font='500 22px Arial,sans-serif';ctx.fillText(d.name+' • '+(d.phone||''),85,1265);
+  ctx.textAlign='center';
+  ctx.fillStyle='#475569';
+  ctx.font='800 35px Arial,sans-serif';
+  ctx.fillText(d.amount>0?'बकाया पेमेंट रिमाइंडर!':'हिसाब साफ है',540,338);
+  ctx.fillStyle='#111827';
+  ctx.font='900 90px Arial,sans-serif';
+  ctx.fillText('₹'+d.amount.toLocaleString('en-IN'),540,455);
+  ctx.fillStyle='#64748b';
+  ctx.font='600 27px Arial,sans-serif';
+  ctx.fillText('ग्राहक: '+d.name,540,520);
+
+  // Small detail area, kept compact like the reference image.
+  roundRect(ctx,28,610,1024,520,28);ctx.fillStyle='#fff';ctx.fill();
+  ctx.textAlign='left';
+  ctx.fillStyle='#111827';
+  ctx.font='700 31px Arial,sans-serif';
+  let y=680;
+  const detailLines=[];
+  if(d.amount>0)detailLines.push('कृपया बकाया राशि का भुगतान करें।');
+  if(d.upiId)detailLines.push('UPI ID: '+d.upiId);
+  if(d.amount>0&&d.upiId)detailLines.push('PhonePe / Google Pay / Paytm से भुगतान करें।');
+  if(d.link)detailLines.push('पूरा हिसाब: Portal Link');
+  for(const line of detailLines){
+    const words=line.split(' ');let current='';
+    for(const word of words){
+      const test=current?current+' '+word:word;
+      if(ctx.measureText(test)>900){ctx.fillText(current,85,y);y+=48;current=word}else current=test;
+    }
+    if(current){ctx.fillText(current,85,y);y+=48;}
+    y+=8;
+  }
+
+  // Own app brand replaces the reference app branding.
+  ctx.textAlign='center';
+  ctx.fillStyle='#fff';
+  ctx.font='800 34px Arial,sans-serif';
+  ctx.fillText('BSR-PRO-KHATABOOK-APP',540,1245);
+  ctx.fillStyle='rgba(255,255,255,.86)';
+  ctx.font='500 22px Arial,sans-serif';
+  ctx.fillText(d.owner||'',540,1285);
+
   return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Image creation failed')),'image/png',.92));
 }
 async function shareHisaabWhatsAppPhoto(id){
