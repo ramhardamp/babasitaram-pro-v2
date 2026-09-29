@@ -2327,7 +2327,7 @@ async function saveCustomer(){
     closeModal();
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
     try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
-    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',openingDate,bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
+    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',localDateInputValue(),bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
