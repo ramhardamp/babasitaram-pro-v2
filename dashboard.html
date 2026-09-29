@@ -860,7 +860,7 @@ body.dark-mode{
             </button>
             <div class="android-setting-content">
               <div class="android-sub-row"><span>🕉️ <b>Guru Shree</b><small>Version 6.8 (Stable Mobile)</small></span></div>
-              <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitarampro@gmail.com</small></span><i>›</i></a>
+              <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitaram@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
 
@@ -1895,7 +1895,7 @@ function getSharePhone(phone){
 function getCustomerShareMessage(c,s){
   const name=String(c?.name||'ग्राहक').trim();
   const shop=String(userData?.shopName||'').trim();
-  const owner=String(userData?.ownerName||'').trim();
+  const owner=String(userData?.profileName||userData?.ownerName||'').trim();
   const phone=String(userData?.phone||'').trim();
   const total=Math.max(0,Math.round(Number(s?.grandTotal)||0));
   const udhaar=Math.max(0,Math.round(Number(s?.udhaarBalance)||0));
@@ -1911,11 +1911,11 @@ function getCustomerShareMessage(c,s){
   }
   if(c?.viewToken)lines.push('',`पूरा हिसाब देखें: ${getCustomerViewLink(c.viewToken)}`);
   const upiId=String(userData?.upiId||'').trim();
-  if(upiId&&total>0)lines.push('',`💳 UPI ID: ${upiId}`,'इस UPI ID पर PhonePe, Google Pay या Paytm से भुगतान करें।',`भुगतान राशि: ₹${total.toLocaleString('en-IN')}`);
+  if(upiId&&total>0)lines.push('',`UPI ID: ${upiId}`,'इस UPI ID पर PhonePe, Google Pay या Paytm से भुगतान करें।',`भुगतान राशि: ₹${total.toLocaleString('en-IN')}`);
   lines.push('');
   if(shop)lines.push(shop);
   if(owner)lines.push(owner);
-  if(phone)lines.push(`📞 ${phone}`);
+  if(phone)lines.push(`मोबाइल: ${phone}`);
   return lines.join('\n');
 }
 function getShareCardData(c,s){
