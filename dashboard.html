@@ -1045,15 +1045,44 @@ function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function t(en,hi){return currentLang==='hi'?hi:en}
 
-function dateStr(d){
-  if(!d)return '-';
+function toDateObject(value){
+  if(!value)return null;
   try{
-    const date = d.toDate ? d.toDate() : new Date(d);
-    const dd = String(date.getDate()).padStart(2,'0');
-    const mm = String(date.getMonth()+1).padStart(2,'0');
-    const yyyy = date.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }catch(e){return '-'}
+    if(typeof value?.toDate==='function')return value.toDate();
+    if(value instanceof Date)return value;
+    if(typeof value==='object'&&typeof value.seconds==='number')return new Date(value.seconds*1000+(Number(value.nanoseconds)||0)/1000000);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(value)))return new Date(String(value)+'T00:00:00');
+    return new Date(value);
+  }catch(e){return null}
+}
+function pad2(n){return String(n).padStart(2,'0')}
+function localDateInputValue(d=new Date()){const x=toDateObject(d)||new Date();return `${x.getFullYear()}-${pad2(x.getMonth()+1)}-${pad2(x.getDate())}`}
+function localTimeInputValue(d=new Date()){const x=toDateObject(d)||new Date();return `${pad2(x.getHours())}:${pad2(x.getMinutes())}`}
+function makeDateTimeISO(date,time){
+  const ds=String(date||'').slice(0,10),ts=String(time||'00:00').slice(0,5);
+  const x=new Date(`${ds}T${/^\d{2}:\d{2}$/.test(ts)?ts:'00:00'}:00`);
+  return Number.isNaN(x.getTime())?new Date().toISOString():x.toISOString();
+}
+function transactionDateTimeValue(tx){
+  if(tx?.dateTime||tx?.transactionAt){const ms=sortableDateValue(tx.dateTime||tx.transactionAt);if(ms)return ms}
+  if(tx?.date&&tx?.time){const ms=Date.parse(`${String(tx.date).slice(0,10)}T${String(tx.time).slice(0,5)}:00`);if(!Number.isNaN(ms))return ms}
+  return sortableDateValue(tx?.date||tx?.startDate);
+}
+function dateStr(d){
+  const date=toDateObject(d);
+  if(!date||Number.isNaN(date.getTime()))return '-';
+  return `${pad2(date.getDate())}/${pad2(date.getMonth()+1)}/${date.getFullYear()}`;
+}
+function dateTimeStr(value){
+  const date=toDateObject(value);
+  if(!date||Number.isNaN(date.getTime()))return '-';
+  return `${pad2(date.getDate())}/${pad2(date.getMonth()+1)}/${date.getFullYear()}, ${date.toLocaleTimeString(currentLang==='hi'?'hi-IN':'en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})}`;
+}
+function txnDateTimeStr(tx){
+  if(tx?.dateTime)return dateTimeStr(tx.dateTime);
+  if(tx?.transactionAt)return dateTimeStr(tx.transactionAt);
+  if(tx?.date&&tx?.time)return dateTimeStr(makeDateTimeISO(tx.date,tx.time));
+  return dateStr(tx?.date||tx?.startDate);
 }
 
 function monthsBetween(start, end) {
@@ -1136,9 +1165,9 @@ function getTotals(){
   let u=0,b=0,t2=0,p=0,income=0;
   customers.forEach(c=>{const s=getSummary(c.id);if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}});
   transactions.forEach(x=>{
-    if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(x.amount||0);
-    // Total Income is interest received only. Loans/principal are not income.
-    if(x.type==='interest_paid')income+=(x.amount||0);
+    if(x.status==='deleted'||x.deletedAt)return;
+    if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(Number(x.amount)||0);
+    if(x.type==='interest_paid')income+=(Number(x.amount)||0);
   });
   return{udhaar:u,byaj:b,total:t2,paid:p,income};
 }
@@ -1242,7 +1271,7 @@ async function fixAllBalances(){
     for(const c of customers){
       let correctBalance = 0;
       transactions.forEach(t => {
-        if(t.partyId !== c.id) return;
+        if(t.partyId !== c.id || t.status==='deleted' || t.deletedAt) return;
         if(t.type === 'udhaar') correctBalance += (t.amount || 0);
         else if(t.type === 'jama') correctBalance -= (t.amount || 0);
       });
@@ -2020,7 +2049,9 @@ function openEditTxnModal(txn){
     <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
       <input type="text" id="mNote" class="text-input" value="${esc(txn.note||'')}" placeholder="${t('Optional','वैकल्पिक')}"></div>
     <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
-      <input type="date" id="mDate" class="text-input" value="${(txn.date||new Date().toISOString().split('T')[0]).slice(0,10)}"></div>
+      <input type="date" id="mDate" class="text-input" value="${(txn.date||localDateInputValue()).slice(0,10)}"></div>
+    <div class="input-group"><label class="input-label">${t('Time','समय')}</label>
+      <input type="time" id="mTime" class="text-input" value="${txn.time||localTimeInputValue(txn.dateTime||txn.transactionAt||txn.date)}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveEditedTxn('${txn.id}')">${t('Save','सेव')}</button></div>`);
   setTimeout(()=>document.getElementById('mAmt')?.focus(),300);
@@ -2031,8 +2062,11 @@ async function saveEditedTxn(id){
   const newAmt=parseFloat(document.getElementById('mAmt')?.value);
   const newNote=document.getElementById('mNote')?.value.trim()||'';
   const newDate=document.getElementById('mDate')?.value||'';
+  const newTime=document.getElementById('mTime')?.value||'';
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
+  if(!newTime)return toast(t('Enter time','समय डालें'),'error');
+  const newDateTime=makeDateTimeISO(newDate,newTime);
   if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
 
   try{
@@ -2062,7 +2096,7 @@ async function saveEditedTxn(id){
       if(oldType==='udhaar')balanceDelta+=newAmt;
       else if(oldType==='jama')balanceDelta-=newAmt;
 
-      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate});
+      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate,time:newTime,dateTime:newDateTime,transactionAt:newDateTime,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
       if(balanceDelta!==0)transaction.update(partyRef,{
         balance:firebase.firestore.FieldValue.increment(balanceDelta)
       });
@@ -2112,7 +2146,7 @@ async function deleteTxn(id){
       if(current.status==='deleted'||current.deletedAt)throw new Error('Transaction already deleted');
       if(type==='loan_repay'||type==='interest_paid')throw new Error('Derived loan transaction cannot be deleted independently');
       let reverseDelta=0;if(type==='udhaar')reverseDelta=-amount;else if(type==='jama')reverseDelta=amount;
-      transaction.update(txRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      transaction.update(txRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedAtLocal:new Date().toISOString(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
       if(reverseDelta!==0)transaction.update(partyRef,{balance:firebase.firestore.FieldValue.increment(reverseDelta),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     });
     const freshParty=await partyRef.get(),newBal=Number(freshParty.data()?.balance)||0,c=customers.find(x=>String(x.id)===String(txn.partyId));
@@ -2166,7 +2200,9 @@ async function saveEditedLoan(id){
     if(principalChanged&&existingRepayments.length>0){
       return toast(t('Principal cannot be changed after repayment.','वापसी होने के बाद मूलधन नहीं बदला जा सकता।'),'error');
     }
-    const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart};
+    const editLoanTime=localTimeInputValue(new Date());
+    const editLoanDateTime=makeDateTimeISO(newStart,editLoanTime);
+    const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart,time:editLoanTime,dateTime:editLoanDateTime,transactionAt:editLoanDateTime,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
     if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
@@ -2185,7 +2221,7 @@ async function deleteLoan(id){
       const snap=await transaction.get(loanRef);if(!snap.exists)throw new Error('Loan not found');
       const fresh=snap.data()||{};if(fresh.status==='deleted'||fresh.deletedAt)throw new Error('Loan already deleted');
       if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0)throw new Error('Loan has payment history');
-      transaction.update(loanRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      transaction.update(loanRef,{status:'deleted',deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedAtLocal:new Date().toISOString(),deletedBy:uid,deletionReason:reason.trim().slice(0,500),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     });
     const c=customers.find(x=>x.id===loan.partyId);
     if(c?.viewToken){try{await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}catch(viewErr){console.warn('Public view update failed after loan soft-delete:',viewErr);}}
@@ -2243,14 +2279,18 @@ async function saveCustomer(){
     
     if(bal !== 0){
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]};
+      const openingNow=new Date();
+      const openingDate=localDateInputValue(openingNow);
+      const openingTime=localTimeInputValue(openingNow);
+      const openingDateTime=makeDateTimeISO(openingDate,openingTime);
+      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:openingDate,time:openingTime,dateTime:openingDateTime,transactionAt:openingDateTime,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
       batch.set(txnRef, txnData);
     }
     await batch.commit();
     closeModal();
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
     try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
-    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',new Date().toISOString().split('T')[0],bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
+    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',openingDate,bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
@@ -2351,7 +2391,7 @@ function openTxnModal(type){
     <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
       <input type="text" id="mNote" class="text-input" placeholder="${t('Optional','वैकल्पिक')}"></div>
     <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
-      <input type="date" id="mDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+      <input type="date" id="mDate" class="text-input" value="${localDateInputValue()}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveTxn('${type}')">${t('Save','सेव')}</button></div>`);
   setTimeout(()=>document.getElementById('mAmt')?.focus(),300);
@@ -2379,7 +2419,10 @@ async function saveTxn(type){
     const delta=type==='udhaar'?amt:-amt;
     const batch=db.batch();
 
-    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date});
+    const now=new Date();
+    const time=localTimeInputValue(now);
+    const dateTime=makeDateTimeISO(date,time);
+    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date,time,dateTime,transactionAt:dateTime,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     batch.update(partyRef,{balance:firebase.firestore.FieldValue.increment(delta)});
 
     await batch.commit();
@@ -2435,7 +2478,7 @@ function openLoanModal(){
       <div class="input-prefix-wrap"><span class="input-prefix">%</span>
         <input type="number" id="mRate" class="text-input" value="${userData?.defaultRate||2}" step="0.1" inputmode="decimal"></div></div>
     <div class="input-group"><label class="input-label">${t('Start Date','शुरुआत तारीख')}</label>
-      <input type="date" id="mStart" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+      <input type="date" id="mStart" class="text-input" value="${localDateInputValue()}"></div>
     <div class="input-group"><label class="input-label">${t('Note','नोट')}</label>
       <input type="text" id="mNote" class="text-input" placeholder="${t('Optional','वैकल्पिक')}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
@@ -2457,6 +2500,8 @@ async function saveLoan(){
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
     const loanRef=txCol.doc();
+    const loanTime=localTimeInputValue(new Date());
+    const loanDateTime=makeDateTimeISO(sd,loanTime);
     const loanData={
       partyId:String(currentCustomerId),
       type:'byaj_loan',
@@ -2468,6 +2513,10 @@ async function saveLoan(){
       interestPaid:0,
       repayments:[],
       date:sd,
+      time:loanTime,
+      dateTime:loanDateTime,
+      transactionAt:loanDateTime,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
       loanId:loanRef.id
     };
     await loanRef.set(loanData);
@@ -2508,7 +2557,7 @@ function openRepayModal(){
       <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
         <input type="number" id="mRepay" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
-      <input type="date" id="mRepayDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+      <input type="date" id="mRepayDate" class="text-input" value="${localDateInputValue()}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveRepay()">${t('Save','सेव')}</button></div>`);
 }
@@ -2534,7 +2583,9 @@ async function saveRepay(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
-      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt}];
+      const repayTime=localTimeInputValue(new Date());
+      const repayDateTime=makeDateTimeISO(rdate,repayTime);
+      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,time:repayTime,dateTime:repayDateTime,amount:amt}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
@@ -2544,6 +2595,10 @@ async function saveRepay(){
         amount:amt,
         note:t('Loan repayment','लोन वापसी'),
         date:rdate,
+        time:repayTime,
+        dateTime:repayDateTime,
+        transactionAt:repayDateTime,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         loanId:String(id)
       });
     });
@@ -2583,7 +2638,7 @@ function openIntPaidModal(){
       <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
         <input type="number" id="mIntAmt" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
-      <input type="date" id="mIntDate" class="text-input" value="${new Date().toISOString().split('T')[0]}"></div>
+      <input type="date" id="mIntDate" class="text-input" value="${localDateInputValue()}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveIntPaid()">${t('Save','सेव')}</button></div>`);
 }
@@ -2607,12 +2662,18 @@ async function saveIntPaid(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const txnRef=txCol.doc();
       transaction.update(loanRef,{interestPaid:(Number(fresh.interestPaid)||0)+amt});
+      const intTime=localTimeInputValue(new Date());
+      const intDateTime=makeDateTimeISO(idate,intTime);
       transaction.set(txnRef,{
         partyId:String(currentCustomerId),
         type:'interest_paid',
         amount:amt,
         note:t('Interest received','ब्याज मिला'),
         date:idate,
+        time:intTime,
+        dateTime:intDateTime,
+        transactionAt:intDateTime,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         loanId:String(id)
       });
     });
