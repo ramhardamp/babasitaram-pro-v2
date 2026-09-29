@@ -2292,9 +2292,6 @@ function openAddCustomer(){
     <div class="input-group"><label class="input-label">${t('Email','ईमेल')} <span style="color:var(--text-muted);font-size:11px">(optional)</span></label>
       <input type="email" id="mEmail" class="text-input" placeholder="customer@email.com" inputmode="email">
       <div class="helper-text">📧 इस ईमेल पर notification जाएगी</div></div>
-    <div class="input-group"><label class="input-label">${t('Opening Udhaar','शुरुआती उधार')}</label>
-      <div class="input-prefix-wrap"><span class="input-prefix">₹</span>
-        <input type="number" id="mBal" class="text-input" placeholder="0" inputmode="numeric"></div></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveCustomer()">${t('Save','सेव')}</button></div>`);
   setTimeout(()=>document.getElementById('mName')?.focus(),300);
@@ -2303,7 +2300,6 @@ async function saveCustomer(){
   const name=document.getElementById('mName').value.trim();
   const phone=document.getElementById('mPhone').value.replace(/\D/g,'').slice(0,10);
   const email=document.getElementById('mEmail').value.trim();
-  const bal=parseFloat(document.getElementById('mBal').value)||0;
   if(!name)return toast(t('Enter name','नाम डालें'),'error');
   if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast(t('Invalid email','ईमेल सही नहीं'),'error');
   try{
@@ -2311,23 +2307,15 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     
-    const partyData = {name,phone,email,balance:bal,viewToken};
+    // Customer creation is intentionally balance-neutral. Udhaar/Jama must be recorded
+    // afterward through the transaction flow, where date and time can be entered/edited.
+    const partyData = {name,phone,email,balance:0,viewToken};
     batch.set(partyRef, partyData);
     
-    if(bal !== 0){
-      const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      const openingNow=new Date();
-      const openingDate=localDateInputValue(openingNow);
-      const openingTime=localTimeInputValue(openingNow);
-      const openingDateTime=makeDateTimeISO(openingDate,openingTime);
-      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:openingDate,time:openingTime,dateTime:openingDateTime,transactionAt:openingDateTime,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-      batch.set(txnRef, txnData);
-    }
     await batch.commit();
     closeModal();
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
-    try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:bal})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
-    if(bal>0){try{await sendTransactionEmail({name,email},'udhaar',bal,'Opening balance',localDateInputValue(),bal)}catch(emailErr){console.warn('Opening-balance email failed after customer save:',emailErr)}}
+    try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:0})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
