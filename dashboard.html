@@ -1900,7 +1900,7 @@ function getCustomerShareMessage(c,s){
   const total=Math.max(0,Math.round(Number(s?.grandTotal)||0));
   const udhaar=Math.max(0,Math.round(Number(s?.udhaarBalance)||0));
   const loan=Math.max(0,Math.round(Number(s?.byajBalance)||0));
-  const lines=['Payment Due Reminder!','',`नमस्ते ${name} ji,`];
+  const lines=['BSR-PRO-KHATABOOK-APP - लेन-देन सूचना','',`नमस्ते ${name} जी,`];
   if(total>0){
     if(udhaar>0&&loan>0)lines.push(`आपका कुल ₹${total.toLocaleString('en-IN')} बकाया है।`,`उधार: ₹${udhaar.toLocaleString('en-IN')}`,`लोन/ब्याज: ₹${loan.toLocaleString('en-IN')}`);
     else if(loan>0)lines.push(`आपके लोन खाते में ₹${total.toLocaleString('en-IN')} बकाया है।`,`लोन बकाया: ₹${loan.toLocaleString('en-IN')}`);
@@ -1909,11 +1909,11 @@ function getCustomerShareMessage(c,s){
   }else{
     lines.push('आपका हिसाब अभी साफ है।');
   }
-  if(c?.viewToken)lines.push('',`पूरा हिसाब: ${getCustomerViewLink(c.viewToken)}`);
+  if(c?.viewToken)lines.push('',`पूरा हिसाब देखें: ${getCustomerViewLink(c.viewToken)}`);
   const upiId=String(userData?.upiId||'').trim();
   if(upiId&&total>0)lines.push('',`💳 UPI ID: ${upiId}`,'इस UPI ID पर PhonePe, Google Pay या Paytm से भुगतान करें।',`भुगतान राशि: ₹${total.toLocaleString('en-IN')}`);
   lines.push('');
-  if(shop)lines.push(`— ${shop}`);
+  if(shop)lines.push(shop);
   if(owner)lines.push(owner);
   if(phone)lines.push(`📞 ${phone}`);
   return lines.join('\n');
