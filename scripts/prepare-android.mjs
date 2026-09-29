@@ -270,7 +270,7 @@ if (!mainText.includes('bsrSetupAndroidBack')) {
     if (!mainText.includes(classMarker)) throw new Error('MainActivity class marker not found for back setup');
     mainText=mainText.replace(classMarker,classMarker+'\n  @Override public void onCreate(android.os.Bundle savedInstanceState) { super.onCreate(savedInstanceState); '+createCall+' }');
   }
-  const classEnd = mainText.lastIndexOf('\n}');
+  const classEnd = mainText.lastIndexOf('}');
   if (classEnd < 0) throw new Error('MainActivity class closing brace not found');
   mainText = mainText.slice(0, classEnd) + '\n' + setupMethod.trim() + mainText.slice(classEnd);
   fs.writeFileSync(main, mainText);

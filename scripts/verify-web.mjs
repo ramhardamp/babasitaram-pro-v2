@@ -5,7 +5,6 @@ const signup=await readFile('signup.html','utf8');
 const forgot=await readFile('forgot-password.html','utf8');
 const prep=await readFile('scripts/prepare-web.mjs','utf8');
 const guruLogo=await readFile('assets/guru-shree-logo.svg','utf8');
-const brandLogo=await readFile('assets/babasitaram-pro-logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
 ['Total Income is interest-only',dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
@@ -14,7 +13,7 @@ const checks=[
 ['customer add entry exists on dashboard',dashboard.includes('onclick="openAddCustomer()"')],
 ['customer save logic exists',dashboard.includes('async function saveCustomer()')],
 ['dark mode toggle exists',dashboard.includes('function toggleDarkMode()')&&dashboard.includes('bsp_dark_mode')],
-['PIN lock exists',dashboard.includes('function lockApp()')&&dashboard.includes('function pinPress')],
+['PIN security flow exists',dashboard.includes('function showPinScreen(')&&dashboard.includes('function handlePinComplete(')&&dashboard.includes('function savePIN(')],
 ['Firebase config referenced',dashboard.includes('firebase-config.js')&&index.includes('firebase-config.js')],
 ['customer-view has no customer-create modal',!(await readFile('customer-view.html','utf8')).includes('openAddCustomer(')],
 ['customer-view payment colors defined', (await readFile('customer-view.html','utf8')).includes('.txn-amt.jama') && (await readFile('customer-view.html','utf8')).includes('.txn-amt.udhaar')],
@@ -28,7 +27,7 @@ const checks=[
 ['customer search exists',dashboard.includes('id="customerSearch"')&&dashboard.includes('function setCustomerSearch')],
 ['transaction index exists',dashboard.includes('const txnIndex = new Map()')&&dashboard.includes('function rebuildTxnIndex')],
 ['verified backup schema exists',dashboard.includes('schemaVersion:2')&&dashboard.includes('checksumSha256')&&dashboard.includes('function verifyDataIntegrity')],
-['backup export UI exists',dashboard.includes('class="export-card primary"')&&dashboard.includes('onclick="exportExcelData()"')&&dashboard.includes('onclick="exportBusinessPdf()"')&&dashboard.includes('onclick="exportCsvData()"')],
+['backup export UI exists',dashboard.includes('onclick="exportData()"')&&dashboard.includes('onclick="exportExcelData()"')&&dashboard.includes('onclick="exportBusinessPdf()"')&&dashboard.includes('onclick="exportCsvData()"')],
 ['Excel export has multi-sheet structure',dashboard.includes("function exportExcelData(){")&&dashboard.includes("addSheet('Customers'")&&dashboard.includes("addSheet('Transactions'")&&dashboard.includes("addSheet('Loans'")],
 ['PDF business report is printable',dashboard.includes('function exportBusinessPdf()')&&dashboard.includes('function printExportWindow')&&dashboard.includes('w.print()')],
 ['customer statement export exists',dashboard.includes('function exportCustomerStatementPdf(id)')&&dashboard.includes('exportCustomerStatementPdf(\'')],
@@ -43,10 +42,10 @@ const checks=[
 
 ['atomic customer/payment writes',dashboard.includes('const batch=db.batch()')&&dashboard.includes('db.runTransaction(async transaction=>')],
 ['Guru Shree logo asset exists',guruLogo.includes('<svg')&&dashboard.includes('assets/guru-shree-logo.svg')&&index.includes('assets/guru-shree-logo.svg')],
-['Reliable brand logo fallback exists',brandLogo.includes('<svg')&&dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&index.includes("this.src='assets/babasitaram-pro-logo.svg'")&&prep.includes("'assets/babasitaram-pro-logo.svg'")],
+['Guru Shree fallback is used consistently',dashboard.includes("this.src='assets/guru-shree-logo.jpg'")&&index.includes("this.src='assets/guru-shree-logo.jpg'")&&!dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&!index.includes("this.src='assets/babasitaram-pro-logo.svg'")],
 ['Customer avatars use brand logo',dashboard.includes('cc-avatar-brand')&&dashboard.includes('cc-avatar-logo')&&dashboard.includes('assets/guru-shree-logo.svg')],
-['PDF logo uses absolute live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href")&&dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
-['Branded PDF header includes logo and business identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BABASITARAM PRO')&&dashboard.includes('assets/babasitaram-pro-logo.svg')&&dashboard.includes('w.print()')],
+['PDF logo uses Guru Shree live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href")&&!dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
+['Branded PDF header uses Guru Shree identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('Guru Shree')&&dashboard.includes('assets/guru-shree-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
 checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/jpeg;base64,')&&guruLogo.length>1000]);
@@ -58,7 +57,7 @@ checks.push(['Existing users get non-destructive profile fields',dashboard.inclu
 
 checks.push(['Login keeps Firestore profile and ledger off the critical path',!index.includes('preloadDashboardData(user.uid)')&&!index.includes('bsp_dashboard_prefetched')&&!index.includes('bsp_user_prefetched')&&index.includes('bsp_login_handoff')&&!index.includes('const userDoc = await db.collection(\'users\').doc(user.uid).get()')&&!index.includes('loginDataLoading')]);
 checks.push(['Login progress stays inside the login button',index.includes('id="loginBtn"')&&index.includes("btn.id === 'loginBtn'")&&!index.includes('id="loginDataLoading"')&&!index.includes('function showLoginDataLoading')]);
-checks.push(['No duplicate dashboard totals declaration',((dashboard.match(/const totals=getTotals\(\);/g)||[]).length===1)]);
+checks.push(['Dashboard totals function is unique',((dashboard.match(/function getTotals\(\)/g)||[]).length===1)]);
 checks.push(['Dashboard boot timing instrumentation exists',dashboard.includes('[DASH-BOOT]')&&index.includes('[LOGIN-TIMING]')]);
 checks.push(['Dashboard hydrates through parallel Firestore listeners',dashboard.includes('function setupListeners()')&&dashboard.includes('onSnapshot({includeMetadataChanges:true}')&&dashboard.includes('initialCustomersReady=true')&&dashboard.includes('initialTransactionsReady=true')&&!dashboard.includes('async function primeDashboardData()')&&dashboard.includes("get({source:'cache'})")&&dashboard.includes("setupListeners();")]);
 checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/jpeg;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
@@ -81,7 +80,8 @@ checks.push(['Android SMS preparation script exists',await readFile('scripts/pre
 checks.push(['Android workflow prepares native SMS layer',await readFile('.github/workflows/android-build.yml','utf8').then(x=>x.includes('node scripts/prepare-android.mjs'))]);
 checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
 checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
-checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.4.4']);
+checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.1.2']);
+checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
 
