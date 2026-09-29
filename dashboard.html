@@ -2960,8 +2960,15 @@ async function saveSettingsPanel(name){
       await db.collection('users').doc(currentUser.uid).set({upiId:upiId||'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
       userData.upiId=upiId||'';
       const el=document.getElementById('sUpiId');if(el)el.textContent=userData.upiId||'-';
+      // Refresh existing customer portal snapshots so newly added/changed UPI ID
+      // immediately appears with the current outstanding amount.
+      for(const customer of customers){
+        if(customer.viewToken){
+          try{await updatePublicView(customer.id,customer.viewToken,customer)}catch(e){console.warn('Portal UPI refresh skipped:',customer.id,e)}
+        }
+      }
       closeSettingsPanel();
-      toast('✅ UPI ID सेव हो गई','success');
+      toast('✅ UPI ID सेव हो गई और customer links अपडेट हो गए','success');
     }catch(e){console.error(e);toast('UPI ID सेव नहीं हुई','error')}
     return;
   }
