@@ -2131,30 +2131,48 @@ function showTxnMenu(id){
 function getTxnShareCustomer(txn){
   return customers.find(x=>String(x.id)===String(txn?.partyId||currentCustomerId))||null;
 }
+function shareDisplayName(value,fallback=''){
+  const raw=String(value||fallback).trim();
+  if(!raw)return '';
+  if(!/[A-Za-z]/.test(raw))return raw;
+  return raw.toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase());
+}
+function txnShareTime(txn){
+  if(txn?.dateTime||txn?.transactionAt)return dateTimeStr(txn.dateTime||txn.transactionAt).split(', ').pop();
+  if(txn?.date&&txn?.time){
+    const d=toDateObject(makeDateTimeISO(txn.date,txn.time));
+    if(d)return d.toLocaleTimeString(currentLang==='hi'?'hi-IN':'en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+  return localTimeInputValue(new Date()).replace(/^([01]\d|2[0-3]):([0-5]\d)$/,(_,h,m)=>{
+    const n=Number(h); return `${pad2(n%12||12)}:${m} ${n>=12?'pm':'am'}`;
+  });
+}
 function getTxnShareMessage(txn,customer){
   const c=customer||getTxnShareCustomer(txn);
   const amount=txn?.type==='byaj_loan'?(Number(txn?.principal)||Number(txn?.amount)||0):Number(txn?.amount)||0;
   const sign=['jama','loan_repay','interest_paid'].includes(txn?.type)?'-':'+';
   const typeLabel={udhaar:'उधार',jama:'जमा भुगतान',byaj_loan:'ब्याज पर लोन',loan_repay:'लोन वापसी',interest_paid:'ब्याज भुगतान'}[txn?.type]||'लेन-देन';
   const due=Math.max(0,Math.round(Number(c?.balance)||0));
+  const customerName=shareDisplayName(c?.name,'ग्राहक');
+  const shop=shareDisplayName(userData?.shopName);
+  const owner=shareDisplayName(userData?.ownerName);
   const lines=[
     'Guru Shree - लेन-देन सूचना',
     '',
-    `नमस्ते ${String(c?.name||'ग्राहक').trim()} ji,`,
+    `नमस्ते ${customerName} जी,`,
     `लेन-देन: ${typeLabel}`,
     `रकम: ${sign}₹${Number(amount).toLocaleString('en-IN')}`,
     `तारीख: ${dateStr(txn?.date||txn?.startDate)}`,
-    `समय: ${txn?.time||localTimeInputValue(txn?.dateTime||txn?.transactionAt||txn?.date)}`
+    `समय: ${txnShareTime(txn)}`
   ];
   if(txn?.note)lines.push(`नोट: ${String(txn.note)}`);
   if(due>0)lines.push('',`वर्तमान बकाया: ₹${due.toLocaleString('en-IN')}`);
   if(c?.viewToken)lines.push('',`📋 पूरा हिसाब देखें:`,getCustomerViewLink(c.viewToken));
   const upiUrl=buildUpiPaymentUrl(c,due);
   if(upiUrl)lines.push('',`💳 बकाया भुगतान के लिए UPI लिंक:`,upiUrl,`UPI में ₹${due.toLocaleString('en-IN')} amount पहले से भरा रहेगा।`);
-  const shop=String(userData?.shopName||'').trim(),owner=String(userData?.ownerName||'').trim();
   if(shop)lines.push('',`— ${shop}`);
   if(owner)lines.push(owner);
-  return lines.join('\\n');
+  return lines.join('\n');
 }
 function shareTxnWhatsApp(id){
   const txn=transactions.find(t=>String(t.id)===String(id));if(!txn)return;
