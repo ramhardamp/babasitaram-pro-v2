@@ -85,6 +85,13 @@ checks.push(['Capacitor App dependency is installed for secondary Back bridge',J
 
 
 
+checks.push(['New ledger entries store createdAt timestamp',dashboard.includes("createdAt:firebase.firestore.FieldValue.serverTimestamp()")&&dashboard.includes('dateTimeStr(txn.date,txn.createdAt)')]);
+checks.push(['Normal transaction delete is non-destructive',dashboard.includes('deleted:true')&&dashboard.includes('deletedAt:firebase.firestore.FieldValue.serverTimestamp()')&&!dashboard.includes('transaction.delete(txRef)')]);
+checks.push(['Deleted transaction stays visible in compact history',dashboard.includes('txn-item ${deleted')&&dashboard.includes('Deleted entry')&&dashboard.includes('cannot be restored or permanently deleted')]);
+checks.push(['Deleted transactions excluded from active balances',dashboard.includes('if(isDeletedTxn(t))return;')&&dashboard.includes("filter(t=>!isDeletedTxn(t)&&t.type==='byaj_loan'")]);
+checks.push(['Linked loan repayment/interest deletion safely updates parent loan',dashboard.includes("type==='loan_repay'||type==='interest_paid'")&&dashboard.includes('interestPaid:Math.max(0')&&dashboard.includes('repayments:finalReps')]);
+checks.push(['Customer public view preserves entry time',customerView.includes('function timeStr(d)')&&customerView.includes('dateTimeStr(txn.date,txn.createdAt)')]);
+
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
 if(failed)process.exit(1);
