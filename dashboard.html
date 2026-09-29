@@ -2171,8 +2171,8 @@ function getTxnShareMessage(txn,customer){
   const upiUrl=buildUpiPaymentUrl(c,due);
   if(upiUrl)lines.push('',`💳 बकाया भुगतान के लिए UPI लिंक:`,upiUrl,`UPI में ₹${due.toLocaleString('en-IN')} amount पहले से भरा रहेगा।`);
   lines.push('');
-  if(shop)lines.push(`*Business Name* — ${shop}`);
-  if(owner)lines.push(`*👤 नाम* — ${owner}`);
+  if(shop)lines.push(shop);
+  if(owner)lines.push(owner);
   return lines.join('\n');
 }
 function shareTxnWhatsApp(id){
