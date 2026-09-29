@@ -1995,7 +1995,7 @@ function showTxnMenu(id){
     <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
       <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
       <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateTimeStr(txn.date,txn.createdAt)} • ${txn.type}</div></div>
     ${actionHtml}
     <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);
 }
@@ -2573,9 +2573,9 @@ async function saveRepay(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
+      const txnRef=txCol.doc();
       const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt,createdAt:firebase.firestore.Timestamp.now(),transactionId:txnRef.id}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
-      const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
       transaction.set(txnRef,{
         partyId:String(currentCustomerId),
