@@ -57,7 +57,7 @@ checks.push(['Existing users get non-destructive profile fields',dashboard.inclu
 
 checks.push(['Login keeps Firestore profile and ledger off the critical path',!index.includes('preloadDashboardData(user.uid)')&&!index.includes('bsp_dashboard_prefetched')&&!index.includes('bsp_user_prefetched')&&index.includes('bsp_login_handoff')&&!index.includes('const userDoc = await db.collection(\'users\').doc(user.uid).get()')&&!index.includes('loginDataLoading')]);
 checks.push(['Login progress stays inside the login button',index.includes('id="loginBtn"')&&index.includes("btn.id === 'loginBtn'")&&!index.includes('id="loginDataLoading"')&&!index.includes('function showLoginDataLoading')]);
-checks.push(['No duplicate dashboard totals declaration',((dashboard.match(/const totals=getTotals\(\);/g)||[]).length===1)]);
+checks.push(['Dashboard totals function is unique',((dashboard.match(/function getTotals\(\)/g)||[]).length===1)]);
 checks.push(['Dashboard boot timing instrumentation exists',dashboard.includes('[DASH-BOOT]')&&index.includes('[LOGIN-TIMING]')]);
 checks.push(['Dashboard hydrates through parallel Firestore listeners',dashboard.includes('function setupListeners()')&&dashboard.includes('onSnapshot({includeMetadataChanges:true}')&&dashboard.includes('initialCustomersReady=true')&&dashboard.includes('initialTransactionsReady=true')&&!dashboard.includes('async function primeDashboardData()')&&dashboard.includes("get({source:'cache'})")&&dashboard.includes("setupListeners();")]);
 checks.push(['Supplied Guru Shree logo is embedded as a valid SVG image',guruLogo.includes('<svg')&&guruLogo.includes('data:image/jpeg;base64,')&&guruLogo.includes('<image ')&&guruLogo.length>2500]);
