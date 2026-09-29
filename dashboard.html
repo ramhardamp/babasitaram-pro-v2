@@ -1844,12 +1844,12 @@ function renderCustomerDetail(){
       const deleted=txn.status==='deleted'||!!txn.deletedAt;
       const title=deleted?t('Payment Deleted','भुगतान हटाया गया'):m.label;
       const amount=txn.type==='byaj_loan'?(Number(txn.principal)||Number(txn.amount)||0):Number(txn.amount)||0;
-      txnHtml+=`<div class="txn-item ${deleted?'txn-item-deleted':''}" ${deleted?`onclick="showDeletedTxnDetails('${txn.id}')" role="button" tabindex="0"`:''}>
+      txnHtml+=`<div class="txn-item ${deleted?'txn-item-deleted':''}" onclick="${deleted?`showDeletedTxnDetails('${txn.id}')`:`showTxnMenu('${txn.id}')`}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${deleted?`showDeletedTxnDetails('${txn.id}')`:`showTxnMenu('${txn.id}')`}}">
         <div class="txn-icon ${deleted?'deleted':m.cls}">${deleted?'🗑️':m.icon}</div>
         <div class="txn-info"><div class="txn-title">${title}${txn.note?' • '+esc(txn.note):''}</div>
         <div class="txn-date">${txnDateTimeStr(txn)}${deleted&&txn.deletedAt?' • '+t('Deleted','डिलीटेड'):''}</div></div>
         <div class="txn-right"><div class="txn-amt ${deleted?'deleted':m.cls}">${deleted?'':m.sign}${fmt(amount)}</div>
-          ${deleted?'<span class="txn-view-hint">›</span>':`<button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button>`}</div></div>`;
+          <span class="txn-view-hint">›</span></div></div>`;
     });
   }
   txnHtml+='</div>';
