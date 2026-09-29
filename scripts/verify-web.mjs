@@ -5,7 +5,6 @@ const signup=await readFile('signup.html','utf8');
 const forgot=await readFile('forgot-password.html','utf8');
 const prep=await readFile('scripts/prepare-web.mjs','utf8');
 const guruLogo=await readFile('assets/guru-shree-logo.svg','utf8');
-const brandLogo=await readFile('assets/babasitaram-pro-logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
 ['Total Income is interest-only',dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
