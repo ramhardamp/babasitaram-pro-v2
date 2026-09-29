@@ -634,6 +634,7 @@ body.dark-mode{
 .deleted-detail-grid b{display:block;font-size:13px;word-break:break-word}
 </style></style>
 </head>
+<style id="premium-whatsapp-share-style">.whatsapp-share-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:8px}.whatsapp-share-icon{width:22px;height:22px;display:inline-block;flex:0 0 22px}</style>
 <body>
 <div class="app-shell" id="appShell">
 
@@ -1947,9 +1948,9 @@ function openShareHisaab(id){
     <div class="share-reminder-message">${esc(message)}</div>
     ${phoneState}
     <div class="share-reminder-actions" style="margin-top:10px">
-      <button class="btn btn-primary" onclick="shareHisaabWhatsApp('${id}')">🟢 WhatsApp</button>
+      <button class="btn btn-primary whatsapp-share-btn" onclick="shareHisaabWhatsApp('${id}')"><svg class="whatsapp-share-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="currentColor"/><path fill="#fff" d="M22.7 9.25A9.35 9.35 0 0 0 7.9 20.55L7 25l4.56-1.2a9.34 9.34 0 0 0 4.47 1.14h.01a9.35 9.35 0 0 0 6.66-15.69Zm-6.66 14.1h-.01a7.75 7.75 0 0 1-3.95-1.08l-.28-.17-2.7.71.72-2.63-.18-.29a7.75 7.75 0 1 1 6.4 3.46Zm4.25-5.82c-.23-.12-1.35-.67-1.56-.75-.21-.08-.36-.12-.51.12-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.12-.68-.6-1.13-1.34-1.26-1.57-.13-.23-.01-.36.1-.48.1-.1.23-.27.35-.4.12-.14.15-.23.23-.38.08-.15.04-.29-.02-.41-.06-.12-.51-1.23-.7-1.69-.18-.43-.37-.37-.51-.38h-.44c-.15 0-.4.06-.61.29-.21.23-.8.78-.8 1.9s.82 2.2.93 2.35c.12.15 1.61 2.46 3.9 3.45.55.24.98.38 1.32.49.55.17 1.05.15 1.45.09.44-.07 1.35-.55 1.54-1.08.19-.53.19-.98.13-1.08-.06-.1-.21-.16-.44-.28Z"/></svg><span>WhatsApp</span></button>
       <button class="btn btn-secondary" onclick="shareHisaabSms('${id}')">💬 SMS</button>
-      <button class="btn btn-secondary" onclick="shareHisaabWhatsAppPhoto('${id}')">🖼️ WhatsApp + फोटो</button>
+      <button class="btn btn-secondary whatsapp-share-btn" onclick="shareHisaabWhatsAppPhoto('${id}')"><svg class="whatsapp-share-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="currentColor"/><path fill="#fff" d="M22.7 9.25A9.35 9.35 0 0 0 7.9 20.55L7 25l4.56-1.2a9.34 9.34 0 0 0 4.47 1.14h.01a9.35 9.35 0 0 0 6.66-15.69Zm-6.66 14.1h-.01a7.75 7.75 0 0 1-3.95-1.08l-.28-.17-2.7.71.72-2.63-.18-.29a7.75 7.75 0 1 1 6.4 3.46Zm4.25-5.82c-.23-.12-1.35-.67-1.56-.75-.21-.08-.36-.12-.51.12-.15.23-.59.75-.72.9-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.12-.68-.6-1.13-1.34-1.26-1.57-.13-.23-.01-.36.1-.48.1-.1.23-.27.35-.4.12-.14.15-.23.23-.38.08-.15.04-.29-.02-.41-.06-.12-.51-1.23-.7-1.69-.18-.43-.37-.37-.51-.38h-.44c-.15 0-.4.06-.61.29-.21.23-.8.78-.8 1.9s.82 2.2.93 2.35c.12.15 1.61 2.46 3.9 3.45.55.24.98.38 1.32.49.55.17 1.05.15 1.45.09.44-.07 1.35-.55 1.54-1.08.19-.53.19-.98.13-1.08-.06-.1-.21-.16-.44-.28Z"/></svg><span>WhatsApp + फोटो</span></button>
       <button class="btn btn-secondary" onclick="exportCustomerStatementPdf('${id}');closeModal()">📄 PDF</button>
     </div>
     <button class="btn btn-secondary" onclick="shareCustomerViewLink('${id}')" style="margin-top:8px">🔗 Portal Link</button>
