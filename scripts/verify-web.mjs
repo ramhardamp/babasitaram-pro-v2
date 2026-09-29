@@ -80,7 +80,7 @@ checks.push(['Android SMS preparation script exists',await readFile('scripts/pre
 checks.push(['Android workflow prepares native SMS layer',await readFile('.github/workflows/android-build.yml','utf8').then(x=>x.includes('node scripts/prepare-android.mjs'))]);
 checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
 checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
-checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.4.4']);
+checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.1.2']);
 checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
