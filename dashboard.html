@@ -2239,8 +2239,6 @@ function openEditTxnModal(txn){
       <input type="text" id="mNote" class="text-input" value="${esc(txn.note||'')}" placeholder="${t('Optional','वैकल्पिक')}"></div>
     <div class="input-group"><label class="input-label">${t('Date','तारीख')}</label>
       <input type="date" id="mDate" class="text-input" value="${(txn.date||localDateInputValue()).slice(0,10)}"></div>
-    <div class="input-group"><label class="input-label">${t('Time','समय')}</label>
-      <input type="time" id="mTime" class="text-input" value="${txn.time||localTimeInputValue(txn.dateTime||txn.transactionAt||txn.date)}"></div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveEditedTxn('${txn.id}')">${t('Save','सेव')}</button></div>`);
   setTimeout(()=>document.getElementById('mAmt')?.focus(),300);
@@ -2251,10 +2249,10 @@ async function saveEditedTxn(id){
   const newAmt=parseFloat(document.getElementById('mAmt')?.value);
   const newNote=document.getElementById('mNote')?.value.trim()||'';
   const newDate=document.getElementById('mDate')?.value||'';
-  const newTime=document.getElementById('mTime')?.value||'';
+  // Edit time is automatic: use the current local time when the edit is saved.
+  const newTime=localTimeInputValue(new Date());
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
-  if(!newTime)return toast(t('Enter time','समय डालें'),'error');
   const newDateTime=makeDateTimeISO(newDate,newTime);
   if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
 
