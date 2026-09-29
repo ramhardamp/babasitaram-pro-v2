@@ -776,6 +776,18 @@ body.dark-mode{
             </div>
           </section>
 
+          <section class="android-setting-section" data-settings-section="upi">
+            <button class="android-setting-row" type="button" onclick="openSettingsPanel('upi')">
+              <span class="android-setting-icon">💳</span>
+              <span class="android-setting-main"><b>UPI Payment</b><small>UPI ID जोड़ें और ग्राहक से QR/UPI भुगतान लें</small></span>
+              <span class="android-setting-chevron">›</span>
+            </button>
+            <div class="android-setting-content">
+              <div class="android-sub-row"><span>💳 <b>UPI ID</b></span><em id="sUpiId">-</em></div>
+              <div class="android-setting-note">आपकी UPI ID ग्राहक के payment link और QR code में इस्तेमाल होगी।</div>
+            </div>
+          </section>
+
           <section class="android-setting-section" data-settings-section="security">
             <button class="android-setting-row" type="button" onclick="openSettingsPanel('security')">
               <span class="android-setting-icon">🔐</span>
@@ -1237,6 +1249,8 @@ async function updatePublicView(partyId, viewToken, partyData){
       businessUid:currentUser.uid, partyId:String(partyId),
       shopName:userData.shopName||'Guru Shree',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
+      upiId:String(userData?.upiId||'').trim(),
+      upiPayUrl:(userData?.upiId && Number(partyData.balance)>0 && partyData.viewToken)?buildUpiPaymentUrl(partyData,Number(partyData.balance)): '',
       customerName:partyData.name, customerPhone:partyData.phone||'',
       balance:Number(partyData.balance)||0, totalUdhaar, totalJama, transactions:txns
     };
@@ -2890,7 +2904,7 @@ function openSettingsPanel(name){
   const overlay=document.createElement('div');
   overlay.id='settingsPanelOverlay';
   overlay.className='settings-panel-overlay';
-  const hasSave=name==='profile'||name==='advanced';
+  const hasSave=name==='profile'||name==='upi'||name==='advanced';
   overlay.innerHTML=`<div class="settings-panel" role="dialog" aria-modal="true">
     <div class="settings-panel-head">
       <button type="button" class="settings-panel-back" onclick="closeSettingsPanel()" aria-label="Back">‹</button>
@@ -2912,6 +2926,11 @@ function openSettingsPanel(name){
       <div class="settings-field locked"><label>📧 ईमेल आईडी <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profileEmail||currentUser?.email||'-')}</div></div>
       <div class="settings-form-note">नाम और Business Name को एक साथ Save किया जाएगा। मोबाइल और ईमेल सुरक्षित रूप से locked हैं।</div>
     </div>`;
+  }else if(name==='upi'){
+    body.innerHTML=`<div class="settings-profile-form">
+      <div class="settings-field"><label>💳 UPI ID</label><input id="panelUpiId" class="text-input" value="${esc(userData?.upiId||'')}" placeholder="example@upi" autocomplete="off" inputmode="email"></div>
+      <div class="settings-form-note">यह UPI ID ग्राहक के बकाया amount के साथ payment link और QR code बनाने के लिए इस्तेमाल होगी। उदाहरण: yourname@upi</div>
+    </div>`;
   }else{
     body.appendChild(content);
   }
@@ -2931,6 +2950,18 @@ function closeSettingsPanel(){
   }
 }
 async function saveSettingsPanel(name){
+  if(name==='upi'){
+    const upiId=document.getElementById('panelUpiId')?.value.trim();
+    if(upiId && !/^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+$/.test(upiId)) return toast('सही UPI ID डालें, जैसे name@upi','error');
+    try{
+      await db.collection('users').doc(currentUser.uid).set({upiId:upiId||'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+      userData.upiId=upiId||'';
+      const el=document.getElementById('sUpiId');if(el)el.textContent=userData.upiId||'-';
+      closeSettingsPanel();
+      toast('✅ UPI ID सेव हो गई','success');
+    }catch(e){console.error(e);toast('UPI ID सेव नहीं हुई','error')}
+    return;
+  }
   if(name==='profile'){
     const profileName=document.getElementById('panelProfileName')?.value.trim();
     const shopName=document.getElementById('panelShopName')?.value.trim();
