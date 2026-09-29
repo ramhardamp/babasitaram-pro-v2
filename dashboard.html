@@ -1995,7 +1995,7 @@ async function buildShareReminderImage(id){
   ctx.fillStyle=bg;ctx.fillRect(0,0,1080,740);
 
   const photo=await loadShareCardImage(getProfilePhotoUrl());
-  const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260929-3',location.href).href;
+  const logoUrl=new URL('assets/guru-shree-logo.webp?v=20260929-4',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
 
   // Profile photo first: the saved profile name belongs to the account owner.
@@ -2019,7 +2019,7 @@ async function buildShareReminderImage(id){
   }
   ctx.fillStyle='#fff';
   ctx.font='800 31px Arial,sans-serif';
-  ctx.fillText('BSR-PRO-KHATABOOK-APP',765,82);
+  ctx.fillText('BSR PRO DIGITAL KHATA APP',765,82);
   ctx.font='600 27px Arial,sans-serif';
   ctx.fillStyle='rgba(255,255,255,.92)';
   ctx.fillText(d.shop||'',224,135);
@@ -2046,7 +2046,7 @@ async function buildShareReminderImage(id){
   // Bottom app branding replaces the reference app branding.
   ctx.fillStyle='rgba(255,255,255,.95)';
   ctx.font='800 27px Arial,sans-serif';
-  ctx.fillText('BSR-PRO-KHATABOOK-APP',540,664);
+  ctx.fillText('BSR PRO DIGITAL KHATA APP',540,664);
   ctx.font='500 20px Arial,sans-serif';
   ctx.fillStyle='rgba(255,255,255,.82)';
   ctx.fillText(d.owner||'',540,698);
