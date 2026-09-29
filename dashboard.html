@@ -1909,6 +1909,9 @@ function getCustomerShareMessage(c,s){
     lines.push('आपका हिसाब अभी साफ है।');
   }
   if(c?.viewToken)lines.push('',`पूरा हिसाब: ${getCustomerViewLink(c.viewToken)}`);
+  const upiUrl=buildUpiPaymentUrl(c,total);
+  if(upiUrl)lines.push(`💳 UPI से सीधे भुगतान: ${upiUrl}`);
+  if(total>0)lines.push('QR/UPI payment में यही बकाया amount भरा रहेगा।');
   lines.push('');
   if(shop)lines.push(`— ${shop}`);
   if(owner)lines.push(owner);
@@ -1916,7 +1919,7 @@ function getCustomerShareMessage(c,s){
   return lines.join('\n');
 }
 function getShareCardData(c,s){
-  return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):''};
+  return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):'',upiId:String(userData?.upiId||'').trim(),upiUrl:buildUpiPaymentUrl(c,Math.max(0,Math.round(Number(s?.grandTotal)||0)))};
 }
 function buildUpiPaymentUrl(customer,amount){
   const upi=String(userData?.upiId||'').trim();if(!upi||!amount||amount<=0)return '';
