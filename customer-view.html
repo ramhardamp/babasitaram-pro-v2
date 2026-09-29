@@ -148,6 +148,9 @@ function dateStr(d){
     return `${dd}/${mm}/${yyyy}`;
   }catch(e){return '-'}
 }
+function timeStr(d){if(!d)return '';try{const date=d.toDate?d.toDate():new Date(d);if(Number.isNaN(date.getTime()))return '';return date.toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit',hour12:true});}catch(e){return ''}}
+function dateTimeStr(d,t){const ds=dateStr(d),ts=timeStr(t);return ts?ds+' • '+ts:ds;}
+
 
 /* ⭐ FIXED: Show only ONE screen at a time */
 function showOnly(screenName){
@@ -207,7 +210,7 @@ function renderView(data){
   const balance = data.balance || 0;
   const totalUdhaar = data.totalUdhaar || 0;
   const totalJama = data.totalJama || 0;
-  const transactions = data.transactions || [];
+  const transactions = (data.transactions || []).filter(txn => !txn.deleted);
 
   let balLabel = 'कुल बकाया';
   let balSub = '';
@@ -240,7 +243,7 @@ function renderView(data){
         <div class="txn-icon ${m.cls}">${m.icon}</div>
         <div class="txn-info">
           <div class="txn-title">${m.label}${txn.note ? ' • ' + esc(txn.note) : ''}</div>
-          <div class="txn-date">${dateStr(txn.date)}</div>
+          <div class="txn-date">${dateTimeStr(txn.date,txn.createdAt)}</div>
         </div>
         <div class="txn-amt ${m.cls}">${m.sign}${fmt(amt)}</div>
       </div>`;

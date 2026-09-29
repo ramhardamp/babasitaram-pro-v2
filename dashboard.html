@@ -125,7 +125,7 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}
 .loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}
 .loan-status.active{background:#dcfce7;color:#15803d}
-.txn-history-list{max-height:42vh;overflow-y:auto;overflow-x:hidden;padding-right:3px;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.txn-history-list::-webkit-scrollbar{width:5px}.txn-history-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;position:relative}
+.txn-history-list{max-height:42vh;overflow-y:auto;overflow-x:hidden;padding-right:3px;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.txn-history-list::-webkit-scrollbar{width:5px}.txn-history-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}.txn-item.deleted{padding:7px 10px;margin-bottom:4px;opacity:.62;border-style:dashed;background:var(--bg)}.txn-item.deleted .txn-icon{width:28px;height:28px;font-size:12px}.txn-item.deleted .txn-title{font-size:11px;text-decoration:line-through}.txn-item.deleted .txn-date{font-size:9px}.txn-item.deleted .txn-amt{font-size:11px;text-decoration:line-through;color:var(--text-muted)!important}.txn-deleted-badge{font-size:9px;font-weight:900;color:var(--text-muted);background:var(--border);padding:2px 6px;border-radius:999px;margin-left:5px}.txn-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;position:relative}
 .txn-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .txn-icon.udhaar{background:var(--credit-bg)}
 .txn-icon.jama{background:var(--debit-bg)}
@@ -1055,6 +1055,10 @@ function dateStr(d){
   }catch(e){return '-'}
 }
 
+function timeStr(d){if(!d)return '';try{const date=d.toDate?d.toDate():new Date(d);if(Number.isNaN(date.getTime()))return '';return date.toLocaleTimeString(currentLang==='hi'?'hi-IN':'en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});}catch(e){return ''}}
+function dateTimeStr(dateValue,createdAt){const date=dateStr(dateValue);const time=timeStr(createdAt);return time?date+' • '+time:date;}
+function isDeletedTxn(txn){return txn?.deleted===true||!!txn?.deletedAt;}
+
 function monthsBetween(start, end) {
   const s = new Date(start);
   const e = new Date(end);
@@ -1096,13 +1100,14 @@ function calcLoan(loan){
 }
 function getPartyTransactions(cid){return txnIndex.get(cid)||[]}
 function rebuildTxnIndex(){txnIndex.clear();for(const tx of transactions){if(!tx.partyId)continue;const list=txnIndex.get(tx.partyId)||[];list.push(tx);txnIndex.set(tx.partyId,list)}}
-function getLoans(cid){return getPartyTransactions(cid).filter(t=>t.type==='byaj_loan'&&t.status==='active')}
+function getLoans(cid){return getPartyTransactions(cid).filter(t=>!isDeletedTxn(t)&&t.type==='byaj_loan'&&t.status==='active')}
 
 function getSummary(cid){
   const c=customers.find(x=>x.id===cid);
   if(!c)return null;
   let udhaarBalance = 0;
   getPartyTransactions(cid).forEach(t => {
+    if(isDeletedTxn(t))return;
     if(t.type === 'udhaar') udhaarBalance += (t.amount || 0);
     else if(t.type === 'jama') udhaarBalance -= (t.amount || 0);
   });
@@ -1135,6 +1140,7 @@ function getTotals(){
   let u=0,b=0,t2=0,p=0,income=0;
   customers.forEach(c=>{const s=getSummary(c.id);if(s){u+=Math.max(0,s.udhaarBalance);b+=s.byajBalance;t2+=s.grandTotal}});
   transactions.forEach(x=>{
+    if(isDeletedTxn(x))return;
     if(x.type==='jama'||x.type==='loan_repay'||x.type==='interest_paid')p+=(x.amount||0);
     // Total Income is interest received only. Loans/principal are not income.
     if(x.type==='interest_paid')income+=(x.amount||0);
@@ -1183,8 +1189,9 @@ async function updatePublicView(partyId, viewToken, partyData){
     const txns=[];
     txnSnap.forEach(doc=>{
       const t=doc.data();
+      if(isDeletedTxn(t))return;
       const amt=t.amount||t.principal||0;
-      txns.push({type:t.type,amount:amt,date:t.date,note:t.note||''});
+      txns.push({type:t.type,amount:amt,date:t.date,createdAt:t.createdAt||null,note:t.note||''});
       if(t.type==='udhaar'||t.type==='byaj_loan')totalUdhaar+=amt;
       else if(['jama','loan_repay','interest_paid'].includes(t.type))totalJama+=amt;
     });
@@ -1789,19 +1796,20 @@ function renderCustomerDetail(){
         <div class="loan-status active">● ${t('ACTIVE','सक्रिय')}</div></div>`;
     });
   }
-  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&t.type!=='byaj_loan');
+  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&(t.type!=='byaj_loan'||isDeletedTxn(t))).sort((a,b)=>sortableDateValue(b.createdAt||b.date)-sortableDateValue(a.createdAt||a.date));
   let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div><div class="txn-history-list">`;
   if(txns.length===0){txnHtml+=`<div class="empty-state" style="padding:20px"><div class="empty-title">${t('No transactions','कोई लेन-देन नहीं')}</div></div>`}
   else{
     const map={udhaar:{icon:'📤',cls:'udhaar',label:t('Udhaar','उधार'),sign:'+'},jama:{icon:'📥',cls:'jama',label:t('Payment','जमा'),sign:'-'},loan_repay:{icon:'💵',cls:'loan_repay',label:t('Loan Repayment','लोन वापसी'),sign:'-'},interest_paid:{icon:'💰',cls:'interest_paid',label:t('Interest Paid','ब्याज भुगतान'),sign:'-'}};
     txns.forEach(txn=>{
       const m=map[txn.type]||map.udhaar;
-      txnHtml+=`<div class="txn-item">
-        <div class="txn-icon ${m.cls}">${m.icon}</div>
-        <div class="txn-info"><div class="txn-title">${m.label}${txn.note?' • '+esc(txn.note):''}</div>
-        <div class="txn-date">${dateStr(txn.date)}</div></div>
+      const deleted=isDeletedTxn(txn);
+      txnHtml+=`<div class="txn-item ${deleted?'deleted':''}">
+        <div class="txn-icon ${m.cls}">${deleted?'🗑️':m.icon}</div>
+        <div class="txn-info"><div class="txn-title">${deleted?t('Deleted entry','डिलीट की गई एंट्री'):m.label}${txn.note?' • '+esc(txn.note):''}${deleted?'<span class="txn-deleted-badge">'+t('Deleted','डिलीट')+'</span>':''}</div>
+        <div class="txn-date">${dateTimeStr(txn.date,txn.createdAt)}</div></div>
         <div class="txn-right"><div class="txn-amt ${m.cls}">${m.sign}${fmt(txn.amount)}</div>
-          <button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button></div></div>`;
+          ${deleted?'':`<button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button>`}</div></div>`;
     });
   }
   txnHtml+='</div>';
@@ -1979,19 +1987,15 @@ function shareCustomerLinkWhatsApp(id){
 
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
-  const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
-  const derivedMessage=txn.type==='loan_repay'
-    ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
-    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।');
-  const actionHtml=isDerivedLoanTxn
-    ? `<div style="padding:12px;background:var(--interest-bg);border:1px solid var(--interest);border-radius:12px;margin-bottom:12px;color:#92400e;font-size:13px;font-weight:700;text-align:center">${derivedMessage}</div>`
-    : `<button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
+  if(isDeletedTxn(txn)){showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Deleted entry','डिलीट की गई एंट्री')}</div><div style="padding:14px;background:var(--bg);border-radius:12px;text-align:center"><div style="font-size:22px">🗑️</div><div style="font-size:13px;font-weight:800;margin-top:6px">${dateTimeStr(txn.date,txn.createdAt)}</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">${t('This entry is retained for history. It cannot be restored or permanently deleted.','यह एंट्री हिस्ट्री के लिए सुरक्षित रखी गई है। इसे रिस्टोर या परमानेंट डिलीट नहीं किया जा सकता।')}</div></div><button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);return}
+    const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
+  const actionHtml=`<button class="btn btn-secondary" onclick="${isDerivedLoanTxn?'closeModal()':'closeModal();editTxnConfirm(\\''+id+'\\')'}" style="margin-bottom:8px">${isDerivedLoanTxn?'🔒 '+t('Edit locked','एडिट लॉक'):'✏️ '+t('Edit','एडिट')}</button>
        <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>`;
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
     <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
       <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase">${t('Amount','रकम')}</div>
       <div style="font-size:22px;font-weight:900;color:var(--primary);margin-top:4px">₹${txn.amount||0}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateStr(txn.date)} • ${txn.type}</div></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${dateTimeStr(txn.date,txn.createdAt)} • ${txn.type}</div></div>
     ${actionHtml}
     <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);
 }
@@ -2049,7 +2053,7 @@ async function saveEditedTxn(id){
       if(oldType==='udhaar')balanceDelta+=newAmt;
       else if(oldType==='jama')balanceDelta-=newAmt;
 
-      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate});
+      transaction.update(txRef,{amount:newAmt,note:newNote,date:newDate,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
       if(balanceDelta!==0)transaction.update(partyRef,{
         balance:firebase.firestore.FieldValue.increment(balanceDelta)
       });
@@ -2085,51 +2089,58 @@ async function saveEditedTxn(id){
 async function deleteTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
-
   try{
     const uid=currentUser.uid;
     const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
     const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
     const c=customers.find(x=>String(x.id)===String(txn.partyId));
-
     await db.runTransaction(async(transaction)=>{
       const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
-      if(!txSnap.exists)throw new Error('Transaction already deleted');
+      if(!txSnap.exists)throw new Error('Transaction not found');
       if(!partySnap.exists)throw new Error('Customer not found');
-
       const current=txSnap.data()||{};
       const amount=Number(current.amount)||0;
       const type=String(current.type||'');
+      if(current.deleted===true||current.deletedAt)throw new Error('Transaction already deleted');
 
-      // Derived loan-payment records cannot be deleted independently because
-      // their parent loan history would remain inconsistent.
-      if(type==='loan_repay'||type==='interest_paid'){
-        throw new Error('Derived loan transaction cannot be deleted independently');
-      }
-
-      // Reverse only the balance effect of the transaction being removed.
       let reverseDelta=0;
       if(type==='udhaar')reverseDelta=-amount;
       else if(type==='jama')reverseDelta=amount;
 
-      transaction.delete(txRef);
-      if(reverseDelta!==0)transaction.update(partyRef,{
-        balance:firebase.firestore.FieldValue.increment(reverseDelta)
-      });
-    });
+      if(type==='loan_repay'||type==='interest_paid'){
+        const loanId=String(current.loanId||'');
+        if(!loanId)throw new Error('Linked loan not found');
+        const loanRef=db.collection('users').doc(uid).collection('transactions').doc(loanId);
+        const loanSnap=await transaction.get(loanRef);
+        if(!loanSnap.exists)throw new Error('Linked loan not found');
+        const loan=loanSnap.data()||{};
+        if(isDeletedTxn(loan))throw new Error('Linked loan is deleted');
+        if(type==='loan_repay'){
+          const reps=Array.isArray(loan.repayments)?loan.repayments:[];
+          let removed=false;
+          const next=reps.filter(rep=>{
+            if(!removed && String(rep?.transactionId||'')===String(id)){removed=true;return false}
+            return true;
+          });
+          const finalReps=removed?next:reps.filter(rep=>{
+            if(!removed && Number(rep?.amount)===amount && String(rep?.date||'')===String(current.date||'')){removed=true;return false}
+            return true;
+          });
+          transaction.update(loanRef,{repayments:finalReps,status:'active',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        }else{
+          transaction.update(loanRef,{interestPaid:Math.max(0,(Number(loan.interestPaid)||0)-amount),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        }
+      }
 
+      transaction.update(txRef,{deleted:true,deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      if(reverseDelta!==0)transaction.update(partyRef,{balance:firebase.firestore.FieldValue.increment(reverseDelta)});
+    });
     const freshParty=await partyRef.get();
     const newBal=Number(freshParty.data()?.balance)||0;
-    if(c?.viewToken){
-      try{
-        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
-      }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
-    }
-    if(getSmsSettings().enabled) await cancelCustomerSmsReminders(txn.partyId);
+    if(c?.viewToken){try{await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});}catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}}
+    if(getSmsSettings().enabled)await cancelCustomerSmsReminders(txn.partyId);
     toast(t('Deleted','डिलीट हो गया'),'success');
-  }catch(e){
-    console.error('deleteTxn failed:',e);    toast('Error: '+(e.message||'Delete failed'),'error');
-  }
+  }catch(e){console.error('deleteTxn failed:',e);toast('Error: '+(e.message||'Delete failed'),'error');}
 }
 
 function showLoanMenu(id){
@@ -2176,7 +2187,7 @@ async function saveEditedLoan(id){
     if(principalChanged&&existingRepayments.length>0){
       return toast(t('Principal cannot be changed after repayment.','वापसी होने के बाद मूलधन नहीं बदला जा सकता।'),'error');
     }
-    const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart};
+    const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
     await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).update(updateData);
     const c=customers.find(x=>x.id===loan.partyId);
     if(c&&c.viewToken){await updatePublicView(loan.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0})}
@@ -2201,7 +2212,7 @@ async function deleteLoan(id){
       if((fresh.repayments||[]).length>0||Number(fresh.interestPaid)||0>0){
         throw new Error('Loan has payment history');
       }
-      transaction.delete(loanRef);
+      transaction.update(loanRef,{deleted:true,deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),status:'deleted'});
     });
     const c=customers.find(x=>x.id===loan.partyId);
     if(c?.viewToken){
@@ -2268,7 +2279,7 @@ async function saveCustomer(){
     
     if(bal !== 0){
       const txnRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0]};
+      const txnData = {partyId:String(partyRef.id),type:bal>0?'udhaar':'jama',amount:Math.abs(bal),note:'Opening balance',date:new Date().toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),deleted:false};
       batch.set(txnRef, txnData);
     }
     await batch.commit();
@@ -2404,7 +2415,7 @@ async function saveTxn(type){
     const delta=type==='udhaar'?amt:-amt;
     const batch=db.batch();
 
-    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date});
+    batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),deleted:false});
     batch.update(partyRef,{balance:firebase.firestore.FieldValue.increment(delta)});
 
     await batch.commit();
@@ -2493,6 +2504,9 @@ async function saveLoan(){
       interestPaid:0,
       repayments:[],
       date:sd,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      deleted:false,
       loanId:loanRef.id
     };
     await loanRef.set(loanData);
@@ -2559,9 +2573,9 @@ async function saveRepay(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
-      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt}];
-      const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
+      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt,createdAt:firebase.firestore.Timestamp.now(),transactionId:txnRef.id}];
+      const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
       transaction.set(txnRef,{
         partyId:String(currentCustomerId),
@@ -2569,6 +2583,9 @@ async function saveRepay(){
         amount:amt,
         note:t('Loan repayment','लोन वापसी'),
         date:rdate,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        deleted:false,
         loanId:String(id)
       });
     });
@@ -2638,6 +2655,9 @@ async function saveIntPaid(){
         amount:amt,
         note:t('Interest received','ब्याज मिला'),
         date:idate,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        deleted:false,
         loanId:String(id)
       });
     });
