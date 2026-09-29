@@ -1995,7 +1995,7 @@ async function buildShareReminderImage(id){
 
   // Use the user's Guru Shree logo whenever a profile photo is not available.
   const photo=await loadShareCardImage(getProfilePhotoUrl());
-  const logoUrl=new URL('assets/guru-shree-logo.webp?v=20260929-4',location.href).href;
+  const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260929-5',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
   const avatarImage=photo||logo;
 
@@ -2044,7 +2044,7 @@ async function shareHisaabWhatsAppPhoto(id){
   const phone=getSharePhone(c.phone);if(!phone)return toast('ग्राहक का 10-अंकों वाला मोबाइल नंबर सेव करें','error');
   try{
     const blob=await buildShareReminderImage(id);
-    const file=new File([blob],'babasitaram-payment-reminder.png',{type:'image/png'});
+    const file=new File([blob],'bsr-pro-digital-khata-payment-reminder.png',{type:'image/png'});
     const canShare=!!navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}));
     if(canShare){await navigator.share({files:[file],text:getCustomerShareMessage(c,getSummary(id)),title:'Payment Due Reminder'});return;}
     toast('इस device पर photo-share उपलब्ध नहीं है। WhatsApp text reminder खोला जा रहा है।','error');shareHisaabWhatsApp(id);
