@@ -619,7 +619,20 @@ body.dark-mode{
 .dark-mode .cc-stat,.dark-mode .cc-stat-total{background:#111b2d!important;border-color:#334155!important}
 .dark-mode .cc-stat .cc-box-label{color:#aebbd0!important}
 .dark-mode .cc-stat .cc-box-value,.dark-mode .cc-stat-total .cc-box-value,.dark-mode .cc-header-total-value{color:#f8fafc!important}
-</style>
+<style>
+.txn-item-deleted{opacity:.58;cursor:pointer;background:var(--bg)!important;border:1px solid var(--border)!important}
+.txn-item-deleted .txn-title{font-style:italic;color:var(--text-muted)}
+.txn-item-deleted .txn-date{color:var(--text-light)}
+.txn-icon.deleted{background:#e5e7eb;color:#6b7280}
+.txn-amt.deleted{color:#94a3b8;text-decoration:line-through}
+.txn-view-hint{font-size:28px;color:var(--text-light);line-height:1}
+.deleted-detail-status{margin:8px 0 16px;padding:10px 12px;border-radius:10px;background:var(--success-bg);color:var(--success);font-weight:800;text-align:center}
+.deleted-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--bg);padding:12px;border-radius:14px}
+.deleted-detail-grid>div{padding:9px;border-bottom:1px solid var(--border)}
+.deleted-detail-grid>div.full{grid-column:1/-1}
+.deleted-detail-grid span{display:block;font-size:11px;color:var(--text-muted);font-weight:700;margin-bottom:3px}
+.deleted-detail-grid b{display:block;font-size:13px;word-break:break-word}
+</style></style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
@@ -1820,19 +1833,23 @@ function renderCustomerDetail(){
         <div class="loan-status active">● ${t('ACTIVE','सक्रिय')}</div></div>`;
     });
   }
-  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&t.type!=='byaj_loan');
-  let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div><div class="txn-history-list">`;
+  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&(t.type!=='byaj_loan'||t.status==='deleted'||t.deletedAt)).slice().sort((a,b)=>transactionDateTimeValue(b)-transactionDateTimeValue(a));
+  const activeHistoryCount=txns.filter(t=>t.status!=='deleted'&&!t.deletedAt).length;
+  let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${activeHistoryCount})</div><div class="txn-history-list">`;
   if(txns.length===0){txnHtml+=`<div class="empty-state" style="padding:20px"><div class="empty-title">${t('No transactions','कोई लेन-देन नहीं')}</div></div>`}
   else{
-    const map={udhaar:{icon:'📤',cls:'udhaar',label:t('Udhaar','उधार'),sign:'+'},jama:{icon:'📥',cls:'jama',label:t('Payment','जमा'),sign:'-'},loan_repay:{icon:'💵',cls:'loan_repay',label:t('Loan Repayment','लोन वापसी'),sign:'-'},interest_paid:{icon:'💰',cls:'interest_paid',label:t('Interest Paid','ब्याज भुगतान'),sign:'-'}};
+    const map={udhaar:{icon:'📤',cls:'udhaar',label:t('Udhaar','उधार'),sign:'+'},jama:{icon:'📥',cls:'jama',label:t('Payment','जमा'),sign:'-'},loan_repay:{icon:'💵',cls:'loan_repay',label:t('Loan Repayment','लोन वापसी'),sign:'-'},interest_paid:{icon:'💰',cls:'interest_paid',label:t('Interest Paid','ब्याज भुगतान'),sign:'-'},byaj_loan:{icon:'📈',cls:'loan',label:t('Loan','लोन'),sign:''}};
     txns.forEach(txn=>{
       const m=map[txn.type]||map.udhaar;
-      txnHtml+=`<div class="txn-item">
-        <div class="txn-icon ${m.cls}">${m.icon}</div>
-        <div class="txn-info"><div class="txn-title">${m.label}${txn.note?' • '+esc(txn.note):''}</div>
-        <div class="txn-date">${dateStr(txn.date)}</div></div>
-        <div class="txn-right"><div class="txn-amt ${m.cls}">${m.sign}${fmt(txn.amount)}</div>
-          <button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button></div></div>`;
+      const deleted=txn.status==='deleted'||!!txn.deletedAt;
+      const title=deleted?t('Payment Deleted','भुगतान हटाया गया'):m.label;
+      const amount=txn.type==='byaj_loan'?(Number(txn.principal)||Number(txn.amount)||0):Number(txn.amount)||0;
+      txnHtml+=`<div class="txn-item ${deleted?'txn-item-deleted':''}" ${deleted?`onclick="showDeletedTxnDetails('${txn.id}')" role="button" tabindex="0"`:''}>
+        <div class="txn-icon ${deleted?'deleted':m.cls}">${deleted?'🗑️':m.icon}</div>
+        <div class="txn-info"><div class="txn-title">${title}${txn.note?' • '+esc(txn.note):''}</div>
+        <div class="txn-date">${txnDateTimeStr(txn)}${deleted&&txn.deletedAt?' • '+t('Deleted','डिलीटेड'):''}</div></div>
+        <div class="txn-right"><div class="txn-amt ${deleted?'deleted':m.cls}">${deleted?'':m.sign}${fmt(amount)}</div>
+          ${deleted?'<span class="txn-view-hint">›</span>':`<button class="txn-menu-btn" onclick="showTxnMenu('${txn.id}')">⋮</button>`}</div></div>`;
     });
   }
   txnHtml+='</div>';
@@ -2019,8 +2036,28 @@ function shareCustomerLinkWhatsApp(id){
   window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
+function showDeletedTxnDetails(id){
+  const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  const amount=txn.type==='byaj_loan'?(Number(txn.principal)||Number(txn.amount)||0):Number(txn.amount)||0;
+  const deletedAt=txn.deletedAt||txn.deletedAtLocal||null;
+  const typeLabel={udhaar:t('Udhaar','उधार'),jama:t('Payment','जमा'),byaj_loan:t('Loan','लोन'),loan_repay:t('Loan Repayment','लोन वापसी'),interest_paid:t('Interest Paid','ब्याज भुगतान')}[txn.type]||txn.type;
+  showModal(`<div class="modal-handle"></div>
+    <div class="modal-title">🗑️ ${t('Deleted Transaction','हटाया गया लेन-देन')}</div>
+    <div class="deleted-detail-status">✓ ${t('Sync Successful','सिंक सफल')}</div>
+    <div class="deleted-detail-grid">
+      <div><span>${t('Type','प्रकार')}</span><b>${typeLabel}</b></div>
+      <div><span>${t('Amount','रकम')}</span><b>${fmt(amount)}</b></div>
+      <div><span>${t('Transaction Date','लेन-देन तारीख')}</span><b>${dateStr(txn.date||txn.startDate)}</b></div>
+      <div><span>${t('Transaction Time','लेन-देन समय')}</span><b>${txnDateTimeStr(txn).split(', ').slice(-1)[0]}</b></div>
+      <div><span>${t('Deleted On','डिलीट किया गया')}</span><b>${dateTimeStr(deletedAt)}</b></div>
+      <div><span>${t('Deleted By','डिलीट करने वाला')}</span><b>${txn.deletedBy?'You':'-'}</b></div>
+      <div class="full"><span>${t('Reason','कारण')}</span><b>${esc(txn.deletionReason||t('No reason given','कोई कारण नहीं दिया गया'))}</b></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Close','बंद करें')}</button></div>`);
+}
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
+  if(txn.status==='deleted'||txn.deletedAt){showDeletedTxnDetails(id);return}
   const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
   const derivedMessage=txn.type==='loan_repay'
     ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
@@ -2712,7 +2749,7 @@ function renderReports(){
   const buckets=[];
   for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*86400000);const key=d.toISOString().split('T')[0];
     buckets.push({key,label:d.toLocaleDateString(currentLang==='hi'?'hi-IN':'en-IN',{day:'2-digit'}),udhaar:0,byaj:0,jama:0})}
-  transactions.forEach(t2=>{const key=new Date(t2.date).toISOString().split('T')[0];const b=buckets.find(x=>x.key===key);if(!b)return;
+  transactions.forEach(t2=>{if(t2.status==='deleted'||t2.deletedAt)return;const key=localDateInputValue(toDateObject(t2.dateTime||t2.transactionAt||t2.date));const b=buckets.find(x=>x.key===key);if(!b)return;
     if(t2.type==='udhaar')b.udhaar+=t2.amount||0;
     else if(t2.type==='byaj_loan')b.byaj+=t2.principal||0;
     else if(['jama','loan_repay','interest_paid'].includes(t2.type))b.jama+=t2.amount||0});
