@@ -79,6 +79,15 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .empty-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
 .empty-text{font-size:12px}
 
+/* UPI Payment */
+.upi-pay-card{background:var(--white);border:2px solid #bbf7d0;border-radius:var(--radius-lg);padding:18px;margin:16px 0;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.upi-pay-title{font-size:17px;font-weight:900;color:#15803d;margin-bottom:4px}
+.upi-pay-sub{font-size:11px;color:var(--text-muted);margin-bottom:12px}
+.upi-qr{width:220px;height:220px;max-width:80vw;object-fit:contain;border:8px solid #fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin:4px auto 12px;display:block}
+.upi-id-box{font-size:12px;font-weight:800;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:9px;word-break:break-all;margin-bottom:10px}
+.upi-pay-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border:0;border-radius:14px;background:#16a34a;color:#fff;font-size:15px;font-weight:900;cursor:pointer;text-decoration:none}
+.upi-link-box{font-size:10px;color:var(--text-muted);word-break:break-all;margin-top:10px;padding:8px;background:var(--bg);border-radius:8px}
+.upi-copy-btn{margin-top:8px;border:1px solid #86efac;background:#fff;color:#15803d;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}
 /* Footer */
 .footer-bar{text-align:center;padding:24px 0 12px;font-size:11px;color:var(--text-muted);line-height:1.8}
 .footer-bar a{color:var(--primary);text-decoration:none;font-weight:800}
@@ -201,6 +210,18 @@ function showError(title, text){
   document.getElementById('errorText').textContent = text;
 }
 
+function buildCustomerUpiUrl(data,amount){
+  const upi=String(data?.upiId||'').trim(); const am=Number(amount)||0;
+  if(!upi||am<=0)return '';
+  const params=new URLSearchParams({pa:upi,pn:String(data?.shopName||'Guru Shree'),am:am.toFixed(2),cu:'INR',tn:'Khata payment - '+String(data?.customerName||'Customer')});
+  return 'upi://pay?'+params.toString();
+}
+function qrImageUrl(text){
+  return text?'https://quickchart.io/qr?size=260&margin=2&text='+encodeURIComponent(text):'';
+}
+async function copyText(value){
+  try{await navigator.clipboard.writeText(value);alert('UPI link कॉपी हो गया');}catch(_){alert('कॉपी नहीं हुआ');}
+}
 function renderView(data){
   showOnly('content');
   const content = document.getElementById('contentScreen');
@@ -271,6 +292,17 @@ function renderView(data){
         <div class="summary-value">${fmt(totalJama)}</div>
       </div>
     </div>
+
+    ${data.upiId && balance>0 ? (()=>{const upiUrl=data.upiPayUrl||buildCustomerUpiUrl(data,balance);const qr=qrImageUrl(upiUrl);return `
+    <div class="upi-pay-card">
+      <div class="upi-pay-title">💳 UPI से भुगतान करें</div>
+      <div class="upi-pay-sub">आपके बकाया ${fmt(balance)} का amount पहले से भरा है</div>
+      ${qr?`<img class="upi-qr" src="${qr}" alt="UPI QR Code" loading="eager">`:''}
+      <div class="upi-id-box">UPI ID: ${esc(data.upiId)}</div>
+      ${upiUrl?`<a class="upi-pay-btn" href="${esc(upiUrl)}">📲 UPI App में भुगतान करें</a>
+      <button class="upi-copy-btn" onclick="copyText('${esc(upiUrl).replace(/'/g,"\\'")}')">🔗 UPI Link कॉपी करें</button>
+      <div class="upi-link-box">${esc(upiUrl)}</div>`:''}
+    </div>`;})() : ''}
 
     <div class="section-title">📋 लेन-देन (${transactions.length})</div>
     ${txnHtml}
