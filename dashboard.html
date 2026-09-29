@@ -2157,7 +2157,7 @@ function getTxnShareMessage(txn,customer){
   const shop=shareDisplayName(userData?.shopName);
   const owner=shareDisplayName(userData?.ownerName);
   const lines=[
-    'Guru Shree - लेन-देन सूचना',
+    'BSR-PRO-KHATABOOK-APP - लेन-देन सूचना',
     '',
     `नमस्ते ${customerName} जी,`,
     `लेन-देन: ${typeLabel}`,
@@ -2170,8 +2170,9 @@ function getTxnShareMessage(txn,customer){
   if(c?.viewToken)lines.push('',`📋 पूरा हिसाब देखें:`,getCustomerViewLink(c.viewToken));
   const upiUrl=buildUpiPaymentUrl(c,due);
   if(upiUrl)lines.push('',`💳 बकाया भुगतान के लिए UPI लिंक:`,upiUrl,`UPI में ₹${due.toLocaleString('en-IN')} amount पहले से भरा रहेगा।`);
-  if(shop)lines.push('',`— ${shop}`);
-  if(owner)lines.push(owner);
+  lines.push('');
+  if(shop)lines.push(`*Business Name* — ${shop}`);
+  if(owner)lines.push(`*👤 नाम* — ${owner}`);
   return lines.join('\n');
 }
 function shareTxnWhatsApp(id){
