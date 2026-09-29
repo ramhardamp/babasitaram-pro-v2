@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - production-okcredit-safety-fix-20260929
+      - separate-install-guru-shree-20260929
 
 permissions:
   contents: write
@@ -62,7 +63,7 @@ jobs:
           AAPT=$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -1)
           test -n "$AAPT"
           "$AAPT" dump badging "${{ steps.apk.outputs.path }}" | tee apk-badging.txt
-          grep -q "package: name='com.babasitaram.pro'" apk-badging.txt
+          grep -q "package: name='com.gurushree.digital.khata'" apk-badging.txt
           "$AAPT" dump permissions "${{ steps.apk.outputs.path }}" | grep -q "android.permission.SEND_SMS"
       - name: Verify APK archive
         run: |
@@ -95,12 +96,12 @@ jobs:
             adb wait-for-device
             sleep 5
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            adb shell am force-stop com.babasitaram.pro
+            adb shell am force-stop com.gurushree.digital.khata
             adb logcat -c
-            adb shell am start -W -n com.babasitaram.pro/.MainActivity
+            adb shell am start -W -n com.gurushree.digital.khata/.MainActivity
             sleep 8
-            adb shell pidof com.babasitaram.pro
-            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.babasitaram.pro"
+            adb shell pidof com.gurushree.digital.khata
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.gurushree.digital.khata"
             adb logcat -d -t 500 | tee runtime-logcat.txt
             grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt && exit 1 || true
       - name: Create GitHub Release
