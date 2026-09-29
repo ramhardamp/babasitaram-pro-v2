@@ -1923,7 +1923,7 @@ function getShareCardData(c,s){
 }
 function buildUpiPaymentUrl(customer,amount){
   const upi=String(userData?.upiId||'').trim();if(!upi||!amount||amount<=0)return '';
-  const params=new URLSearchParams({pa:upi,pn:String(userData?.shopName||'Guru Shree'),am:Number(amount).toFixed(2),cu:'INR',tn:'Khata payment - '+String(customer?.name||'Customer')});
+  const params=new URLSearchParams({pa:upi,am:Number(amount).toFixed(2),cu:'INR'});
   return 'upi://pay?'+params.toString();
 }
 function openUpiPayment(id){
