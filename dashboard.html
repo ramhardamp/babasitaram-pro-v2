@@ -1923,8 +1923,8 @@ function getShareCardData(c,s){
 }
 function buildUpiPaymentUrl(customer,amount){
   const upi=String(userData?.upiId||'').trim();if(!upi||!amount||amount<=0)return '';
-  const params=new URLSearchParams({pa:upi,am:Number(amount).toFixed(2),cu:'INR'});
-  return 'upi://pay?'+params.toString();
+  // Keep the UPI deep-link minimal: only UPI ID, amount and currency.
+  return 'upi://pay?pa='+upi+'&am='+Number(amount).toFixed(2)+'&cu=INR';
 }
 function openUpiPayment(id){
   const c=customers.find(x=>String(x.id)===String(id));if(!c)return;
