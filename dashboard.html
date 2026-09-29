@@ -2168,8 +2168,10 @@ function getTxnShareMessage(txn,customer){
   if(txn?.note)lines.push(`नोट: ${String(txn.note)}`);
   if(due>0)lines.push('',`वर्तमान बकाया: ₹${due.toLocaleString('en-IN')}`);
   if(c?.viewToken)lines.push('',`📋 पूरा हिसाब देखें:`,getCustomerViewLink(c.viewToken));
-  const upiUrl=buildUpiPaymentUrl(c,due);
-  if(upiUrl)lines.push('',`💳 बकाया भुगतान के लिए UPI लिंक:`,upiUrl,`UPI में ₹${due.toLocaleString('en-IN')} amount पहले से भरा रहेगा।`);
+  const upiId=String(userData?.upiId||'').trim();
+  if(upiId && due>0){
+    lines.push('',`💳 बकाया भुगतान के लिए UPI ID: ${upiId}`,`इस UPI ID पर PhonePe, Google Pay या Paytm से भुगतान करें।`,`भुगतान राशि: ₹${due.toLocaleString('en-IN')}`,`कृपया बकाया राशि समय पर जमा करें। विलंब होने पर खाता डिफॉल्ट के रूप में दर्ज किया जा सकता है।`);
+  }
   lines.push('');
   if(shop)lines.push(shop);
   if(owner)lines.push(owner);
