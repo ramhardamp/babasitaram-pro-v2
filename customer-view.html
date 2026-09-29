@@ -213,8 +213,8 @@ function showError(title, text){
 function buildCustomerUpiUrl(data,amount){
   const upi=String(data?.upiId||'').trim(); const am=Number(amount)||0;
   if(!upi||am<=0)return '';
-  const params=new URLSearchParams({pa:upi,pn:String(data?.shopName||'Guru Shree'),am:am.toFixed(2),cu:'INR',tn:'Khata payment - '+String(data?.customerName||'Customer')});
-  return 'upi://pay?'+params.toString();
+  // Never use stored/stale upiPayUrl here: build a clean link from the current UPI ID and amount.
+  return 'upi://pay?pa='+upi+'&am='+am.toFixed(2)+'&cu=INR';
 }
 function qrImageUrl(text){
   return text?'https://quickchart.io/qr?size=260&margin=2&text='+encodeURIComponent(text):'';
@@ -293,13 +293,13 @@ function renderView(data){
       </div>
     </div>
 
-    ${data.upiId && balance>0 ? (()=>{const upiUrl=data.upiPayUrl||buildCustomerUpiUrl(data,balance);const qr=qrImageUrl(upiUrl);return `
+    ${data.upiId && balance>0 ? (()=>{const upiUrl=buildCustomerUpiUrl(data,balance);const qr=qrImageUrl(upiUrl);return `
     <div class="upi-pay-card">
       <div class="upi-pay-title">💳 UPI से भुगतान करें</div>
       <div class="upi-pay-sub">आपके बकाया ${fmt(balance)} का amount पहले से भरा है</div>
       ${qr?`<img class="upi-qr" src="${qr}" alt="UPI QR Code" loading="eager">`:''}
       <div class="upi-id-box">UPI ID: ${esc(data.upiId)}</div>
-      ${upiUrl?`<a class="upi-pay-btn" href="${esc(upiUrl)}">📲 UPI App में भुगतान करें</a>
+      ${upiUrl?`<a class="upi-pay-btn" href="${esc(upiUrl).replace(/%40/g,"@")}">📲 UPI App में भुगतान करें</a>
       <button class="upi-copy-btn" onclick="copyText('${esc(upiUrl).replace(/'/g,"\\'")}')">🔗 UPI Link कॉपी करें</button>
       <div class="upi-link-box">${esc(upiUrl)}</div>`:''}
     </div>`;})() : ''}
