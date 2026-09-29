@@ -1796,7 +1796,7 @@ function renderCustomerDetail(){
         <div class="loan-status active">● ${t('ACTIVE','सक्रिय')}</div></div>`;
     });
   }
-  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&t.type!=='byaj_loan').sort((a,b)=>sortableDateValue(b.createdAt||b.date)-sortableDateValue(a.createdAt||a.date));
+  const txns=transactions.filter(t=>t.partyId===currentCustomerId&&(t.type!=='byaj_loan'||isDeletedTxn(t))).sort((a,b)=>sortableDateValue(b.createdAt||b.date)-sortableDateValue(a.createdAt||a.date));
   let txnHtml=`<div class="section-title">📋 ${t('History','लेन-देन')} (${txns.length})</div><div class="txn-history-list">`;
   if(txns.length===0){txnHtml+=`<div class="empty-state" style="padding:20px"><div class="empty-title">${t('No transactions','कोई लेन-देन नहीं')}</div></div>`}
   else{
@@ -1988,13 +1988,8 @@ function shareCustomerLinkWhatsApp(id){
 function showTxnMenu(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   if(isDeletedTxn(txn)){showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Deleted entry','डिलीट की गई एंट्री')}</div><div style="padding:14px;background:var(--bg);border-radius:12px;text-align:center"><div style="font-size:22px">🗑️</div><div style="font-size:13px;font-weight:800;margin-top:6px">${dateTimeStr(txn.date,txn.createdAt)}</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">${t('This entry is retained for history. It cannot be restored or permanently deleted.','यह एंट्री हिस्ट्री के लिए सुरक्षित रखी गई है। इसे रिस्टोर या परमानेंट डिलीट नहीं किया जा सकता।')}</div></div><button class="btn btn-secondary" onclick="closeModal()" style="margin-top:10px">${t('Close','बंद करें')}</button>`);return}
-  const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
-  const derivedMessage=txn.type==='loan_repay'
-    ? t('This loan repayment is managed by the parent loan record.','यह लोन वसूली मुख्य लोन रिकॉर्ड से नियंत्रित होती है।')
-    : t('This interest payment is managed by the parent loan record.','यह ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।');
-  const actionHtml=isDerivedLoanTxn
-    ? `<div style="padding:12px;background:var(--interest-bg);border:1px solid var(--interest);border-radius:12px;margin-bottom:12px;color:#92400e;font-size:13px;font-weight:700;text-align:center">${derivedMessage}</div>`
-    : `<button class="btn btn-secondary" onclick="closeModal();editTxnConfirm('${id}')" style="margin-bottom:8px">✏️ ${t('Edit','एडिट')}</button>
+    const isDerivedLoanTxn=txn.type==='loan_repay'||txn.type==='interest_paid';
+  const actionHtml=`<button class="btn btn-secondary" onclick="${isDerivedLoanTxn?'closeModal()':'closeModal();editTxnConfirm(\\''+id+'\\')'}" style="margin-bottom:8px">${isDerivedLoanTxn?'🔒 '+t('Edit locked','एडिट लॉक'):'✏️ '+t('Edit','एडिट')}</button>
        <button class="btn btn-danger" onclick="closeModal();deleteTxnConfirm('${id}')">🗑️ ${t('Delete','डिलीट')}</button>`;
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Transaction Actions','लेन-देन विकल्प')}</div>
     <div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:14px;text-align:center">
@@ -2094,52 +2089,58 @@ async function saveEditedTxn(id){
 async function deleteTxn(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   if(!currentUser?.uid||!txn.partyId)return toast(t('Invalid transaction','लेन-देन गलत है'),'error');
-
   try{
     const uid=currentUser.uid;
     const txRef=db.collection('users').doc(uid).collection('transactions').doc(String(id));
     const partyRef=db.collection('users').doc(uid).collection('parties').doc(String(txn.partyId));
     const c=customers.find(x=>String(x.id)===String(txn.partyId));
-
     await db.runTransaction(async(transaction)=>{
       const [txSnap,partySnap]=await Promise.all([transaction.get(txRef),transaction.get(partyRef)]);
-      if(!txSnap.exists)throw new Error('Transaction already deleted');
+      if(!txSnap.exists)throw new Error('Transaction not found');
       if(!partySnap.exists)throw new Error('Customer not found');
-
       const current=txSnap.data()||{};
       const amount=Number(current.amount)||0;
       const type=String(current.type||'');
+      if(current.deleted===true||current.deletedAt)throw new Error('Transaction already deleted');
 
-      // Derived loan-payment records cannot be deleted independently because
-      // their parent loan history would remain inconsistent.
-      if(type==='loan_repay'||type==='interest_paid'){
-        throw new Error('Derived loan transaction cannot be deleted independently');
-      }
-
-      // Reverse only the balance effect of the transaction being removed.
       let reverseDelta=0;
       if(type==='udhaar')reverseDelta=-amount;
       else if(type==='jama')reverseDelta=amount;
 
-      if(current.deleted===true||current.deletedAt)throw new Error('Transaction already deleted');
-      transaction.update(txRef,{deleted:true,deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      if(reverseDelta!==0)transaction.update(partyRef,{
-        balance:firebase.firestore.FieldValue.increment(reverseDelta)
-      });
-    });
+      if(type==='loan_repay'||type==='interest_paid'){
+        const loanId=String(current.loanId||'');
+        if(!loanId)throw new Error('Linked loan not found');
+        const loanRef=db.collection('users').doc(uid).collection('transactions').doc(loanId);
+        const loanSnap=await transaction.get(loanRef);
+        if(!loanSnap.exists)throw new Error('Linked loan not found');
+        const loan=loanSnap.data()||{};
+        if(isDeletedTxn(loan))throw new Error('Linked loan is deleted');
+        if(type==='loan_repay'){
+          const reps=Array.isArray(loan.repayments)?loan.repayments:[];
+          let removed=false;
+          const next=reps.filter(rep=>{
+            if(!removed && String(rep?.transactionId||'')===String(id)){removed=true;return false}
+            return true;
+          });
+          const finalReps=removed?next:reps.filter(rep=>{
+            if(!removed && Number(rep?.amount)===amount && String(rep?.date||'')===String(current.date||'')){removed=true;return false}
+            return true;
+          });
+          transaction.update(loanRef,{repayments:finalReps,status:'active',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        }else{
+          transaction.update(loanRef,{interestPaid:Math.max(0,(Number(loan.interestPaid)||0)-amount),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        }
+      }
 
+      transaction.update(txRef,{deleted:true,deletedAt:firebase.firestore.FieldValue.serverTimestamp(),deletedBy:uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      if(reverseDelta!==0)transaction.update(partyRef,{balance:firebase.firestore.FieldValue.increment(reverseDelta)});
+    });
     const freshParty=await partyRef.get();
     const newBal=Number(freshParty.data()?.balance)||0;
-    if(c?.viewToken){
-      try{
-        await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});
-      }catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}
-    }
-    if(getSmsSettings().enabled) await cancelCustomerSmsReminders(txn.partyId);
+    if(c?.viewToken){try{await updatePublicView(txn.partyId,c.viewToken,{name:c.name,phone:c.phone,balance:newBal});}catch(viewErr){console.warn('Public view update failed after transaction delete:',viewErr);}}
+    if(getSmsSettings().enabled)await cancelCustomerSmsReminders(txn.partyId);
     toast(t('Deleted','डिलीट हो गया'),'success');
-  }catch(e){
-    console.error('deleteTxn failed:',e);    toast('Error: '+(e.message||'Delete failed'),'error');
-  }
+  }catch(e){console.error('deleteTxn failed:',e);toast('Error: '+(e.message||'Delete failed'),'error');}
 }
 
 function showLoanMenu(id){
@@ -2572,7 +2573,7 @@ async function saveRepay(){
       if(String(fresh.partyId||'')!==String(currentCustomerId||''))throw new Error('Loan/customer mismatch');
       const freshRepaid=(Array.isArray(fresh.repayments)?fresh.repayments:[]).reduce((sum,r)=>sum+(Number(r?.amount)||0),0);
       if(amt>Number(fresh.principal||0)-freshRepaid)throw new Error('Exceeds principal');
-      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt,createdAt:firebase.firestore.Timestamp.now()}];
+      const newRepayments=[...(Array.isArray(fresh.repayments)?fresh.repayments:[]),{date:rdate,amount:amt,createdAt:firebase.firestore.Timestamp.now(),transactionId:txnRef.id}];
       const newStatus=freshRepaid+amt>=Number(fresh.principal||0)?'closed':'active';
       const txnRef=txCol.doc();
       transaction.update(loanRef,{repayments:newRepayments,status:newStatus});
