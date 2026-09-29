@@ -1,0 +1,25 @@
+{
+  "name": "Guru Shree Digital Khata",
+  "short_name": "Guru Shree",
+  "description": "Offline-first digital khata, customer ledger and payment collection.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e1b4b",
+  "lang": "hi",
+  "icons": [
+    {
+      "src": "assets/guru-shree-logo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/guru-shree-logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
