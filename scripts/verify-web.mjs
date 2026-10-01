@@ -7,7 +7,7 @@ const prep=await readFile('scripts/prepare-web.mjs','utf8');
 const guruLogo=await readFile('assets/guru-shree-logo.svg','utf8');
 const checks=[
 ['dashboard Total Income UI',dashboard.includes('id="dIncome"')&&dashboard.includes('id="dLblI"')],
-['Total Income is interest-only',dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
+['Total Income is interest-only',/if\s*\(x\.type\s*===\s*['\"]interest_paid['\"]\)\s*income\s*\+=\s*\(?\s*(?:Number\(x\.amount\)|x\.amount)\s*\|\|\s*0\s*\)?/.test(dashboard)],
 ['jama payment is green',dashboard.includes('.txn-amt.jama{color:var(--debit)}')],
 ['udhaar is red',dashboard.includes('.txn-amt.udhaar{color:var(--credit)}')],
 ['customer add entry exists on dashboard',dashboard.includes('onclick="openAddCustomer()"')],
@@ -17,7 +17,7 @@ const checks=[
 ['Firebase config referenced',dashboard.includes('firebase-config.js')&&index.includes('firebase-config.js')],
 ['customer-view has no customer-create modal',!(await readFile('customer-view.html','utf8')).includes('openAddCustomer(')],
 ['customer-view payment colors defined', (await readFile('customer-view.html','utf8')).includes('.txn-amt.jama') && (await readFile('customer-view.html','utf8')).includes('.txn-amt.udhaar')],
-['interest income excludes principal', (dashboard.match(/income\s*\+=\s*\(x\.amount\|\|0\)/g)||[]).length===1 && dashboard.includes("if(x.type==='interest_paid')income+=(x.amount||0)")],
+['interest income excludes principal', (dashboard.match(/income\s*\+=\s*\(?\s*(?:Number\(x\.amount\)|x\.amount)\s*\|\|\s*0\s*\)?/g)||[]).length===1 && /if\s*\(x\.type\s*===\s*['\"]interest_paid['\"]\)\s*income\s*\+=/.test(dashboard)],
 ['100+ customer scroll architecture',dashboard.includes('height:100dvh')&&dashboard.includes('height:0')&&dashboard.includes('min-height:0')&&dashboard.includes('overflow-y:auto')&&dashboard.includes('touch-action:pan-y')&&dashboard.includes('overscroll-behavior-y:contain')&&dashboard.includes('env(safe-area-inset-bottom')&&dashboard.includes('html,body{height:100%;overflow:hidden')],
 ['large customer list rendering guard',dashboard.includes('content-visibility:auto')&&dashboard.includes('contain-intrinsic-size:0 150px')],
 ['incremental customer rendering',dashboard.includes('CUSTOMER_RENDER_CHUNK = 5')&&dashboard.includes('IntersectionObserver')&&dashboard.includes('customerListTail')],
