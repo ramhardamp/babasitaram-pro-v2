@@ -3253,8 +3253,10 @@ function exportCustomerStatementPdf(id){
   const allTxns=getPartyTransactions(id).slice().sort((a,b)=>transactionDateTimeValue(a)-transactionDateTimeValue(b));
   const selected=monthKey?allTxns.filter(tx=>{const d=toDateObject(tx.dateTime||tx.transactionAt||tx.date||tx.startDate);return d&&localDateInputValue(d).slice(0,7)===monthKey;}):allTxns;
   const typeLabels={udhaar:'उधार दिया',jama:'जमा / भुगतान प्राप्त',byaj_loan:'Loan Principal / लोन मूलधन',loan_repay:'लोन वसूली',interest_paid:'ब्याज भुगतान'};
-  const isLoan=tx=>tx.type==='byaj_loan';
-  const amountOf=tx=>isLoan(tx)?Number(tx.principal||tx.amount)||0:Number(tx.amount)||0;
+  const amountOf=tx=>{
+    const isLoan=tx.type==='byaj_loan';
+    return isLoan?Number(tx.principal||tx.amount)||0:Number(tx.amount)||0;
+  };
   const debit=tx=>['udhaar','byaj_loan'].includes(tx.type);
   const credit=tx=>['jama','loan_repay','interest_paid'].includes(tx.type);
   let opening=0,monthUdhaar=0,monthJama=0;
