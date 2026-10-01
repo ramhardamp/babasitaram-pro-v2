@@ -3249,7 +3249,7 @@ function exportCustomerStatementPdf(id){
   const monthInput=prompt('मासिक स्टेटमेंट के लिए महीना YYYY-MM में डालें (उदाहरण: 2026-09)। पूरा हिसाब चाहिए तो खाली छोड़ें।',defaultMonth);
   if(monthInput===null)return;
   const monthKey=String(monthInput||'').trim();
-  if(monthKey && !/^\\d{4}-(0[1-9]|1[0-2])$/.test(monthKey)){toast('महीना YYYY-MM में डालें, जैसे 2026-09','error');return;}
+  if(monthKey && !/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey){toast('महीना YYYY-MM में डालें, जैसे 2026-09','error');return;}
   const allTxns=getPartyTransactions(id).slice().sort((a,b)=>transactionDateTimeValue(a)-transactionDateTimeValue(b));
   const selected=monthKey?allTxns.filter(tx=>{const d=toDateObject(tx.dateTime||tx.transactionAt||tx.date||tx.startDate);return d&&localDateInputValue(d).slice(0,7)===monthKey;}):allTxns;
   const typeLabels={udhaar:'उधार दिया',jama:'जमा / भुगतान प्राप्त',byaj_loan:'लोन मूलधन',loan_repay:'लोन वसूली',interest_paid:'ब्याज भुगतान'};
