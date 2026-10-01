@@ -3263,7 +3263,7 @@ function exportCustomerStatementPdf(id){
   };
   const selected=fromDate?allTxns.filter(tx=>{const d=txDate(tx);return d&&d>=fromDate&&d<=toDate;}):allTxns;
   const typeLabels={udhaar:'उधार दिया',jama:'जमा / भुगतान प्राप्त',byaj_loan:'Loan Principal / लोन मूलधन',loan_repay:'लोन वसूली',interest_paid:'ब्याज भुगतान'};
-  const amountOf=tx=>tx.type==='byaj_loan'?(Number(tx.principal||tx.amount)||0):(Number(tx.amount)||0);
+  const amountOf=tx=>{\n    const isLoan=tx.type==='byaj_loan';\n    return isLoan?Number(tx.principal||tx.amount)||0:Number(tx.amount)||0;\n  };
   const debit=tx=>['udhaar','byaj_loan'].includes(tx.type);
   const credit=tx=>['jama','loan_repay','interest_paid'].includes(tx.type);
   let opening=0,periodUdhaar=0,periodJama=0;
