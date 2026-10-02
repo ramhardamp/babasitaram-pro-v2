@@ -14,6 +14,13 @@ const parseDate = value => {
   return d;
 };
 const daysBetween = (start, end) => Math.max(0, Math.round((parseDate(end)-parseDate(start))/DAY_MS));
+const european30E360Days = (startValue, endValue) => {
+  const start=parseDate(startValue), end=parseDate(endValue);
+  const y1=start.getUTCFullYear(), y2=end.getUTCFullYear();
+  const m1=start.getUTCMonth()+1, m2=end.getUTCMonth()+1;
+  const d1=Math.min(start.getUTCDate(),30), d2=Math.min(end.getUTCDate(),30);
+  return Math.max(0,360*(y2-y1)+30*(m2-m1)+(d2-d1));
+};
 export function previewInterest({principal, ratePercent, ratePeriod='monthly', startDate, endDate, mode='simple', dayCount='ACT/365', compounding='monthly', rounding='half-up'}) {
   for (const [k,v] of Object.entries({principal,ratePercent})) if (!Number.isFinite(Number(v)) || Number(v)<0) throw new RangeError(`Invalid ${k}`);
   const p=Number(principal), rate=Number(ratePercent), days=daysBetween(startDate,endDate);
@@ -23,7 +30,7 @@ export function previewInterest({principal, ratePercent, ratePeriod='monthly', s
   if(dayCount==='ACT/365') yearFraction=days/365;
   else if(dayCount==='ACT/366') yearFraction=days/366;
   else if(dayCount==='ACT/360') yearFraction=days/360;
-  else if(dayCount==='30/360') yearFraction=days/360;
+  else if(dayCount==='30E/360' || dayCount==='30/360') yearFraction=european30E360Days(startDate,endDate)/360;
   else throw new RangeError('Unsupported day-count basis');
   let total;
   if(mode==='simple') total=p*(1+annualRate*yearFraction);
@@ -32,5 +39,5 @@ export function previewInterest({principal, ratePercent, ratePeriod='monthly', s
     if(!m) throw new RangeError('Unsupported compounding frequency');
     total=p*Math.pow(1+annualRate/m,m*yearFraction);
   } else throw new RangeError('Unsupported interest mode');
-  return Object.freeze({principal:roundPaise(p,rounding),interest:roundPaise(total-p,rounding),total:roundPaise(total,rounding),elapsedDays:days,mode,ratePercent:rate,ratePeriod,dayCount,compounding:mode==='compound'?compounding:null,calculationVersion:1});
+  return Object.freeze({principal:roundPaise(p,rounding),interest:roundPaise(total-p,rounding),total:roundPaise(total,rounding),elapsedDays:days,mode,ratePercent:rate,ratePeriod,dayCount:dayCount==='30/360'?'30E/360':dayCount,compounding:mode==='compound'?compounding:null,calculationVersion:1});
 }
