@@ -84,7 +84,7 @@ checks.push(['Capacitor App dependency is installed for secondary Back bridge',J
 checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
-const statementDateValidator=String.raw\`const validDate=s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s)\`;
+const statementDateValidator="const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)";
 checks.push(['Statement date validator uses digit classes',dashboard.includes(statementDateValidator)]);
 const statementDatePattern=/^\d{4}-\d{2}-\d{2}$/;
 checks.push(['Statement date pattern accepts valid ISO dates',statementDatePattern.test('2026-10-02')&&statementDatePattern.test('2024-02-29')]);
