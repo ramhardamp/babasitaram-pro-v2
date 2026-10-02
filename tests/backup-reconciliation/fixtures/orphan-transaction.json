@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "data": {
+    "user": {"fixture": true},
+    "customers": [{"id":"cust-1","name":"Synthetic Customer"}],
+    "transactions": [
+      {"id":"txn-1","customerId":"cust-missing","type":"udhaar","amount":12500,"date":"2026-01-15"}
+    ]
+  },
+  "counts": {"customers":1,"transactions":1},
+  "checksum":"__HARNESS_COMPUTE__"
+}
