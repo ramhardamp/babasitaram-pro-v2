@@ -68,6 +68,13 @@ For every case record fixture version/hash, expected result, actual result, test
 
 A passing plan/test suite is not permission to enable production restore. Restore requires a separate reviewed implementation, recovery/rollback design, fresh backup procedure, explicit user confirmation, and release authorization.
 
+
+## Prepared local artifacts (not executed)
+
+Synthetic fixture inputs and a Node built-in test scaffold are staged under `tests/backup-reconciliation/`. They cover an empty v2-shaped envelope, malformed JSON, checksum tampering, duplicate customer IDs, and an orphan transaction. The scaffold is intentionally offline/local: it imports no Firebase SDK and contains no Firestore write path. Fixture checksum sentinels are computed in memory by the harness; no fixture file is rewritten.
+
+**Execution status: NOT RUN by instruction.** These artifacts are scaffolding, not validated test results, not a complete production-backup contract, and not emulator evidence. Emulator execution remains pending separate owner authorization. Production restore remains disabled.
+
 ## Current status
 
 Not executed. No emulator results are claimed. Production restore remains disabled.
