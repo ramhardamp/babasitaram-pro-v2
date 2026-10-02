@@ -1,7 +1,7 @@
 // Pure, side-effect-free interest preview engine. Not wired to live ledger writes.
 // Simple-interest money arithmetic uses exact decimal/rational intermediates and integer paise.
 const DAY_MS = 86400000;
-const DECIMAL_RE = /^([+-]?)(\\d+)(?:\\.(\\d+))?(?:e([+-]?\\d+))?$/i;
+const DECIMAL_RE = /^([+-]?)(\d+)(?:\.(\d+))?(?:e([+-]?\d+))?$/i;
 const decimalRational = (value, label) => {
   if (typeof value === 'number' && !Number.isFinite(value)) throw new RangeError(`Invalid ${label}`);
   const raw = String(value).trim();
@@ -53,7 +53,7 @@ const parseDate = value => {
     if (!Number.isFinite(value.getTime())) throw new TypeError('Invalid ISO date');
     return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
   }
-  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) throw new TypeError('Date must be a valid YYYY-MM-DD ISO date');
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new TypeError('Date must be a valid YYYY-MM-DD ISO date');
   const d = new Date(`${value}T00:00:00Z`);
   if (!Number.isFinite(d.getTime()) || d.toISOString().slice(0, 10) !== value) throw new TypeError('Invalid ISO date');
   return d;
