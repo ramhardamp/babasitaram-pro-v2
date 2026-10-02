@@ -59,6 +59,32 @@ Never silently rewrite historical source events to make totals agree. A correcti
 9. Unknown transaction types or missing required fields block restore; no guessed defaults.
 10. Reconciliation emits differences without writing to Firestore.
 
+
+## PROPOSED (Pending Owner Approval)
+
+**Important:** These are reviewable defaults only—not adopted business rules, legal/accounting advice, or implementation authorization. Every row below remains **UNDECIDED** until the owner explicitly accepts, edits, or rejects it. No code may rely on these proposals before approval.
+
+| Topic | Standard accounting proposal for review | Owner decision |
+|---|---|---|
+| Interest model | Simple interest on outstanding principal; no interest-on-interest. If the business actually quotes a flat fee on original principal, record that as a distinct fee model, not silently as reducing-balance interest. | PENDING |
+| Rate unit | Store the quoted rate and explicit unit; proposed default is annual nominal percentage, with the UI displaying the unit unambiguously. | PENDING |
+| Day count | Actual elapsed calendar days / 365 for annual simple interest; define leap-year treatment explicitly before adoption. | PENDING |
+| Accrual boundaries | Start on the day after disbursement; accrue through the day before settlement/closure. Dates use the account's declared timezone and date-only effective dates. | PENDING |
+| Compounding | None under the simple-interest proposal. | PENDING |
+| Repayment allocation | Proposed principal-first: allocate the repayment to principal outstanding up to that amount; then to accrued interest; any remainder becomes unapplied advance credit. Show the allocation breakdown before recording. This is a business choice, not a universal accounting rule. | PENDING |
+| Partial payments | Apply the same approved allocation deterministically; retain the original payment event and record any correction as a separate linked event. | PENDING |
+| Overpayment | Do not discard or silently refund. Keep excess as a separately identified customer advance/unapplied credit; require an explicit later application or refund event and audit trail. | PENDING |
+| Rate changes | Effective-dated and prospective only; never retroactively change already accrued periods without an explicit correction event and owner-approved reason. | PENDING |
+| Backdated edits/deletes | Preserve the original event in audit history; use linked reversal/correction events. Recompute derived balances from the corrected event stream in preview only; do not mutate source history. | PENDING |
+| Closure | Close when principal and due interest are both zero, or after an explicitly recorded, authorized waiver/write-off with amount, date, reason, and actor. A manual close with a nonzero balance must be visibly exceptional and must not erase the balance. | PENDING |
+| Reopen | No silent reopen. Use an authorized, audited correction/reopen event with reason and linkage to the closure. | PENDING |
+| Currency rounding | INR amounts stored as integer paise; proposed round-half-up to paise at each explicitly defined accrual period, with no binary floating-point money arithmetic. Confirm tax/contract treatment separately where applicable. | PENDING |
+| Legacy missing fields | Quarantine for manual review; do not infer rate unit, dates, allocation, owner, or loan linkage. Preserve original bytes/record evidence and report blockers. | PENDING |
+
+### Approval worksheet
+
+For each row, owner response must be one of **ACCEPT**, **REJECT**, or **EDIT**, with any replacement rule and at least one worked example. Until all required choices and examples are approved, the current decision table above remains UNDECIDED and restore readiness is blocked.
+
 ## Required approval
 
 Before implementation, record the owner's explicit answers for every decision above, approve example calculations, and version the specification. Any change to approved rules requires a new version and regression fixtures.
