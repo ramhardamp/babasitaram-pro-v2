@@ -47,7 +47,7 @@ const checks=[
 ['Guru Shree fallback is used consistently',dashboard.includes("this.src='assets/guru-shree-logo.jpg'")&&index.includes("this.src='assets/guru-shree-logo.jpg'")&&!dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&!index.includes("this.src='assets/babasitaram-pro-logo.svg'")],
 ['Customer avatars use brand logo',dashboard.includes('cc-avatar-brand')&&dashboard.includes('cc-avatar-logo')&&dashboard.includes('assets/guru-shree-logo.svg')],
 ['PDF logo uses Guru Shree live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href")&&!dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
-['Branded PDF header uses Guru Shree identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('Guru Shree')&&dashboard.includes('assets/guru-shree-logo.svg')&&dashboard.includes('w.print()')],
+['Branded PDF header uses Guru Shree identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BSR PRO')&&dashboard.includes('assets/guru-shree-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
 checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/jpeg;base64,')&&guruLogo.length>1000]);
@@ -83,7 +83,7 @@ checks.push(['Android workflow prepares native SMS layer',await readFile('.githu
 checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
 checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
 checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.1.2']);
-checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
+checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('BSR PRO Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
 checks.push(['Statement date validator uses digit classes and calendar validation',/const validDate=s=>\/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\/\.test\(s\)&&!Number\.isNaN\(new Date\(s\+'T12:00:00'\)\.getTime\(\)\)&&localDateInputValue\(new Date\(s\+'T12:00:00'\)\)===s/.test(dashboard)]);
