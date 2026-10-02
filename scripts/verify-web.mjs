@@ -83,7 +83,7 @@ checks.push(['Android workflow prepares native SMS layer',await readFile('.githu
 checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
 checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
 checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.1.2']);
-checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('BSR PRO Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
+checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('BSRPRO DIGITAL KHATA')&&x.includes('start_url')&&x.includes('standalone'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell')&&x.includes('addAll(SHELL)'))]);
 
 
 checks.push(['Statement date validator uses digit classes and calendar validation',/const validDate=s=>\/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\/\.test\(s\)&&!Number\.isNaN\(new Date\(s\+'T12:00:00'\)\.getTime\(\)\)&&localDateInputValue\(new Date\(s\+'T12:00:00'\)\)===s/.test(dashboard)]);
