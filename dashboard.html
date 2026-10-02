@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
-<title>Guru Shree - Digital Khata</title>
+<title>BSR PRO - Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -642,7 +642,7 @@ body.dark-mode{
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree">
+      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO">
       <div class="top-title-wrap">
         <div class="top-title" id="topTitle">Loading...</div>
         <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
@@ -655,7 +655,7 @@ body.dark-mode{
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots" aria-hidden="true">
@@ -854,12 +854,12 @@ body.dark-mode{
 
           <section class="android-setting-section" data-settings-section="about">
             <button class="android-setting-row" type="button" onclick="openSettingsPanel('about')">
-              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree"></span>
+              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO"></span>
               <span class="android-setting-main"><b>About & Support</b><small>Version और सहायता</small></span>
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>🕉️ <b>Guru Shree</b><small>Version 6.8 (Stable Mobile)</small></span></div>
+              <div class="android-sub-row"><span>🕉️ <b>BSR PRO</b><small>Version 6.8 (Stable Mobile)</small></span></div>
               <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitaram@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
@@ -1248,7 +1248,7 @@ async function updatePublicView(partyId, viewToken, partyData){
     txns.sort((a,b)=>sortableDateValue(b.date)-sortableDateValue(a.date));
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
-      shopName:userData.shopName||'Guru Shree',
+      shopName:userData.shopName||'BSR PRO',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       upiId:String(userData?.upiId||'').trim(),
       upiPayUrl:(userData?.upiId && Number(partyData.balance)>0 && partyData.viewToken)?buildUpiPaymentUrl(partyData,Number(partyData.balance)): '',
@@ -1777,7 +1777,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent=(userData.shopName||'Guru Shree');
+  document.getElementById('topTitle').textContent=(userData.shopName||'BSR PRO');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1791,7 +1791,7 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
-    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
+    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO">`;
     const total=s.grandTotal;
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
@@ -1824,7 +1824,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
-  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
+  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO">`;
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -1993,7 +1993,7 @@ async function buildShareReminderImage(id){
   bg.addColorStop(0,'#078b3d');bg.addColorStop(1,'#13843c');
   ctx.fillStyle=bg;ctx.fillRect(0,0,1080,740);
 
-  // Use the user's Guru Shree logo whenever a profile photo is not available.
+  // Use the user's BSR PRO logo whenever a profile photo is not available.
   const photo=await loadShareCardImage(getProfilePhotoUrl());
   const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260929-5',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
@@ -3196,7 +3196,7 @@ function buildExportTables(data){
   const transactionRows=transactions.map(tx=>{const c=customers.find(x=>x.id===tx.partyId);return {...tx,customerName:c?.name||'',customerPhone:c?.phone||''}});
   const loanRows=transactions.filter(tx=>tx.type==='byaj_loan').map(loan=>{const c=customers.find(x=>x.id===loan.partyId);const m=calcLoan(loan);return {...loan,customerName:c?.name||'',customerPhone:c?.phone||'',currentPrincipal:m.currentPrincipal,interestAccrued:m.interestAccrued,interestPaidCalculated:m.interestPaid,interestOutstanding:m.interestOutstanding,loanTotal:m.loanTotal,progress:m.progress}});
   const totals=getTotals();
-  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'Guru Shree'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
+  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'BSR PRO'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
   return {customerRows,transactionRows,loanRows,summaryRows};
 }
 async function exportExcelData(){
@@ -3221,7 +3221,7 @@ async function exportCsvData(existingData){
 function printExportWindow(title,bodyHtml){
   const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
   const safeTitle=esc(title);
-  const shop=esc(userData?.shopName||'Guru Shree');
+  const shop=esc(userData?.shopName||'BSR PRO');
   const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href;
   const fallbackLogoUrl=new URL('assets/guru-shree-logo.jpg',window.location.href).href;
   const owner=esc(userData?.profileName||userData?.ownerName||'');
@@ -3244,7 +3244,7 @@ function exportBusinessPdf(){
   try{
     const totals=getTotals();const sorted=buildExportTables({integrity:{orphanTransactions:0,balanceMismatches:0}}).customerRows.slice().sort((a,b)=>(Number(b.grandTotal)||0)-(Number(a.grandTotal)||0));
     const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
-    const body='<h1>'+esc(userData?.shopName||'Guru Shree')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
+    const body='<h1>'+esc(userData?.shopName||'BSR PRO')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
       '<div class="summary"><div class="box"><div class="label">Customers</div><div class="value">'+customers.length+'</div></div><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(totals.udhaar)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(totals.byaj)+'</div></div><div class="box"><div class="label">Outstanding</div><div class="value">'+fmt(totals.total)+'</div></div></div>'+
       '<h2>Customer Balance</h2><table><thead><tr><th>Customer</th><th>Phone</th><th>Udhaar</th><th>Interest</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<h2>Transaction Summary</h2><div>Transactions: <b>'+transactions.length+'</b> &nbsp; Payments: <b>'+fmt(totals.paid)+'</b> &nbsp; Interest income: <b>'+fmt(totals.income)+'</b></div>';
