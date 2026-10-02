@@ -1,0 +1,62 @@
+name: Read-only Firestore Emulator Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  emulator-readonly:
+    name: Synthetic fixture + emulator read-only checks
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.number == 22
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GCLOUD_PROJECT: demo-bsr-readonly
+      FIRESTORE_EMULATOR_HOST: 127.0.0.1:8080
+      FIREBASE_CLI_EXPERIMENTS: ""
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Firebase CLI and Admin SDK for CI only
+        run: |
+          npm install --global firebase-tools
+          npm install --no-save --package-lock=false firebase-admin
+
+      - name: Create minimal emulator-only configuration
+        shell: bash
+        run: |
+          cat > firebase.json <<'JSON'
+          {
+            "emulators": {
+              "firestore": { "host": "127.0.0.1", "port": 8080 },
+              "ui": { "enabled": false }
+            }
+          }
+          JSON
+          test "$GCLOUD_PROJECT" = "demo-bsr-readonly"
+          test "$FIRESTORE_EMULATOR_HOST" = "127.0.0.1:8080"
+
+      - name: Run fixture tests inside isolated Firestore Emulator
+        run: |
+          firebase emulators:exec --only firestore --project demo-bsr-readonly             "node --test tests/backup-reconciliation/backup-reconciliation.test.mjs"
+
+      - name: Remove temporary emulator config
+        if: always()
+        run: rm -f firebase.json
