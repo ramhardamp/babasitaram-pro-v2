@@ -93,6 +93,7 @@ checks.push(['Statement date pattern rejects malformed dates',!statementDatePatt
 
 
 
+checks.push(['backup checksum verifier rejects malformed structure and count drift',dashboard.includes("!Array.isArray(data.data.customers)||!Array.isArray(data.data.transactions)")&&dashboard.includes('data.counts.customers!==data.data.customers.length')&&dashboard.includes('data.counts.transactions!==data.data.transactions.length')]);
 checks.push(['All backup formats verify SHA-256 before export',dashboard.includes('async function verifyBackupPayloadChecksum(data)')&&dashboard.includes('await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2)')&&dashboard.includes("const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);")&&dashboard.includes('const data=existingData||await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);')]);
 
 let failed=0;
