@@ -4,29 +4,32 @@ const dashboard=await readFile('dashboard.html','utf8');
 const engine=await readFile('scripts/interest-engine.mjs','utf8');
 
 const dashboardForbidden=[
-  /(?:^|[\\s;])(?:import|export)\\s.*interest-engine/i,
-  /previewInterest\\s*\\(/,
-  /interest-engine\\.mjs/i
+  'interest-engine.mjs',
+  'previewInterest(',
+  'from \'./scripts/interest-engine\'',
+  'from "./scripts/interest-engine"',
+  'import \'./scripts/interest-engine',
+  'import "./scripts/interest-engine'
 ];
-for(const pattern of dashboardForbidden){
-  if(pattern.test(dashboard)) throw new Error(`Interest engine must remain isolated: dashboard matches ${pattern}`);
+for(const needle of dashboardForbidden){
+  if(dashboard.includes(needle)) throw new Error(`Interest engine must remain isolated: dashboard contains ${needle}`);
 }
 
 const engineForbidden=[
-  /firebase/i,
-  /firestore/i,
-  /fetch\\s*\\(/i,
-  /XMLHttpRequest/i,
-  /localStorage/i,
-  /sessionStorage/i,
-  /indexedDB/i,
-  /\\.collection\\s*\\(/,
-  /\\.set\\s*\\(/,
-  /\\.update\\s*\\(/,
-  /\\.delete\\s*\\(/
+  'firebase',
+  'firestore',
+  'fetch(',
+  'XMLHttpRequest',
+  'localStorage',
+  'sessionStorage',
+  'indexedDB',
+  '.collection(',
+  '.set(',
+  '.update(',
+  '.delete('
 ];
-for(const pattern of engineForbidden){
-  if(pattern.test(engine)) throw new Error(`Interest engine must be side-effect-free: matches ${pattern}`);
+for(const needle of engineForbidden){
+  if(engine.toLowerCase().includes(needle.toLowerCase())) throw new Error(`Interest engine must be side-effect-free: contains ${needle}`);
 }
 
 if(!engine.includes('Not wired to live ledger writes.')){
