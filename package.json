@@ -6,7 +6,8 @@
     "verify:web": "node scripts/verify-web.mjs",
     "prepare:web": "node scripts/prepare-web.mjs",
     "android:sync": "npm run prepare:web && npx cap sync android",
-    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace"
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace",
+    "test": "node --test scripts/*.test.mjs"
   },
   "dependencies": {
     "@capacitor/android": "7.4.1",
