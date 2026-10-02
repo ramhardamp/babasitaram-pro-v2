@@ -93,6 +93,8 @@ checks.push(['Statement date pattern rejects malformed dates',!statementDatePatt
 
 
 
+checks.push(['All backup formats verify SHA-256 before export',dashboard.includes('async function verifyBackupPayloadChecksum(data)')&&dashboard.includes('await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2)')&&dashboard.includes("const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);")&&dashboard.includes('const data=existingData||await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);')]);
+
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}
 if(failed)process.exit(1);
