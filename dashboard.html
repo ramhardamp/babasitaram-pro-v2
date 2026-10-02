@@ -3326,6 +3326,7 @@ async function buildBackupPayload(){
   return {schemaVersion:2,appVersion:'6.8.0',exportedAt:new Date().toISOString(),counts:{customers:customers.length,transactions:transactions.length},integrity:{orphanTransactions,balanceMismatches,checksumSha256:checksum},data:normalized};
 }
 async function verifyBackupPayloadChecksum(data){
+  if(!data||typeof data!=='object'||!data.data||typeof data.data!=='object'||Array.isArray(data.data)||!Array.isArray(data.data.customers)||!Array.isArray(data.data.transactions)||!data.integrity||!data.counts||data.counts.customers!==data.data.customers.length||data.counts.transactions!==data.data.transactions.length)throw new Error('Backup structure or record counts are invalid; export cancelled.');
   if(!/^[a-f0-9]{64}$/.test(data?.integrity?.checksumSha256||''))throw new Error('Backup checksum could not be verified; export cancelled.');
   if(!globalThis.crypto?.subtle||typeof TextEncoder==='undefined')throw new Error('SHA-256 verification is unavailable; export cancelled.');
   const canonical=JSON.stringify(data.data);
