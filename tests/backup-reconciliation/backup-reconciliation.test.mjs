@@ -80,7 +80,14 @@ test("orphan transaction is reported, not repaired", async () => {
 
 test("Firestore Emulator connects under exact demo project and performs read-only collection inspection", async () => {
   assert.equal(process.env.GCLOUD_PROJECT, EXPECTED_PROJECT, "Refuse unexpected project ID");
-  assert.equal(process.env.FIRESTORE_EMULATOR_HOST, "127.0.0.1:8080", "Refuse non-local emulator host");
+  // Pin the Admin SDK target before importing/initializing it. Firebase CLI may
+  // inject its own emulator host into the child process; refuse anything except
+  // the loopback endpoint used by this isolated job.
+  const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
+  assert.ok(!emulatorHost || emulatorHost === "127.0.0.1:8080" || emulatorHost === "localhost:8080",
+    `Refuse non-local emulator host: ${emulatorHost}`);
+  process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
+  process.env.GCLOUD_PROJECT = EXPECTED_PROJECT;
   const { initializeApp, getApps } = await import("firebase-admin/app");
   const { getFirestore } = await import("firebase-admin/firestore");
   const app = getApps().find(x => x.name === "readonly-emulator-check") ??
