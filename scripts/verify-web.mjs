@@ -84,8 +84,7 @@ checks.push(['Capacitor App dependency is installed for secondary Back bridge',J
 checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
-const statementDateValidator="const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)";
-checks.push(['Statement date validator uses digit classes',dashboard.includes(statementDateValidator)]);
+checks.push(['Statement date validator uses digit classes and calendar validation',/const validDate=s=>\/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\/\.test\(s\)&&!Number\.isNaN\(new Date\(s\+'T12:00:00'\)\.getTime\(\)\)&&localDateInputValue\(new Date\(s\+'T12:00:00'\)\)===s/.test(dashboard)]);
 const statementDatePattern=/^\d{4}-\d{2}-\d{2}$/;
 checks.push(['Statement date pattern accepts valid ISO dates',statementDatePattern.test('2026-10-02')&&statementDatePattern.test('2024-02-29')]);
 checks.push(['Statement date pattern rejects malformed dates',!statementDatePattern.test('2026-1-02')&&!statementDatePattern.test('02-10-2026')&&!statementDatePattern.test('2026/10/02')]);
