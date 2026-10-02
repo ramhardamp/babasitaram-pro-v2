@@ -2,8 +2,15 @@ name: BSRPRO DIGITAL KHATA Android Build
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish a GitHub Release after all checks pass (normally leave false)"
+        required: true
+        type: boolean
+        default: false
   push:
     branches:
+      - fix/bsrpro-khata-android16-20261002
       - production-okcredit-safety-fix-20260929
       - separate-install-guru-shree-20260929
 
@@ -84,7 +91,7 @@ jobs:
       - name: Emulator install + runtime smoke
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 36
           target: google_apis
           arch: x86_64
           profile: pixel_7
@@ -105,6 +112,7 @@ jobs:
             adb logcat -d -t 500 | tee runtime-logcat.txt
             grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt && exit 1 || true
       - name: Create GitHub Release
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
