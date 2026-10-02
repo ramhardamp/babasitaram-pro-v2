@@ -31,11 +31,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Install Firebase CLI and Admin SDK for CI only
         run: |
-          npm install --global firebase-tools
+          npm install --global firebase-tools@latest
           npm install --no-save --package-lock=false firebase-admin
 
       - name: Create minimal emulator-only configuration
@@ -54,7 +54,7 @@ jobs:
 
       - name: Run fixture tests inside isolated Firestore Emulator
         run: |
-          firebase emulators:exec --only firestore --project demo-bsr-readonly             "node --test tests/backup-reconciliation/backup-reconciliation.test.mjs"
+          firebase emulators:exec --only firestore --project demo-bsr-readonly --debug "node --test tests/backup-reconciliation/backup-reconciliation.test.mjs"
 
       - name: Remove temporary emulator config
         if: always()
