@@ -1,6 +1,6 @@
 {
-  "name": "BSR PRO Digital Khata",
-  "short_name": "BSR PRO",
+  "name": "BSRPRO DIGITAL KHATA",
+  "short_name": "BSRPRO",
   "description": "Offline-first digital khata, customer ledger and payment collection.",
   "start_url": "./index.html",
   "scope": "./",
