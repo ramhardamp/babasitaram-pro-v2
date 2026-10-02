@@ -32,6 +32,8 @@ const checks=[
 ['PDF business report is printable',dashboard.includes('function exportBusinessPdf()')&&dashboard.includes('function printExportWindow')&&dashboard.includes('w.print()')],
 ['customer statement export exists',dashboard.includes('function exportCustomerStatementPdf(id)')&&dashboard.includes('exportCustomerStatementPdf(\'')],
 ['backup export is read-only',dashboard.includes('Export read-only')&&dashboard.includes('buildBackupPayload()')&&dashboard.includes('downloadTextFile')],
+['backup export fails closed without a valid SHA-256',dashboard.includes("if(!/^[a-f0-9]{64}$/.test(data?.integrity?.checksumSha256||''))throw new Error('Backup checksum could not be verified; export cancelled.')")],
+  ['backup export recomputes and matches the payload SHA-256',dashboard.includes("const canonical=JSON.stringify(data.data)")&&dashboard.includes("if(actual!==data.integrity.checksumSha256)throw new Error('Backup checksum mismatch; export cancelled.')")],
 ['customer Hisaab share UI exists',dashboard.includes('openShareHisaab(')&&dashboard.includes('Share Hisaab')&&dashboard.includes('share-reminder-preview')],
 ['customer Hisaab message uses profile identity',dashboard.includes('function getCustomerShareMessage(c,s)')&&dashboard.includes('userData?.shopName')&&dashboard.includes('userData?.ownerName')&&dashboard.includes('userData?.phone')],
 ['customer Hisaab message excludes app branding',(()=>{const a=dashboard.indexOf('function getCustomerShareMessage(c,s)');const b=dashboard.indexOf('function getShareCardData',a);return a>=0&&b>a&&!dashboard.slice(a,b).includes('BABASITARAM PRO')})()],
@@ -45,7 +47,7 @@ const checks=[
 ['Guru Shree fallback is used consistently',dashboard.includes("this.src='assets/guru-shree-logo.jpg'")&&index.includes("this.src='assets/guru-shree-logo.jpg'")&&!dashboard.includes("this.src='assets/babasitaram-pro-logo.svg'")&&!index.includes("this.src='assets/babasitaram-pro-logo.svg'")],
 ['Customer avatars use brand logo',dashboard.includes('cc-avatar-brand')&&dashboard.includes('cc-avatar-logo')&&dashboard.includes('assets/guru-shree-logo.svg')],
 ['PDF logo uses Guru Shree live URL',dashboard.includes("new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href")&&!dashboard.includes("new URL('assets/babasitaram-pro-logo.svg',window.location.href).href")],
-['Branded PDF header uses Guru Shree identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('Guru Shree')&&dashboard.includes('assets/guru-shree-logo.svg')&&dashboard.includes('w.print()')],
+['Branded PDF header uses Guru Shree identity',dashboard.includes('function printExportWindow(title,bodyHtml)')&&dashboard.includes('class="brand-head"')&&dashboard.includes('BSR PRO')&&dashboard.includes('assets/guru-shree-logo.svg')&&dashboard.includes('w.print()')],
 ['web asset copied into www',!prep.includes("'assets/logo.svg'")&&prep.includes("'assets/guru-shree-logo.svg'")&&prep.includes("mkdir('www/assets'")]
 ];
 checks.push(['Guru Shree asset is the original Guru Shree image wrapper',guruLogo.includes('<image href="data:image/jpeg;base64,')&&guruLogo.length>1000]);
@@ -81,7 +83,7 @@ checks.push(['Android workflow prepares native SMS layer',await readFile('.githu
 checks.push(['Unified mobile Back bridge exists',dashboard.includes('window.__nativeAndroidBack')&&dashboard.includes('function setupNativeBackHandler')&&dashboard.includes('handleAppBack()')]);
 checks.push(['Android native Back preparation is present',await readFile('scripts/prepare-android.mjs','utf8').then(x=>x.includes('bsrSetupAndroidBack')&&x.includes('getOnBackPressedDispatcher()')&&x.includes('getBridge().getWebView()')&&x.includes('__nativeAndroidBack'))]);
 checks.push(['Capacitor App dependency is installed for secondary Back bridge',JSON.parse(await readFile('package.json','utf8')).dependencies?.['@capacitor/app']==='7.1.2']);
-checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('Guru Shree Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
+checks.push(['PWA files exist',await readFile('manifest.json','utf8').then(x=>x.includes('BSR PRO Digital Khata'))&&await readFile('service-worker.js','utf8').then(x=>x.includes('guru-shree-shell'))]);
 
 
 checks.push(['Statement date validator uses digit classes and calendar validation',/const validDate=s=>\/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\/\.test\(s\)&&!Number\.isNaN\(new Date\(s\+'T12:00:00'\)\.getTime\(\)\)&&localDateInputValue\(new Date\(s\+'T12:00:00'\)\)===s/.test(dashboard)]);
@@ -90,6 +92,9 @@ checks.push(['Statement date pattern accepts valid ISO dates',statementDatePatte
 checks.push(['Statement date pattern rejects malformed dates',!statementDatePattern.test('2026-1-02')&&!statementDatePattern.test('02-10-2026')&&!statementDatePattern.test('2026/10/02')]);
 
 
+
+checks.push(['backup checksum verifier rejects malformed structure and count drift',dashboard.includes("!Array.isArray(data.data.customers)||!Array.isArray(data.data.transactions)")&&dashboard.includes('data.counts.customers!==data.data.customers.length')&&dashboard.includes('data.counts.transactions!==data.data.transactions.length')]);
+checks.push(['All backup formats verify SHA-256 before export',dashboard.includes('async function verifyBackupPayloadChecksum(data)')&&dashboard.includes('await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2)')&&dashboard.includes("const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);")&&dashboard.includes('const data=existingData||await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);')]);
 
 let failed=0;
 for(const [name,ok] of checks){console.log((ok?'PASS':'FAIL')+' :: '+name);if(!ok)failed++;}

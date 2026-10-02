@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e1b4b">
-<title>Guru Shree - Digital Khata</title>
+<title>BSR PRO - Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -642,7 +642,7 @@ body.dark-mode{
     <div class="top-left">
       <button id="backBtn" class="back-btn hidden" onclick="goBack()">←</button>
       
-      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree">
+      <img class="brand-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO">
       <div class="top-title-wrap">
         <div class="top-title" id="topTitle">Loading...</div>
         <div id="syncStatus" class="sync-status" aria-live="polite">● Offline cache</div>
@@ -655,7 +655,7 @@ body.dark-mode{
 
     <div id="screen-pin" class="screen">
       <div class="pin-screen">
-        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="Guru Shree"></div>
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO"></div>
         <div class="pin-title" id="pinTitle">PIN डालें</div>
         <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
         <div class="pin-dots" id="pinDots" aria-hidden="true">
@@ -854,12 +854,12 @@ body.dark-mode{
 
           <section class="android-setting-section" data-settings-section="about">
             <button class="android-setting-row" type="button" onclick="openSettingsPanel('about')">
-              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree"></span>
+              <span class="android-setting-icon"><img src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO"></span>
               <span class="android-setting-main"><b>About & Support</b><small>Version और सहायता</small></span>
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>🕉️ <b>Guru Shree</b><small>Version 6.8 (Stable Mobile)</small></span></div>
+              <div class="android-sub-row"><span>🕉️ <b>BSR PRO</b><small>Version 6.8 (Stable Mobile)</small></span></div>
               <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitaram@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
@@ -1248,7 +1248,7 @@ async function updatePublicView(partyId, viewToken, partyData){
     txns.sort((a,b)=>sortableDateValue(b.date)-sortableDateValue(a.date));
     const publicViewData = {
       businessUid:currentUser.uid, partyId:String(partyId),
-      shopName:userData.shopName||'Guru Shree',
+      shopName:userData.shopName||'BSR PRO',
       shopPhone:userData.phone||'', shopEmail:currentUser.email||'',
       upiId:String(userData?.upiId||'').trim(),
       upiPayUrl:(userData?.upiId && Number(partyData.balance)>0 && partyData.viewToken)?buildUpiPaymentUrl(partyData,Number(partyData.balance)): '',
@@ -1777,7 +1777,7 @@ function renderDashboard(){
   document.getElementById('dByaj').textContent=fmt(totals.byaj);
   document.getElementById('dPaid').textContent=fmt(totals.paid);
   document.getElementById('dIncome').textContent=fmt(totals.income);
-  document.getElementById('topTitle').textContent=(userData.shopName||'Guru Shree');
+  document.getElementById('topTitle').textContent=(userData.shopName||'BSR PRO');
   let filtered=getAllSummaries();
   if(customerSearchTerm)filtered=filtered.filter(s=>String(s.name||'').toLowerCase().includes(customerSearchTerm)||String(s.phone||'').toLowerCase().includes(customerSearchTerm)||String(s.email||'').toLowerCase().includes(customerSearchTerm));
   if(currentFilter==='udhaar')filtered=filtered.filter(s=>s.udhaarBalance>0);
@@ -1791,7 +1791,7 @@ function renderDashboard(){
   const visible=filtered.slice(0,Math.min(customerRenderLimit,filtered.length));
   const cards=visible.map(s=>{
     const init=(s.name||'?').charAt(0).toUpperCase();
-    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
+    const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO">`;
     const total=s.grandTotal;
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
@@ -1824,7 +1824,7 @@ function renderCustomerDetail(){
   const s=getSummary(currentCustomerId);if(!s){goBack();return}
   const c=customers.find(x=>x.id===currentCustomerId);if(!c){goBack();return}
   const init=(c.name||'?').charAt(0).toUpperCase();
-  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="Guru Shree">`;
+  const brandLogo=`<img class="cc-avatar-logo" src="assets/guru-shree-logo.svg?v=20260926-5" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt="BSR PRO">`;
   document.getElementById('topTitle').textContent='← '+c.name;
   let loansHtml='';
   if(s.loans.length>0){
@@ -1993,7 +1993,7 @@ async function buildShareReminderImage(id){
   bg.addColorStop(0,'#078b3d');bg.addColorStop(1,'#13843c');
   ctx.fillStyle=bg;ctx.fillRect(0,0,1080,740);
 
-  // Use the user's Guru Shree logo whenever a profile photo is not available.
+  // Use the user's BSR PRO logo whenever a profile photo is not available.
   const photo=await loadShareCardImage(getProfilePhotoUrl());
   const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260929-5',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
@@ -3183,16 +3183,25 @@ async function loadExportLibrary(url,globalName){
   window.__bspExportLibraries[globalName]=p;try{return await p}catch(e){delete window.__bspExportLibraries[globalName];throw e}
 }
 function buildExportTables(data){
+  // Export tables must describe the exact verified backup snapshot, not a later live state.
+  // This synchronous guard fails closed if customer/transaction listeners changed data after
+  // the backup was hashed; no mixed-snapshot workbook or CSV is emitted.
+  // Backup exports pass a verified payload and must match its exact snapshot. Print reports
+  // intentionally use a live, read-only view and do not pass through the backup pipeline.
+  if(data?.data){
+    const liveSnapshot=JSON.stringify({user:userData,customers,transactions});
+    if(liveSnapshot!==JSON.stringify(data.data))throw new Error('Data changed after backup verification; please retry the export.');
+  }
   const customerRows=customers.map(c=>{const s=getSummary(c.id)||{};return {...c,udhaarBalance:s.udhaarBalance||0,byajBalance:s.byajBalance||0,grandTotal:s.grandTotal||0,activeLoans:(s.loans||[]).length}});
   const transactionRows=transactions.map(tx=>{const c=customers.find(x=>x.id===tx.partyId);return {...tx,customerName:c?.name||'',customerPhone:c?.phone||''}});
   const loanRows=transactions.filter(tx=>tx.type==='byaj_loan').map(loan=>{const c=customers.find(x=>x.id===loan.partyId);const m=calcLoan(loan);return {...loan,customerName:c?.name||'',customerPhone:c?.phone||'',currentPrincipal:m.currentPrincipal,interestAccrued:m.interestAccrued,interestPaidCalculated:m.interestPaid,interestOutstanding:m.interestOutstanding,loanTotal:m.loanTotal,progress:m.progress}});
   const totals=getTotals();
-  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'Guru Shree'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
+  const summaryRows=[['Field','Value'],['Business',userData?.shopName||'BSR PRO'],['Exported At',new Date().toISOString()],['Customers',customers.length],['Transactions',transactions.length],['Udhaar Outstanding',totals.udhaar],['Interest Outstanding',totals.byaj],['Total Outstanding',totals.total],['Total Payments',totals.paid],['Interest Income',totals.income],['Orphan Transactions',data.integrity.orphanTransactions],['Balance Mismatches',data.integrity.balanceMismatches],['SHA-256',data.integrity.checksumSha256]];
   return {customerRows,transactionRows,loanRows,summaryRows};
 }
 async function exportExcelData(){
   try{
-    toast('📊 Excel backup तैयार हो रहा है...','success');const data=await buildBackupPayload();const tables=buildExportTables(data);let XLSX;
+    toast('📊 Excel backup तैयार हो रहा है...','success');const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);let XLSX;
     try{XLSX=await loadExportLibrary('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','XLSX')}
     catch(libErr){await exportCsvData(data);toast('Excel library उपलब्ध नहीं थी — CSV fallback निकाला गया','error');return}
     const wb=XLSX.utils.book_new();
@@ -3203,7 +3212,7 @@ async function exportExcelData(){
 }
 async function exportCsvData(existingData){
   try{
-    const data=existingData||await buildBackupPayload();const tables=buildExportTables(data);const date=new Date().toISOString().slice(0,10);
+    const data=existingData||await buildBackupPayload();await verifyBackupPayloadChecksum(data);const tables=buildExportTables(data);const date=new Date().toISOString().slice(0,10);
     downloadTextFile('\ufeff'+rowsToCsv(exportRowsFromObjects(tables.customerRows)),'babasitaram_customers_'+date+'.csv','text/csv;charset=utf-8');
     setTimeout(()=>downloadTextFile('\ufeff'+rowsToCsv(exportRowsFromObjects(tables.transactionRows)),'babasitaram_transactions_'+date+'.csv','text/csv;charset=utf-8'),300);
     toast('✅ Customers और Transactions CSV export हो गए','success');
@@ -3212,7 +3221,7 @@ async function exportCsvData(existingData){
 function printExportWindow(title,bodyHtml){
   const w=window.open('','_blank');if(!w)return toast('Popup blocked है — browser में popups allow करें','error');
   const safeTitle=esc(title);
-  const shop=esc(userData?.shopName||'Guru Shree');
+  const shop=esc(userData?.shopName||'BSR PRO');
   const logoUrl=new URL('assets/guru-shree-logo.svg?v=20260926-5',window.location.href).href;
   const fallbackLogoUrl=new URL('assets/guru-shree-logo.jpg',window.location.href).href;
   const owner=esc(userData?.profileName||userData?.ownerName||'');
@@ -3235,7 +3244,7 @@ function exportBusinessPdf(){
   try{
     const totals=getTotals();const sorted=buildExportTables({integrity:{orphanTransactions:0,balanceMismatches:0}}).customerRows.slice().sort((a,b)=>(Number(b.grandTotal)||0)-(Number(a.grandTotal)||0));
     const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
-    const body='<h1>'+esc(userData?.shopName||'Guru Shree')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
+    const body='<h1>'+esc(userData?.shopName||'BSR PRO')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
       '<div class="summary"><div class="box"><div class="label">Customers</div><div class="value">'+customers.length+'</div></div><div class="box"><div class="label">Udhaar</div><div class="value">'+fmt(totals.udhaar)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(totals.byaj)+'</div></div><div class="box"><div class="label">Outstanding</div><div class="value">'+fmt(totals.total)+'</div></div></div>'+
       '<h2>Customer Balance</h2><table><thead><tr><th>Customer</th><th>Phone</th><th>Udhaar</th><th>Interest</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<h2>Transaction Summary</h2><div>Transactions: <b>'+transactions.length+'</b> &nbsp; Payments: <b>'+fmt(totals.paid)+'</b> &nbsp; Interest income: <b>'+fmt(totals.income)+'</b></div>';
@@ -3316,8 +3325,18 @@ async function buildBackupPayload(){
   const balanceMismatches=customers.reduce((n,cc)=>{const txBal=getPartyTransactions(cc.id).reduce((sum,x)=>sum+(x.type==='udhaar'?(x.amount||0):x.type==='jama'?-(x.amount||0):0),0);return n+((cc.balance||0)!==txBal?1:0)},0);
   return {schemaVersion:2,appVersion:'6.8.0',exportedAt:new Date().toISOString(),counts:{customers:customers.length,transactions:transactions.length},integrity:{orphanTransactions,balanceMismatches,checksumSha256:checksum},data:normalized};
 }
+async function verifyBackupPayloadChecksum(data){
+  if(!data||typeof data!=='object'||!data.data||typeof data.data!=='object'||Array.isArray(data.data)||!Array.isArray(data.data.customers)||!Array.isArray(data.data.transactions)||!data.integrity||!data.counts||data.counts.customers!==data.data.customers.length||data.counts.transactions!==data.data.transactions.length)throw new Error('Backup structure or record counts are invalid; export cancelled.');
+  if(!/^[a-f0-9]{64}$/.test(data?.integrity?.checksumSha256||''))throw new Error('Backup checksum could not be verified; export cancelled.');
+  if(!globalThis.crypto?.subtle||typeof TextEncoder==='undefined')throw new Error('SHA-256 verification is unavailable; export cancelled.');
+  const canonical=JSON.stringify(data.data);
+  const digest=await globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical));
+  const actual=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(actual!==data.integrity.checksumSha256)throw new Error('Backup checksum mismatch; export cancelled.');
+  return true;
+}
 async function exportData(){
-  try{toast(t('Preparing backup…','Backup तैयार हो रहा है…'),'success');const data=await buildBackupPayload();const json=JSON.stringify(data,null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_v2_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(t('Verified backup exported','Verified backup export हो गया'),'success')}catch(e){console.error(e);toast(t('Backup failed','Backup विफल'),'error')}
+  try{toast(t('Preparing backup…','Backup तैयार हो रहा है…'),'success');const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_v2_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(t('Verified backup exported','Verified backup export हो गया'),'success')}catch(e){console.error(e);toast(t('Backup failed','Backup विफल'),'error')}
 }
 async function verifyDataIntegrity(showResult=true){
   try{await dataReady;const orphanTransactions=transactions.filter(x=>!customers.some(cc=>cc.id===x.partyId));const balanceMismatches=[];for(const cc of customers){const expected=getPartyTransactions(cc.id).reduce((sum,x)=>sum+(x.type==='udhaar'?(x.amount||0):x.type==='jama'?-(x.amount||0):0),0);if((cc.balance||0)!==expected)balanceMismatches.push(cc.name||cc.id)}const ok=orphanTransactions.length===0&&balanceMismatches.length===0;console.log('DATA_INTEGRITY',{ok,customers:customers.length,transactions:transactions.length,orphanTransactions:orphanTransactions.length,balanceMismatches:balanceMismatches.length});if(showResult)toast(ok?t(`Integrity PASS: ${customers.length} customers / ${transactions.length} transactions`,`Integrity PASS: ${customers.length} ग्राहक / ${transactions.length} transactions`):t(`Integrity warning: ${orphanTransactions.length} orphan, ${balanceMismatches.length} balance mismatch`,`Integrity warning: ${orphanTransactions.length} orphan, ${balanceMismatches.length} balance mismatch`),ok?'success':'error');return {ok,orphanTransactions:orphanTransactions.length,balanceMismatches:balanceMismatches.length}}catch(e){console.error(e);if(showResult)toast('Integrity check failed','error');return {ok:false,error:e.message}}
