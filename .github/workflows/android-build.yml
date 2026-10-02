@@ -37,6 +37,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify isolated interest engine
         run: npm test
+      - name: Verify interest-engine isolation
+        run: node scripts/verify-interest-isolation.mjs
       - name: Verify web features
         run: npm run verify:web
       - name: Prepare Capacitor web assets
