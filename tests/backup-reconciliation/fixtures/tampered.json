@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 2,
+  "data": { "user": {"fixture": true}, "customers": [], "transactions": [] },
+  "counts": { "customers": 0, "transactions": 0 },
+  "checksum": "0000000000000000000000000000000000000000000000000000000000000000"
+}
