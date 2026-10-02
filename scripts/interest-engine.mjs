@@ -94,7 +94,7 @@ export function previewInterest({principal, ratePercent, ratePeriod='monthly', s
   } else if(mode==='compound') {
     const m=({daily:365,monthly:12,quarterly:4,semiannual:2,annual:1})[compounding];
     if(!m) throw new RangeError('Unsupported compounding frequency');
-    const total=principalOut*Math.pow(1+annualRate/m,m*((dayFraction.numerator*1n).toString()/Number(dayFraction.denominator)));
+    const total=principalOut*Math.pow(1+annualRate/m,m*(Number(dayFraction.numerator)/Number(dayFraction.denominator)));
     totalPaise=moneyPaise(total, rounding);
     interestPaise=totalPaise-principalPaise;
   } else throw new RangeError('Unsupported interest mode');
