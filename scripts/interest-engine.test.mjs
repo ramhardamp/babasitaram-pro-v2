@@ -56,7 +56,7 @@ test('leap-day and exact month interval day counts are deterministic',()=>{
   assert.equal(leap.interest,6.58);
   const month=previewInterest({principal:10000,ratePercent:12,ratePeriod:'annual',startDate:'2026-01-01',endDate:'2026-02-01',dayCount:'ACT/365'});
   assert.equal(month.elapsedDays,31);
-  assert.equal(month.interest,102.19);
+  assert.equal(month.interest,101.92);
 });
 
 test('compound frequencies produce deterministic rounded totals',()=>{
@@ -64,7 +64,7 @@ test('compound frequencies produce deterministic rounded totals',()=>{
   assert.equal(previewInterest({...args,compounding:'daily'}).interest,1274.75);
   assert.equal(previewInterest({...args,compounding:'monthly'}).interest,1268.25);
   assert.equal(previewInterest({...args,compounding:'quarterly'}).interest,1255.09);
-  assert.equal(previewInterest({...args,compounding:'semiannual'}).interest,1236.40);
+  assert.equal(previewInterest({...args,compounding:'semiannual'}).interest,1236);
   assert.equal(previewInterest({...args,compounding:'annual'}).interest,1200);
 });
 
