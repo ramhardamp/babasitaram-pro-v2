@@ -35,6 +35,8 @@ jobs:
           java-version: '21'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Verify isolated interest engine
+        run: npm test
       - name: Verify web features
         run: npm run verify:web
       - name: Prepare Capacitor web assets
