@@ -20,3 +20,9 @@ test('legacy 30/360 label normalizes to explicit 30E/360',()=>{
   assert.equal(x.dayCount,'30E/360');
   assert.equal(x.interest,280);
 });
+
+test('rejects impossible ISO dates and reversed date ranges',()=>{
+  assert.throws(()=>previewInterest({principal:1000,ratePercent:2,startDate:'2026-02-30',endDate:'2026-03-01'}),/Invalid ISO date/);
+  assert.throws(()=>previewInterest({principal:1000,ratePercent:2,startDate:'2026-03-01',endDate:'2026-02-28'}),/End date must be on or after start date/);
+  assert.throws(()=>previewInterest({principal:1000,ratePercent:2,startDate:'2026-2-01',endDate:'2026-03-01'}),/YYYY-MM-DD/);
+});
