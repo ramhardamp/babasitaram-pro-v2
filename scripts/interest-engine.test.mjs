@@ -49,3 +49,25 @@ test('rejects impossible ISO dates and reversed date ranges',()=>{
   assert.throws(()=>previewInterest({principal:1000,ratePercent:2,startDate:'2026-03-01',endDate:'2026-02-28'}),/End date must be on or after start date/);
   assert.throws(()=>previewInterest({principal:1000,ratePercent:2,startDate:'2026-2-01',endDate:'2026-03-01'}),/YYYY-MM-DD/);
 });
+
+test('leap-day and exact month interval day counts are deterministic',()=>{
+  const leap=previewInterest({principal:10000,ratePercent:12,ratePeriod:'annual',startDate:'2024-02-28',endDate:'2024-03-01',dayCount:'ACT/365'});
+  assert.equal(leap.elapsedDays,2);
+  assert.equal(leap.interest,6.58);
+  const month=previewInterest({principal:10000,ratePercent:12,ratePeriod:'annual',startDate:'2026-01-01',endDate:'2026-02-01',dayCount:'ACT/365'});
+  assert.equal(month.elapsedDays,31);
+  assert.equal(month.interest,102.19);
+});
+
+test('compound frequencies produce deterministic rounded totals',()=>{
+  const args={principal:10000,ratePercent:12,ratePeriod:'annual',startDate:'2026-01-01',endDate:'2027-01-01',mode:'compound'};
+  assert.equal(previewInterest({...args,compounding:'daily'}).interest,1274.75);
+  assert.equal(previewInterest({...args,compounding:'monthly'}).interest,1268.25);
+  assert.equal(previewInterest({...args,compounding:'quarterly'}).interest,1255.09);
+  assert.equal(previewInterest({...args,compounding:'semiannual'}).interest,1236.40);
+  assert.equal(previewInterest({...args,compounding:'annual'}).interest,1200);
+});
+
+test('rounding modes reject unsupported values',()=>{
+  assert.throws(()=>previewInterest({principal:1,ratePercent:12,startDate:'2026-01-01',endDate:'2026-01-02',rounding:'bankers'}),/Unsupported rounding mode/);
+});
