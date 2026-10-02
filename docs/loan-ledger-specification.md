@@ -1,6 +1,6 @@
-# Loan Ledger Specification (Draft — Decision Required)
+# Loan Ledger Specification (Owner-Approved Rules; Implementation Pending)
 
-Status: draft for business-rule confirmation only. This document does not change application behavior and is not authorization to calculate, migrate, import, or restore production records.
+Status: business rules below are OWNER-APPROVED as of 2026-10-02. This is specification approval only; it does not change application behavior or authorize migration, import, restore, or production writes.
 
 ## Scope observed in the current dashboard
 
@@ -12,23 +12,38 @@ The dashboard recognizes these transaction types:
 
 Current summary code calls `calcLoan(loan)` for active `byaj_loan` records. This draft does not assume that the current calculation is correct or define undocumented historical behavior as policy.
 
-## Decisions required before implementation
+## Approved business rules
 
-The owner must confirm each item against actual business practice and existing customer records. Until then, each item is **UNDECIDED** and must block production restore.
+The owner explicitly approved the following core rules on 2026-10-02:
+
+| Topic | Approved rule | Status |
+|---|---|---|
+| Interest model | Simple interest; no interest-on-interest (no compounding). | APPROVED |
+| Repayment allocation | Principal-first allocation. | APPROVED |
+| Overpayment | Preserve the excess as separately tracked advance/unapplied credit; do not discard or silently refund it. | APPROVED |
+| Closure | A loan closes only when both principal outstanding and interest due are fully settled. | APPROVED |
+
+The approval does not by itself settle the remaining operational details below (rate unit, day-count basis, accrual date boundaries, rounding, treatment of waivers/write-offs, rate changes, corrections, and legacy incomplete records). Those must be specified and tested before implementation. Where a payment exceeds principal under principal-first allocation, the approved overpayment-credit rule applies to the excess after the applicable allocation; interest accounting must remain separately visible.
+
+## Remaining implementation details (not yet approved)
+
+
+
+The remaining items require explicit decisions before implementation; they must block production restore until resolved.
 
 | Topic | Candidate choices | Current decision |
 |---|---|---|
-| Interest model | Simple interest; compound interest; flat/periodic fee; no interest | UNDECIDED |
+| Interest model | Simple interest; compound interest; flat/periodic fee; no interest | APPROVED: simple interest |
 | Rate unit | Per day, month, year, or explicit period | UNDECIDED |
 | Day-count convention | Actual days/365; Actual/Actual; 30/360; fixed monthly periods | UNDECIDED |
 | Accrual start/end | Disbursement date; next day; due date; closure date/inclusive rule | UNDECIDED |
 | Compounding cadence (if applicable) | Daily, monthly, yearly, none | UNDECIDED |
-| Repayment allocation | Interest-first; principal-first; proportional; user-designated allocation | UNDECIDED |
+| Repayment allocation | Interest-first; principal-first; proportional; user-designated allocation | APPROVED: principal-first |
 | Partial payments | Allocation and rounding rules | UNDECIDED |
-| Overpayment | Reject; refund/credit; carry forward | UNDECIDED |
+| Overpayment | Reject; refund/credit; carry forward | APPROVED: retain as advance credit |
 | Rate changes | Prospective only; effective-dated schedule; other | UNDECIDED |
 | Backdated edits/deletes | Recompute derived ledger; preserve immutable audit events; correction entry | UNDECIDED |
-| Closure | Close only when principal and due interest are zero; explicit waiver/write-off; manual close with reason | UNDECIDED |
+| Closure | Close only when principal and due interest are zero; explicit waiver/write-off; manual close with reason | APPROVED: principal and interest both fully settled; exception/write-off mechanics pending |
 | Reopen | Prohibited; authorized correction workflow | UNDECIDED |
 | Currency rounding | INR paise precision and per-period vs final rounding | UNDECIDED |
 | Legacy records lacking fields | Quarantine/manual review; never silently infer | UNDECIDED |
@@ -62,7 +77,7 @@ Never silently rewrite historical source events to make totals agree. A correcti
 
 ## PROPOSED (Pending Owner Approval)
 
-**Important:** These are reviewable defaults only—not adopted business rules, legal/accounting advice, or implementation authorization. Every row below remains **UNDECIDED** until the owner explicitly accepts, edits, or rejects it. No code may rely on these proposals before approval.
+**Important:** Core rules listed in the Approved business rules section are owner-approved. The remaining proposals below are not adopted policy and are not implementation authorization; no code may rely on unresolved details.
 
 | Topic | Standard accounting proposal for review | Owner decision |
 |---|---|---|
@@ -83,11 +98,11 @@ Never silently rewrite historical source events to make totals agree. A correcti
 
 ### Approval worksheet
 
-For each row, owner response must be one of **ACCEPT**, **REJECT**, or **EDIT**, with any replacement rule and at least one worked example. Until all required choices and examples are approved, the current decision table above remains UNDECIDED and restore readiness is blocked.
+For each row, owner response must be one of **ACCEPT**, **REJECT**, or **EDIT**, with any replacement rule and at least one worked example. Until all remaining required choices and worked examples are approved, restore readiness remains blocked.
 
 ## Required approval
 
-Before implementation, record the owner's explicit answers for every decision above, approve example calculations, and version the specification. Any change to approved rules requires a new version and regression fixtures.
+Core owner approval recorded 2026-10-02. Before implementation, resolve the remaining details, approve worked examples, and version the specification. Any change to approved rules requires a new version and regression fixtures.
 
 ## Release boundary
 
