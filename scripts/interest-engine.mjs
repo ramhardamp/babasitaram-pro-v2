@@ -9,11 +9,20 @@ const roundPaise = (amount, mode = 'half-up') => {
   return Math.round(scaled + Number.EPSILON) / 100;
 };
 const parseDate = value => {
-  const d = value instanceof Date ? new Date(value.getTime()) : new Date(`${value}T00:00:00Z`);
-  if (!Number.isFinite(d.getTime())) throw new TypeError('Invalid ISO date');
+  if (value instanceof Date) {
+    if (!Number.isFinite(value.getTime())) throw new TypeError('Invalid ISO date');
+    return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+  }
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) throw new TypeError('Date must be a valid YYYY-MM-DD ISO date');
+  const d = new Date(`${value}T00:00:00Z`);
+  if (!Number.isFinite(d.getTime()) || d.toISOString().slice(0, 10) !== value) throw new TypeError('Invalid ISO date');
   return d;
 };
-const daysBetween = (start, end) => Math.max(0, Math.round((parseDate(end)-parseDate(start))/DAY_MS));
+const daysBetween = (start, end) => {
+  const delta = Math.round((parseDate(end)-parseDate(start))/DAY_MS);
+  if (delta < 0) throw new RangeError('End date must be on or after start date');
+  return delta;
+};
 const european30E360Days = (startValue, endValue) => {
   const start=parseDate(startValue), end=parseDate(endValue);
   const y1=start.getUTCFullYear(), y2=end.getUTCFullYear();
