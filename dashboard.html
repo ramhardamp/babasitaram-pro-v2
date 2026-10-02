@@ -3183,6 +3183,11 @@ async function loadExportLibrary(url,globalName){
   window.__bspExportLibraries[globalName]=p;try{return await p}catch(e){delete window.__bspExportLibraries[globalName];throw e}
 }
 function buildExportTables(data){
+  // Export tables must describe the exact verified backup snapshot, not a later live state.
+  // This synchronous guard fails closed if customer/transaction listeners changed data after
+  // the backup was hashed; no mixed-snapshot workbook or CSV is emitted.
+  const liveSnapshot=JSON.stringify({user:userData,customers,transactions});
+  if(liveSnapshot!==JSON.stringify(data?.data))throw new Error('Data changed after backup verification; please retry the export.');
   const customerRows=customers.map(c=>{const s=getSummary(c.id)||{};return {...c,udhaarBalance:s.udhaarBalance||0,byajBalance:s.byajBalance||0,grandTotal:s.grandTotal||0,activeLoans:(s.loans||[]).length}});
   const transactionRows=transactions.map(tx=>{const c=customers.find(x=>x.id===tx.partyId);return {...tx,customerName:c?.name||'',customerPhone:c?.phone||''}});
   const loanRows=transactions.filter(tx=>tx.type==='byaj_loan').map(loan=>{const c=customers.find(x=>x.id===loan.partyId);const m=calcLoan(loan);return {...loan,customerName:c?.name||'',customerPhone:c?.phone||'',currentPrincipal:m.currentPrincipal,interestAccrued:m.interestAccrued,interestPaidCalculated:m.interestPaid,interestOutstanding:m.interestOutstanding,loanTotal:m.loanTotal,progress:m.progress}});
