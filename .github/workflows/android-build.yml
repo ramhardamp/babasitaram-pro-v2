@@ -1,4 +1,4 @@
-name: BABASITARAM PRO Android Build
+name: BSRPRO DIGITAL KHATA Android Build
 
 on:
   workflow_dispatch:
@@ -63,7 +63,7 @@ jobs:
           AAPT=$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -1)
           test -n "$AAPT"
           "$AAPT" dump badging "${{ steps.apk.outputs.path }}" | tee apk-badging.txt
-          grep -q "package: name='com.gurushree.digital.khata'" apk-badging.txt
+          grep -q "package: name='com.bsrpro.digital.khata'" apk-badging.txt
           "$AAPT" dump permissions "${{ steps.apk.outputs.path }}" | grep -q "android.permission.SEND_SMS"
       - name: Verify APK archive
         run: |
@@ -96,12 +96,12 @@ jobs:
             adb wait-for-device
             sleep 5
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            adb shell am force-stop com.gurushree.digital.khata
+            adb shell am force-stop com.bsrpro.digital.khata
             adb logcat -c
-            adb shell am start -W -n com.gurushree.digital.khata/.MainActivity
+            adb shell am start -W -n com.bsrpro.digital.khata/.MainActivity
             sleep 8
-            adb shell pidof com.gurushree.digital.khata
-            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.gurushree.digital.khata"
+            adb shell pidof com.bsrpro.digital.khata
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.bsrpro.digital.khata"
             adb logcat -d -t 500 | tee runtime-logcat.txt
             grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt && exit 1 || true
       - name: Create GitHub Release
@@ -109,4 +109,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="android-build-${GITHUB_RUN_ID}"
-          gh release create "$TAG" "${{ steps.apk.outputs.path }}" --title "BABASITARAM PRO Android $TAG" --notes "Automated debug-signed APK. Signature, aapt manifest, unzip archive, emulator installation, resolved activity launch, running process, resumed activity and runtime fatal-exception checks passed."
+          gh release create "$TAG" "${{ steps.apk.outputs.path }}" --title "BSRPRO DIGITAL KHATA Android $TAG" --notes "Automated debug-signed APK. Signature, aapt manifest, unzip archive, emulator installation, resolved activity launch, running process, resumed activity and runtime fatal-exception checks passed."
