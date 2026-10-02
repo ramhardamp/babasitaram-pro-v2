@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "data": {
+    "user": {"fixture": true},
+    "customers": [
+      {"id":"cust-1","name":"Synthetic A"},
+      {"id":"cust-1","name":"Synthetic B"}
+    ],
+    "transactions": []
+  },
+  "counts": {"customers":2,"transactions":0},
+  "checksum":"__HARNESS_COMPUTE__"
+}
