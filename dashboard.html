@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.json">
 <style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}:root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:var(--text);font-size:16px;line-height:1.5;overflow-x:hidden}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}.app-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;max-height:100dvh;background:var(--bg);position:relative;box-shadow:none;overflow:hidden;display:flex;flex-direction:column}@media(min-width:500px){body{padding:0}.app-shell{height:100dvh;min-height:100dvh;max-height:none;border-radius:0}}.settings-header-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 36px}.settings-header-btn:active{background:rgba(99,102,241,.2)}.back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}.back-btn:active{background:rgba(99,102,241,.2)}.lang-toggle{display:flex;background:rgba(99,102,241,.1);border-radius:20px;padding:3px;gap:2px}.lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}.lang-btn.active{background:var(--primary);color:#fff}.lock-btn{background:rgba(99,102,241,.1);border:none;font-size:14px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}.screen-container{flex:1 1 auto;height:0;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable;contain:layout style}.screen-container>.screen{width:100%;min-height:100%}.screen-container::-webkit-scrollbar{width:0}.screen{display:none;min-height:0}.screen.active{display:block}.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}.loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}.pin-screen{padding:32px 20px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}.pin-logo{width:88px;height:88px;margin:0 auto 18px;background:var(--gradient);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 12px 40px rgba(99,102,241,.4);overflow:hidden}.pin-logo img{width:100%;height:100%;object-fit:cover}.pin-title{font-size:22px;font-weight:900;margin-bottom:8px}.pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.5}.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:18px;min-height:22px}.pin-dot{width:17px;height:17px;border-radius:50%;border:2.5px solid var(--primary);background:transparent;transition:all .18s}.pin-dot.filled{background:var(--primary);transform:scale(1.08)}.pin-native-input-wrap{width:min(320px,100%);margin:0 auto}.pin-native-input{width:100%;height:58px;border:2px solid var(--border);border-radius:16px;background:var(--white);color:var(--text);font-family:inherit;font-size:28px;font-weight:900;letter-spacing:12px;text-align:center;outline:none;padding:8px 14px;box-shadow:0 4px 16px rgba(15,23,42,.06);caret-color:var(--primary);-webkit-appearance:none;appearance:none}.pin-native-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}.pin-native-input::placeholder{font-size:14px;letter-spacing:0;color:var(--text-light);font-weight:700}.pin-native-input::-webkit-outer-spin-button,.pin-native-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.pin-native-help{font-size:11px;color:var(--text-muted);font-weight:700;margin-top:10px}.pin-error{color:var(--error);font-size:13px;margin-top:14px;font-weight:600;min-height:20px;line-height:1.4}@media(max-width:500px){.pin-screen{padding:24px 18px calc(32px + env(safe-area-inset-bottom,0px))}.pin-logo{width:78px;height:78px;margin-bottom:14px}.pin-title{font-size:21px}.pin-subtitle{margin-bottom:18px}.pin-native-input{height:56px;font-size:26px;letter-spacing:10px}}.dash-greeting{font-size:11px;opacity:.8;margin-bottom:4px;position:relative;letter-spacing:.5px;text-transform:uppercase;font-weight:700}.dash-shop{font-size:18px;font-weight:900;margin-bottom:16px;position:relative}.dash-total-label{font-size:11px;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;position:relative}.dash-total-amount{font-size:32px;font-weight:900;margin-top:4px;position:relative;letter-spacing:-1.2px;line-height:1}.skeleton-block{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 37%,#e2e8f0 63%);background-size:400% 100%;animation:skeletonShimmer 1.15s ease-in-out infinite;border-radius:8px}.dashboard-skeleton{pointer-events:none}@keyframes skeletonShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}.detail-wrap{padding:14px 16px 24px;max-width:760px;width:100%;box-sizing:border-box;margin:0 auto}.ch-header,.ch-avatar,.ch-name,.ch-total-label,.ch-total-amount,.ch-split{display:none}.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.action-btn{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:12px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:left}.action-btn:active{transform:scale(.97)}.action-btn.wide{grid-column:1/-1}.action-icon{font-size:22px;flex-shrink:0}.action-title{font-size:13px;font-weight:800;color:var(--text)}.action-sub{font-size:10px;color:var(--text-muted);margin-top:1px}.action-btn.udhaar{border-color:#e5322d;background:linear-gradient(135deg,#ef4444,#c81e1e);color:#fff}.action-btn.udhaar .action-title{color:#fff}.action-btn.jama{border-color:#1e8e3e;background:linear-gradient(135deg,#22a047,#166b2e);color:#fff}.action-btn.jama .action-title{color:#fff}.primary-actions .action-btn{min-height:54px;padding:8px 10px;border-radius:14px;box-shadow:0 4px 12px rgba(15,23,42,.10)}.primary-actions .action-icon{font-size:19px}.single-balance-summary{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border-radius:13px;background:#fff;border:1px solid var(--border);box-shadow:0 2px 8px rgba(15,23,42,.05);font-weight:800}.single-balance-summary span{font-size:14px;color:var(--text-muted)}.single-balance-summary strong{font-size:22px;letter-spacing:-.4px}.single-balance-summary.giving strong{color:var(--credit)}.single-balance-summary.received strong{color:var(--debit)}.single-balance-summary.neutral strong{color:var(--text-muted)}.txn-running-balance{font-size:10px;font-weight:800;margin-top:3px}.txn-running-balance.due{color:var(--credit)}.txn-running-balance.advance{color:var(--debit)}.txn-running-balance.clear{color:var(--text-muted)}.action-btn.loan{border-color:#fde68a;background:var(--interest-bg)}.action-btn.repay{border-color:#bfdbfe;background:var(--info-bg)}.action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}.action-btn.edit{border-color:#e2e8f0}.action-btn.share{border-color:#bfdbfe;background:#eff6ff}.share-reminder{border-color:#bbf7d0;background:#ecfdf5}.share-reminder-preview{background:linear-gradient(135deg,#0f8f3e,#1aa34a);color:#fff;border-radius:18px;padding:14px;margin:0 0 14px;box-shadow:0 10px 24px rgba(16,185,129,.22)}.share-reminder-head{display:flex;align-items:center;gap:10px}.share-reminder-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;flex:0 0 48px;border:2px solid rgba(255,255,255,.45)}.share-reminder-name{font-size:15px;font-weight:900;line-height:1.2}.share-reminder-owner{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-phone{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-due{background:#fff;color:#0f172a;border-radius:14px;margin-top:12px;padding:12px;text-align:center}.share-reminder-due-label{font-size:11px;color:#64748b;font-weight:800}.share-reminder-due-amount{font-size:30px;font-weight:900;line-height:1.1;margin-top:3px}.share-reminder-message{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px;white-space:pre-line;font-size:13px;line-height:1.6}.share-reminder-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.share-reminder-actions .btn{margin-top:0}.share-reminder-note{font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.45}.section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}.loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px;position:relative}.loan-card.closed{border-color:#e2e8f0;opacity:.7}.loan-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px}.loan-title{font-size:13px;font-weight:900}.loan-note{font-size:11px;color:var(--text-muted);margin-top:3px}.loan-rate{font-size:11px;color:var(--interest);font-weight:800;background:var(--interest-bg);padding:4px 9px;border-radius:12px;flex-shrink:0}.loan-menu-btn{position:absolute;top:10px;right:10px;background:var(--bg);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;z-index:2}.loan-menu-btn:active{background:var(--primary-lighter)}.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.loan-item{padding:9px 10px;background:var(--bg);border-radius:8px}.loan-item-label{font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.3px}.loan-item-value{font-size:14px;font-weight:900;margin-top:3px;letter-spacing:-.3px}.loan-item-value.amber{color:var(--interest)}.loan-item-value.red{color:var(--credit)}.loan-item-value.green{color:var(--debit)}.loan-item-value.blue{color:var(--info)}.loan-progress{margin-top:10px;background:var(--bg);border-radius:6px;height:6px;overflow:hidden}.loan-progress-bar{height:100%;background:var(--gradient);transition:width .4s}.loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}.loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}.loan-status.active{background:#dcfce7;color:#15803d}.customer-history-totals{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0 12px}.customer-history-total{min-width:0;display:flex;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid var(--border);border-radius:11px;background:var(--white)}.customer-history-total span{font-size:10px;font-weight:700;color:var(--text-muted)}.customer-history-total strong{font-size:14px;line-height:1.25;overflow-wrap:anywhere}.customer-history-total.received strong{color:var(--debit)}.customer-history-total.given strong{color:var(--credit)}.customer-history-total.balance{grid-column:1/-1;display:flex;flex-direction:row;align-items:center;justify-content:space-between}.customer-history-total.balance strong{font-size:16px;color:var(--text)}@media(max-width:360px){.customer-history-total{padding:8px}.customer-history-total strong{font-size:12px}}.customer-history-head{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap}.customer-history-head .section-title{flex:1;min-width:0;font-size:11px;letter-spacing:.6px;white-space:nowrap}.customer-history-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}.history-reminder-toggle{padding:7px 9px;font-size:11px}.customer-history-head .more-btn{min-height:34px;font-size:11px;padding:0 8px}
-/* 🎨 NEW: History totals colors — Giving = Red, Received = Green, Total = Gold */
+/* 🎨 History totals colors — Giving = Red, Received = Green, Total = Gold */
 .history-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}
 .history-totals>div{min-width:0;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;gap:4px;font-weight:800;position:relative;overflow:hidden}
 .history-totals>div span{font-size:10px;text-transform:uppercase;letter-spacing:.6px;opacity:.92;font-weight:800}
@@ -205,8 +205,7 @@
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.customer-history-head{flex:0 0 auto;margin-top:0}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.txn-history-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.loan-card,#screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.section-title{flex:0 0 auto}
-/* 🔧 NEW: Home scroll hang fix — जब customer-mode class हटती है, तब यह rule Home को normal scroll बहाल करता है।
-   कुछ Android WebViews :has() और contain:layout की state cache कर लेते हैं, जिससे overflow:hidden अटक जाता है। */
+/* Home scroll hang fix — जब customer-mode हटती है, Home को normal scroll बहाल करो */
 #screenContainer:not(.customer-mode){overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:calc(128px + env(safe-area-inset-bottom, 0px))!important}
 
 @media(max-width:380px){.customer-history-head .section-title{font-size:10px}.customer-history-actions{gap:4px}.customer-history-head .more-btn,.history-reminder-toggle{padding-left:6px;padding-right:6px;font-size:10px}}
@@ -1005,6 +1004,17 @@ async function backfillViewTokens(){
 /* ============ PIN ============ */
 function showPinScreen(mode,title,subtitle,callback){
   if(pinInputTimer)clearTimeout(pinInputTimer);
+
+  /* 🔧 FIX 1: PIN screen से पहले कोई भी खुला modal / settings panel हटाओ।
+     वरना loan detail / more menu modal PIN के ऊपर या बीच में अटका रहता है। */
+  document.querySelectorAll('.modal-overlay, .settings-panel-overlay').forEach(el=>el.remove());
+  document.body.classList.remove('settings-panel-open');
+
+  /* 🔧 FIX 2: Screen container को top पर scroll करो।
+     अगर user लंबे screen पर था तो scrollTop > 0 था, इसलिए PIN prompt नीचे दिख रहा था। */
+  const sc=document.getElementById('screenContainer');
+  if(sc) sc.scrollTop=0;
+
   pinMode=mode;pendingPIN='';pinActionCallback=callback||null;
   if(mode.startsWith('change-') && !pinReturnScreen)pinReturnScreen='settings';
   pinOriginScreen=(currentScreen==='pin')?pinOriginScreen:((currentScreen&&currentScreen!=='loading')?currentScreen:null);
@@ -1023,6 +1033,10 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('topTitle').textContent='🔐 PIN';
   const canGoBack=!!pinReturnScreen;
   document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
+
+  /* 🔧 FIX 2 (continued): DOM paint के बाद भी scrollTop 0 पर lock रखो। */
+  requestAnimationFrame(()=>{ if(sc) sc.scrollTop=0; });
+
   // Native mobile keyboard: focus after the PIN screen is visible.
   setTimeout(focusPinInput,80);
   // Biometric unlock (fingerprint / face) is offered on every PIN "verify" prompt when enabled on this device.
@@ -1337,8 +1351,8 @@ function showScreen(name, noPush){
   const screenContainer = document.getElementById('screenContainer');
   screenContainer.classList.toggle('dashboard-mode', name === 'dashboard');
   screenContainer.classList.toggle('customer-mode', name === 'customer');
-  // 🔧 NEW: Home scroll hang fix — Force a synchronous style flush. Some Android WebViews cache
-  // :has() and contain:layout state; without this, Home can stay stuck with overflow:hidden
+  // Force a synchronous style flush. Some Android WebViews cache :has() and
+  // contain:layout state; without this, Home can stay stuck with overflow:hidden
   // inherited from the previous customer-mode, and the page refuses to scroll.
   void screenContainer.offsetHeight;
   const restoreDash=(name==='dashboard'&&prevScreen==='customer'&&dashScrollSaved)?dashScrollSaved:null;
@@ -1754,9 +1768,7 @@ function renderCustomerDetail(){
     ${loansHtml}${txnHtml}`;
 }
 
-/* ============ CUSTOMER "MORE" BOTTOM SHEET ============
-   Every row calls an existing, real handler. The sheet is closed first so that
-   handlers which open their own modal (showModal) do not stack. */
+/* ============ CUSTOMER "MORE" BOTTOM SHEET ============ */
 function moreRun(code){closeModal();setTimeout(()=>{try{(new Function('return ('+code+')'))()}catch(e){console.error('[MORE]',e);toast('Error: '+e.message,'error')}},60)}
 function openMoreMenu(){
   const c=customers.find(x=>String(x.id)===String(currentCustomerId));
@@ -1781,9 +1793,7 @@ function openMoreMenu(){
    <div class="modal-actions"><button class="btn btn-secondary" type="button" onclick="closeModal()">${t('Close','बंद करें')}</button></div>`);
 }
 
-/* ============ वसूली (RECOVERY) ============
-   List = Recovery.buildRecoveryList (amount from the canonical Ledger, FIFO ageing).
-   WhatsApp opens a pre-filled message; "भेजा" only means the chat was OPENED, not delivered. */
+/* ============ वसूली (RECOVERY) ============ */
 let recoveryFilter='all',recoveryOpened={};
 function getRecoveryRows(){
   return Recovery.buildRecoveryList(Ledger,customers,transactions,new Date(),{mode:APP_CONFIG.interestMode});
@@ -1833,10 +1843,7 @@ function recoveryRemind(id){
 }
 function recoveryOpenCustomer(id){closeModal();openCustomer(id)}
 
-/* ============ OFFLINE QUEUE (udhaar / jama) ============
-   Used ONLY when the phone is offline; the normal online save is unchanged.
-   Each queued entry has its own Firestore doc id, so a retry can never create a duplicate
-   (the server is checked for that id first). Queued entries are NOT in any balance until synced. */
+/* ============ OFFLINE QUEUE (udhaar / jama) ============ */
 let outboxSyncing=false;
 function getOutbox(){try{return currentUser?Outbox.create(window.localStorage,currentUser.uid):null}catch(e){return null}}
 function queueOfflineTxn({customerId,type,amt,note,date}){
@@ -1863,7 +1870,7 @@ async function syncOutbox(manual){
   outboxSyncing=true;
   try{
     await dataReady;
-    if(!customers.length)return;                       // customers not loaded yet: do nothing (never mark failed by mistake)
+    if(!customers.length)return;
     const base=db.collection('users').doc(currentUser.uid),FV=firebase.firestore.FieldValue,touched=new Set();
     const r=await Outbox.replay(ob,{
       isOnline:()=>navigator.onLine!==false,
@@ -1944,7 +1951,6 @@ function getShareCardData(c,s){
   return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.profileName||userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):'',upiId:String(userData?.upiId||'').trim(),upiUrl:buildUpiPaymentUrl(c,Math.max(0,Math.round(Number(s?.grandTotal)||0)))};
 }
 function buildUpiPaymentUrl(customer,amount){
-  // Validation + encoding Ledger.buildUpiUrl mein (portal bhi yahi use karta hai)
   return Ledger.buildUpiUrl(userData?.upiId,amount);
 }
 function openUpiPayment(id){
@@ -2014,7 +2020,6 @@ async function buildShareReminderImage(id){
   bg.addColorStop(0,'#078b3d');bg.addColorStop(1,'#13843c');
   ctx.fillStyle=bg;ctx.fillRect(0,0,1080,740);
 
-  // Use the user's BSR PRO logo whenever a profile photo is not available.
   const photo=await loadShareCardImage(getProfilePhotoUrl());
   const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260929-5',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
@@ -2035,14 +2040,12 @@ async function buildShareReminderImage(id){
   if(d.phone)ctx.fillText(d.phone,224,139);
   if(d.shop)ctx.fillText(d.shop,224,176);
 
-  // Own branding only: BSR PRO / DIGITAL KHATA APP.
   if(logo){
     ctx.save();roundRect(ctx,662,42,82,82,18);ctx.clip();ctx.drawImage(logo,662,42,82,82);ctx.restore();
   }
   ctx.fillStyle='#fff';ctx.font='900 35px Arial,sans-serif';ctx.fillText('BSR PRO',760,78);
   ctx.font='800 24px Arial,sans-serif';ctx.fillText('DIGITAL KHATA APP',760,112);
 
-  // Main reminder card: the amount is the focus, like the supplied reference.
   roundRect(ctx,20,244,1040,342,34);ctx.fillStyle='#fff';ctx.fill();
   ctx.textAlign='center';ctx.fillStyle='#111827';
   ctx.font='800 36px Arial,sans-serif';
@@ -2050,7 +2053,6 @@ async function buildShareReminderImage(id){
   ctx.font='900 88px Arial,sans-serif';
   ctx.fillText('₹'+d.amount.toLocaleString('en-IN'),540,466);
 
-  // Bottom branding.
   if(logo){
     ctx.save();roundRect(ctx,455,625,70,70,16);ctx.clip();ctx.drawImage(logo,455,625,70,70);ctx.restore();
   }
@@ -2269,7 +2271,6 @@ async function saveEditedTxn(id){
   const newAmt=parseFloat(document.getElementById('mAmt')?.value);
   const newNote=document.getElementById('mNote')?.value.trim()||'';
   const newDate=document.getElementById('mDate')?.value||'';
-  // Edit time is automatic: use the current local time when the edit is saved.
   const newTime=localTimeInputValue(new Date());
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
@@ -2293,12 +2294,10 @@ async function saveEditedTxn(id){
       const oldAmt=Number(current.amount)||0;
       const oldType=String(current.type||'');
 
-      // Derived loan-payment records must remain aligned with parent-loan history.
       if(oldType==='loan_repay'||oldType==='interest_paid'){
         throw new Error('Derived loan transaction cannot be edited independently');
       }
 
-      // Only normal Udhaar/Jama transactions affect the party balance.
       let balanceDelta=0;
       if(oldType==='udhaar')balanceDelta-=oldAmt;
       else if(oldType==='jama')balanceDelta+=oldAmt;
@@ -2413,7 +2412,6 @@ async function saveEditedLoan(id){
     const editLoanTime=localTimeInputValue(new Date());
     const editLoanDateTime=makeDateTimeISO(newStart,editLoanTime);
     const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart,time:editLoanTime,dateTime:editLoanDateTime,transactionAt:editLoanDateTime,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-    /* Byaj ke terms: Simple <-> Compound, frequency, rate unit, due date (sirf badle hue fields likhe jate hain) */
     const FV=firebase.firestore.FieldValue;
     const _unitRaw=document.getElementById('mRateUnit')?.value;const _unit=_unitRaw==='year'?'year':(_unitRaw==='halfyear'?'halfyear':'month');
     const _it=document.getElementById('mIntType')?.value==='compound'?'compound':'simple';
@@ -2486,8 +2484,6 @@ function openAddCustomer(){
   setTimeout(()=>document.getElementById('mName')?.focus(),300);
 }
 async function pickCustomerFromContacts(){
-  // Native Android picker opens only after an explicit tap and returns one selected name/phone.
-  // It does not enumerate the address book or upload contact data in the background.
   try{
     const nativePicker=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.BsrContactsPicker;
     if(nativePicker&&typeof nativePicker.pickContact==='function'){
@@ -2500,7 +2496,6 @@ async function pickCustomerFromContacts(){
       return;
     }
   }catch(e){ if(e&&e.message&&/cancel/i.test(e.message))return; console.warn('Native contact picker failed; trying browser picker',e); }
-  // Browser Contact Picker fallback. It returns only fields explicitly selected by the user.
   const picker=navigator.contacts;
   if(!picker || typeof picker.select!=='function'){
     toast(t('Contact picker is not supported on this device. Enter details manually.','इस डिवाइस पर कॉन्टैक्ट पिकर उपलब्ध नहीं है। जानकारी हाथ से भरें।'),'error');
@@ -2536,8 +2531,6 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     
-    // Customer creation is intentionally balance-neutral. Udhaar/Jama must be recorded
-    // afterward through the transaction flow, where date and time can be entered/edited.
     const partyData = {name,phone,email,balance:0,viewToken};
     batch.set(partyRef, partyData);
     
@@ -2594,9 +2587,6 @@ async function deleteCustomer(){
     const customerId=String(currentCustomerId||'').trim();
     if(!uid||!customerId)throw new Error('Invalid customer');
 
-    // Never destructively delete a customer that has ledger history.
-    // The previous implementation deleted transactions in batches first,
-    // which could leave permanent partial deletion if a later write failed.
     const txCol=db.collection('users').doc(uid).collection('transactions');
     const txSnap=await txCol.where('partyId','==',customerId).limit(1).get();
     if(!txSnap.empty){
@@ -2613,7 +2603,6 @@ async function deleteCustomer(){
       ? db.collection('publicViews').doc(String(c.viewToken))
       : null;
 
-    // No ledger history exists, so remove the party and public view together.
     await db.runTransaction(async(transaction)=>{
       const partySnap=await transaction.get(partyRef);
       if(!partySnap.exists)throw new Error('Customer not found');
@@ -2678,14 +2667,12 @@ async function saveTxn(type){
   if(!customerId||!c)return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
   if(type!=='udhaar'&&type!=='jama')return toast(t('Invalid transaction type','लेन-देन प्रकार गलत है'),'error');
 
-  /* Credit limit: warn only (customers without a limit are not affected at all). */
   if(type==='udhaar'&&Number(c.creditLimit)>0){
     const cur=Ledger.customerState(getPartyTransactions(customerId),new Date(),{mode:APP_CONFIG.interestMode}).totalOutstanding;
     const lm=Recovery.checkLimit(c.creditLimit,cur,amt);
     if(lm.exceeds&&!confirm(t('Credit limit '+fmt(lm.limit)+' will be crossed (new due '+fmt(lm.newDue)+'). Add anyway?','पेमेंट सीमा '+fmt(lm.limit)+' पार हो जाएगी (नया बकाया '+fmt(lm.newDue)+')। फिर भी जोड़ें?')))return;
   }
 
-  /* Offline: queue safely (see OFFLINE QUEUE). The online path below is unchanged. */
   if(typeof navigator!=='undefined'&&navigator.onLine===false){queueOfflineTxn({customerId,type,amt,note,date});return}
   if(!requireOnline())return;
   ledgerWriteBusy=true;
@@ -2712,8 +2699,6 @@ async function saveTxn(type){
     closeModal();
     toast(t('Saved','सेव हो गया'),'success');
 
-    // Financial write is already committed. Public view/email are secondary;
-    // their failure must never make the user retry the ledger write.
     try{
       const freshParty=await partyRef.get();
       if(!freshParty.exists)throw new Error('Customer not found after save');
@@ -3048,7 +3033,7 @@ function renderReports(){
     cancelAnimationFrame(raf);
     raf=requestAnimationFrame(()=>{
       let kb=vv?Math.round(window.innerHeight-vv.height-vv.offsetTop):0;
-      if(!(kb>80))kb=0; /* chhote farak (URL bar/inset) ignore */
+      if(!(kb>80))kb=0;
       root.style.setProperty('--kb',kb+'px');
       if(kb)setTimeout(keepVisible,60);
     });
@@ -3109,7 +3094,6 @@ async function cancelAllSmsReminders(){
   const plugin=getSmsPlugin(); if(!plugin)return;
   await Promise.all(customers.map(c=>cancelCustomerSmsReminders(c.id)));
 }
-/* Settings se wapas aate hi (ek baar) permission check: mil gayi ho to Automatic SMS khud ON. Nahi mili to kuch nahi (koi loop nahi). */
 let _smsResumeArmed=false;
 function armSmsResumeCheck(){
   if(_smsResumeArmed)return; _smsResumeArmed=true;
@@ -3124,9 +3108,6 @@ function armSmsResumeCheck(){
   };
   document.addEventListener('visibilitychange',onVis);
 }
-/* Android 13+: APK file se install (side-load) hui app ko SMS permission "Restricted settings" me block milti hai
-   (dialog: "App was denied access to SMS"). Code se bypass nahi hota; user ko App info me "Allow restricted settings"
-   karna padta hai. Ye guide wahi page khol deta hai. */
 async function showSmsRestrictedGuide(){
   const plugin=getSmsPlugin();
   const msg='SMS permission block है (Android security).\n\nऐसे चालू करें:\n1) App info खुलेगा → ऊपर कोने में ⋮ (3 dots) दबाएँ\n2) "Allow restricted settings" चुनें (फ़ोन lock/PIN माँग सकता है)\n3) Permissions → SMS → Allow\n4) ऐप में वापस आते ही Automatic SMS अपने आप ON हो जाएगा\n\nApp info अभी खोलें?';
@@ -3187,9 +3168,6 @@ async function scheduleUdhaarReminder(customer,txn,balance){
     return true;
   }catch(e){console.warn('7-day SMS schedule failed:',e);return false}
 }
-/* Payment received: cancel 7-day reminders only when nothing is due any more.
-   For a partial payment the pending reminders are re-created with the new balance,
-   so the customer never receives a stale amount. */
 async function refreshCustomerSmsReminders(customer,newBal){
   await cancelCustomerSmsReminders(customer.id);
   if(Number(newBal||0)<=0)return;
@@ -3270,8 +3248,6 @@ async function saveSettingsPanel(name){
       await db.collection('users').doc(currentUser.uid).set({upiId:upiId||'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
       userData.upiId=upiId||'';
       const el=document.getElementById('sUpiId');if(el)el.textContent=userData.upiId||'-';
-      // Refresh existing customer portal snapshots so newly added/changed UPI ID
-      // immediately appears with the current outstanding amount.
       for(const customer of customers){
         if(customer.viewToken){
           try{await updatePublicView(customer.id,customer.viewToken,customer)}catch(e){console.warn('Portal UPI refresh skipped:',customer.id,e)}
@@ -3387,11 +3363,6 @@ async function loadExportLibrary(url,globalName){
   window.__bspExportLibraries[globalName]=p;try{return await p}catch(e){delete window.__bspExportLibraries[globalName];throw e}
 }
 function buildExportTables(data){
-  // Export tables must describe the exact verified backup snapshot, not a later live state.
-  // This synchronous guard fails closed if customer/transaction listeners changed data after
-  // the backup was hashed; no mixed-snapshot workbook or CSV is emitted.
-  // Backup exports pass a verified payload and must match its exact snapshot. Print reports
-  // intentionally use a live, read-only view and do not pass through the backup pipeline.
   if(data?.data){
     const liveSnapshot=JSON.stringify({user:BackupImport.sanitizeUser(userData),customers:customers.map(BackupImport.sanitizeCustomer),transactions});
     if(liveSnapshot!==JSON.stringify(data.data))throw new Error('Data changed after backup verification; please retry the export.');
@@ -3450,7 +3421,6 @@ function _exportBusinessPdf(){
     printExportWindow('BSRPRO Digital Khata Business Report',body);
   }catch(e){console.error('PDF report failed:',e);toast('PDF report failed: '+(e.message||'Unknown error'),'error')}
 }
-/* Wrappers: a failure while building/printing must show a clear error, never a silent half-success. */
 function exportCustomerStatementPdf(id,range){
   try{return _exportCustomerStatementPdf(id,range)}catch(e){console.error('Statement PDF failed:',e);toast('PDF नहीं बन पाया: '+(e?.message||'Unknown error'),'error')}
 }
@@ -3459,7 +3429,7 @@ function _exportCustomerStatementPdf(id,range){
   const today=localDateInputValue(new Date());
   const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(new Date(s+'T12:00:00').getTime())&&localDateInputValue(new Date(s+'T12:00:00'))===s;
   let fromDate='',toDate='';
-  if(range&&typeof range==='object'){ /* naye Statement sheet se aaya: prompt() nahi */
+  if(range&&typeof range==='object'){
     fromDate=String(range.from||'').trim();toDate=String(range.to||'').trim();
     if(fromDate&&(!validDate(fromDate)||!validDate(toDate)||fromDate>toDate)){toast('सही तारीखें डालें और शुरुआत की तारीख, आखिरी तारीख से पहले रखें।','error');return;}
     if(!fromDate)toDate='';
@@ -3489,7 +3459,7 @@ function _exportCustomerStatementPdf(id,range){
     if(tx.type==='udhaar')ordinary+=amount;
     else if(tx.type==='jama')ordinary-=amount;
     else if(tx.type==='byaj_loan')loan+=amount;
-    else if(tx.type==='loan_repay')loan-=amount; // interest_paid principal nahi ghatata (alag track hota hai)
+    else if(tx.type==='loan_repay')loan-=amount;
     return {ordinary,loan};
   };
   if(fromDate){
@@ -3559,11 +3529,6 @@ async function verifyBackupPayloadChecksum(data){
 async function exportData(){
   try{toast(t('Preparing backup…','Backup तैयार हो रहा है…'),'success');const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_v2_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);try{localStorage.setItem('bsp_lastBackup',String(Date.now()))}catch(_){}toast(t('Verified backup exported','Verified backup export हो गया'),'success')}catch(e){console.error(e);toast(t('Backup failed','Backup विफल'),'error')}
 }
-/* ============ IMPORT BACKUP (add-only, previewed, per-customer atomic) ============
-   Never overwrites or deletes. Each customer is imported as one unit:
-   new customer -> create party, then ONE batch (its transactions + balance update);
-   if that batch fails the empty party is removed, so no half ledger is left behind.
-   Success is reported only after Firestore commits. */
 let importPending=null;
 function openImportBackup(){
   if(!requireOnline())return;
@@ -3652,7 +3617,6 @@ async function confirmImportBackup(){
 async function verifyDataIntegrity(showResult=true){
   try{
     await dataReady;
-    // Read-only audit (ledger.js integrityReport). Kuch auto-fix nahi hota.
     const report=Ledger.integrityReport({customers,transactions});
     console.log('DATA_INTEGRITY',{ok:report.ok,errors:report.errors,warnings:report.warnings,counts:report.counts});
     if(showResult){
