@@ -1,12 +1,12 @@
 {
-  "name": "BSR PRO Digital Khata",
-  "short_name": "BSR PRO",
+  "name": "BSRPRO Digital Khata",
+  "short_name": "BSRPRO",
   "description": "Offline-first digital khata, customer ledger and payment collection.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#1e1b4b",
+  "background_color": "#f4f7f5",
+  "theme_color": "#1e8e3e",
   "lang": "hi",
   "icons": [
     {

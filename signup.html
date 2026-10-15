@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+<script src="theme.js"></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1e1b4b">
-<title>Signup - BABASITARAM PRO DIGITAL KHATA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+<script src="native-shim.js"></script>
+<meta name="theme-color" content="#1e8e3e">
+<title>Signup - BSRPRO Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 
@@ -173,27 +175,62 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
   .brand-logo-top { width: 54px; height: 54px; font-size: 26px; }
   .card { padding: 18px 16px; }
   .screen-container { padding: 0 14px 30px; }
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #f1f5f9; --text-muted: #94a3b8; --text-light: #64748b;
-    --border: #334155; --bg: #0f172a; --white: #1e293b;
-    --primary-lighter: #1e1b4b; --primary-light: #312e81;
-    --error-bg: #450a0a; --success-bg: #052e16; --info-bg: #172554;
-  }
-  body { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
-  .text-input, .email-input, .password-input { color: var(--text); background: var(--white); }
-}
+}</style>
+<style id="ok-theme">
+/* ===== OK-THEME v1: OkCredit-style green UI (sirf CSS override, logic/JS/IDs untouched) ===== */
+:root{--primary:#1e8e3e;--primary-dark:#166b2e;--primary-light:#d9f0e0;--primary-lighter:#eef8f1;
+--gradient:linear-gradient(135deg,#22a047 0%,#1e8e3e 100%);--gradient-dark:linear-gradient(135deg,#ffffff 0%,#f3faf5 100%);
+--credit:#e5322d;--credit-bg:#fdecec;--debit:#1e8e3e;--debit-bg:#e6f5ea;--interest:#d98a00;--interest-bg:#fff6e0;
+--violet:#6b4fbb;--violet-bg:#f1edfb;--text:#1c1f23;--text-muted:#5f6b76;--text-light:#98a2ab;--border:#e3e8e5;--bg:#f4f7f5;
+--radius-md:14px;--radius-lg:18px}
+html,body{background:#f4f7f5}
+/* Top bar: clean white, thin border */
+.top-bar{background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.back-btn,.lock-btn{background:var(--primary-lighter);color:var(--primary)}
+.back-btn:active{background:var(--primary-light)}
+.lang-toggle{background:var(--primary-lighter)}
+/* Hero summary: OkCredit "Net Balance" style white card */
+.dash-hero{background:#fff;color:var(--text);margin:10px 12px 12px;padding:14px;border:1px solid var(--border);border-radius:18px;box-shadow:0 2px 10px rgba(16,24,40,.06)}
+.dash-hero::before{display:none}
+.dash-split{background:var(--bg);border:1px solid var(--border);border-radius:14px}
+.dash-split-item+.dash-split-item{border-left:1px solid var(--border)}
+.dash-split-label{color:var(--text-muted);opacity:1}
+.dash-split-value.red{color:var(--credit)}.dash-split-value.amber{color:var(--interest)}.dash-split-value.green{color:var(--debit)}
+.dash-split-sub{color:var(--text-muted);opacity:1}
+/* Search + filter chips */
+.customer-search{border:1px solid var(--border);border-radius:999px;background:#fff;height:44px;padding:0 18px;box-shadow:0 1px 4px rgba(16,24,40,.04)}
+.customer-search:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.tab{border:1px solid var(--border);padding:8px 14px;font-weight:700}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+/* Customer cards: soft, rounded, light shadow */
+.customer-card{border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 4px rgba(16,24,40,.05)}
+.customer-card:active{border-color:var(--primary);box-shadow:0 3px 12px rgba(30,142,62,.15)}
+/* Buttons + FAB */
+.btn-primary{background:var(--gradient);box-shadow:0 6px 18px rgba(30,142,62,.30)}
+.btn-primary:disabled{background:#cbd5d0;box-shadow:none}
+.fab{background:var(--gradient);box-shadow:0 8px 22px rgba(30,142,62,.45)}
+/* Bottom nav: green active pill */
+.bottom-tabs{background:#fff;border-top:1px solid var(--border);box-shadow:0 -4px 18px rgba(16,24,40,.06)}
+.btab.active{color:var(--primary)}
+.btab.active::before{background:var(--primary)}
+.btab.active .btab-icon{background:var(--primary-light);border-radius:999px;padding:0 14px}
+.btab-icon{transition:background .2s}
+/* Inputs focus */
+.text-input:focus,input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+/* Loading */
+.loading-spinner{border-color:var(--primary-light);border-top-color:var(--primary)}
+/* ===== /OK-THEME ===== */
 </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
 <div class="app-shell">
 
   <div class="brand-header">
-    <div class="brand-logo-top"><img src="assets/guru-shree-logo.svg?v=20260926-2" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>
+    <div class="brand-logo-top"><img src="assets/guru-shree-logo.svg?v=20261010-1" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>
     <div class="brand-title">
-      BABASITARAM PRO
+      BSRPRO
       <span class="brand-title-line2">DIGITAL KHATA</span>
     </div>
     <div class="brand-newtagline">आपका हिसाब, हमेशा सुरक्षित</div>
@@ -305,7 +342,7 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
         
         <div class="input-group">
           <label class="input-label">मोबाइल नंबर *</label>
-          <input type="tel" id="ownerPhone" class="text-input" placeholder="98765 43210" maxlength="10" inputmode="numeric" autocomplete="tel">
+          <input type="tel" id="ownerPhone" class="text-input" placeholder="98765 43210" maxlength="18" inputmode="numeric" autocomplete="tel" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
           <div class="helper-text">यह अकाउंट प्रोफाइल मोबाइल होगा और बाद में बदला नहीं जाएगा।</div>
         </div>
 
@@ -342,6 +379,7 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <!-- FIREBASE CONFIG -->
+<script src="app-config.js"></script>
 <script src="firebase-config.js"></script>
 
 <script>
@@ -353,9 +391,9 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
 // ============================================
 // ✅ EMAILJS KEYS (AAPKI)
 // ============================================
-const EMAILJS_PUBLIC_KEY = '2WakeKYOcR5og_jon';
-const EMAILJS_SERVICE_ID = 'service_zyavovm';
-const EMAILJS_TEMPLATE_ID = 'template_w0qs21r';
+const EMAILJS_PUBLIC_KEY = APP_CONFIG.emailjs.publicKey;
+const EMAILJS_SERVICE_ID = APP_CONFIG.emailjs.serviceId;
+const EMAILJS_TEMPLATE_ID = APP_CONFIG.emailjs.welcomeTemplateId;
 
 // Initialize EmailJS
 if (typeof emailjs !== 'undefined') {
@@ -440,7 +478,7 @@ async function handleSignup() {
   try {
     const result = await auth.createUserWithEmailAndPassword(email, password);
     const user = result.user;
-    console.log('✅ Account created:', user.uid);
+    console.log('✅ Account created');
 
     await user.updateProfile({ displayName: email.split('@')[0] });
 
@@ -550,11 +588,11 @@ async function sendWelcomeEmail(userEmail) {
     const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       user_name: userName,
       user_email: userEmail,
-      app_link: 'https://ramhardamp.github.io/babasitaram-pro-v2/',
-      reset_link: 'https://ramhardamp.github.io/babasitaram-pro-v2/forgot-password.html'
+      app_link: APP_CONFIG.webBaseUrl(),
+      reset_link: APP_CONFIG.pageUrl('forgot-password.html')
     });
 
-    console.log('✅ Welcome email sent:', response);
+    console.log('✅ Welcome email sent');
     showToast('🎉 Welcome email भेज दिया गया!', 'success');
   } catch (error) {
     console.error('Welcome email error:', error);
@@ -668,6 +706,8 @@ window.addEventListener('load', () => {
 });
 </script>
 
+<script src="v18-i18n.js"></script>
+<script src="localize-pages.js"></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(e=>console.warn("Service worker unavailable:",e)));}</script>
 </body>
 </html>
