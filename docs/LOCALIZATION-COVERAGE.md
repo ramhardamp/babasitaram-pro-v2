@@ -1,0 +1,378 @@
+# Localization coverage inventory — BSR Pro V19.3.0
+
+Generated from explicit `t(English, Hindi)` / `T(English, Hindi)` phrases in: dashboard.html, interest-calc-ui.js, ux-pro.js, recovery.js, backup-import.js, outbox.js, customer-view.html, index.html, signup.html, forgot-password.html.
+
+- Unique bilingual phrases scanned: **420**
+- Phrases currently resolvable through V18 locale keys: **53**
+- Phrases missing a locale key: **367**
+- For Gujarati, Marathi, Nepali and Telugu, unresolved phrases fall back to English. This report is an inventory, not a claim that localization is complete.
+
+## Missing phrase pairs
+
+- EN:  will no longer be counted. You can unsettle later.  | HI:  गिनती से हट जाएगा। बाद में अनसेटल कर सकते हैं।
+- EN: "Opened" means WhatsApp was opened with the message — not that it was sent.  | HI: "खोला गया" का मतलब WhatsApp संदेश के साथ खुला है — भेजा गया या नहीं, यह आप WhatsApp में देखें।
+- EN: 0-7 days  | HI: 0-7 दिन
+- EN: 30-day month (same as loan card)  | HI: 30 दिन का महीना (लोन कार्ड जैसा)
+- EN: 31-90 days  | HI: 31-90 दिन
+- EN: 6 mo  | HI: 6 माह
+- EN: 6 months  | HI: छह माह
+- EN: 8-30 days  | HI: 8-30 दिन
+- EN: 90+ days  | HI: 90+ दिन
+- EN: ACTIVE  | HI: सक्रिय
+- EN: About  | HI: ऐप के बारे में
+- EN: Account Statement  | HI: स्टेटमेंट
+- EN: Active Loans  | HI: सक्रिय लोन
+- EN: Actual days ÷ 360  | HI: असली दिन ÷ 360
+- EN: Actual days ÷ 365  | HI: असली दिन ÷ 365
+- EN: Add first customer  | HI: पहला ग्राहक जोड़ें
+- EN: Add your UPI ID in Settings first.  | HI: पहले Settings में अपना UPI ID जोड़ें।
+- EN: Add-only: preview first, nothing is overwritten  | HI: सिर्फ़ जोड़ता है: पहले Preview, कुछ भी overwrite नहीं
+- EN: All  | HI: पूरा हिसाब
+- EN: All  | HI: सभी
+- EN: All balances are already correct  | HI: सभी बैलेंस पहले से सही हैं
+- EN: Auto · every anniversary  | HI: अपने आप · हर सालगिरह
+- EN: Avg. interest / day  | HI: औसत ब्याज / दिन
+- EN: Avg. interest / month  | HI: औसत ब्याज / माह
+- EN: Backup failed  | HI: Backup विफल
+- EN: Backup is 7+ days old  | HI: Backup को 7+ दिन हो गए
+- EN: Biometric lock off  | HI: Biometric लॉक बंद
+- EN: Biometric lock on  | HI: Biometric लॉक चालू
+- EN: Biometric lock works only in the Android APK  | HI: Biometric लॉक सिर्फ़ Android APK में चलता है
+- EN: Biometric plugin problem:   | HI: Biometric plugin में दिक्कत: 
+- EN: Business  | HI: व्यवसाय
+- EN: Business Name  | HI: व्यवसाय का नाम
+- EN: Byaj received  | HI: ब्याज मिला
+- EN: CLOSED  | HI: बंद
+- EN: CURRENT  | HI: चालू
+- EN: Calculation settings  | HI: हिसाब की शर्तें
+- EN: Call  | HI: कॉल
+- EN: Clear  | HI: साफ
+- EN: Close  | HI: बंद करें
+- EN: Collect via UPI  | HI: UPI भुगतान
+- EN: Collected in last 7 days:   | HI: पिछले 7 दिन में वसूली: 
+- EN: Compounded  | HI: कंपाउंडिंग
+- EN: Confirm with your fingerprint or face  | HI: अपने फिंगरप्रिंट या फेस से पुष्टि करें
+- EN: Copied  | HI: कॉपी हो गया
+- EN: Copy  | HI: कॉपी
+- EN: Could not copy  | HI: कॉपी नहीं हुआ
+- EN: Counting days  | HI: दिन गिनने का तरीका
+- EN: Create  | HI: बनाएं
+- EN: Create a PIN first  | HI: पहले PIN बनाएं
+- EN: Credit limit (optional)  | HI: पेमेंट सीमा (वैकल्पिक)
+- EN: Credit limit is not valid  | HI: पेमेंट सीमा सही नहीं
+- EN: Customer added  | HI: ग्राहक जोड़ा
+- EN: Customer has transaction history. Delete is blocked to protect data.  | HI: इस ग्राहक का लेन-देन इतिहास मौजूद है। डेटा सुरक्षित रखने के लिए डिलीट रोक दिया गया है।
+- EN: Customer not found  | HI: ग्राहक नहीं मिला
+- EN: Customer view link  | HI: ग्राहक का हिसाब देखने का लिंक
+- EN: Customers, transactions, loans  | HI: ग्राहक, लेन-देन, लोन
+- EN: DUE  | HI: वापसी
+- EN: Daily  | HI: रोज़
+- EN: Dark Mode  | HI: डार्क मोड
+- EN: Dark mode disabled  | HI: डार्क मोड बंद
+- EN: Dark mode enabled  | HI: डार्क मोड चालू
+- EN: Data  | HI: डेटा
+- EN: Date to date  | HI: तारीख से तारीख
+- EN: Default  | HI: डिफ़ॉल्ट
+- EN: Default Interest Rate  | HI: डिफ़ॉल्ट ब्याज दर
+- EN: Default matches the loan card exactly.  | HI: डिफ़ॉल्ट शर्तें आपके लोन कार्ड से बिल्कुल मेल खाती हैं।
+- EN: Delete Loan  | HI: लोन डिलीट
+- EN: Delete cancelled because transaction history was created.  | HI: लेन-देन इतिहास बन जाने के कारण डिलीट रद्द हुआ।
+- EN: Delete customer?  | HI: ग्राहक डिलीट करें?
+- EN: Delete loan  | HI: लोन डिलीट
+- EN: Delete this loan?  | HI: यह लोन डिलीट करें?
+- EN: Delete this loan? The record will be retained in audit history.  | HI: यह लोन हटाएँ? रिकॉर्ड audit history में सुरक्षित रहेगा।
+- EN: Delete this transaction?  | HI: यह लेन-देन डिलीट करें?
+- EN: Delete this transaction? The record will be kept in audit history.  | HI: यह लेन-देन हटाएँ? रिकॉर्ड audit history में सुरक्षित रहेगा।
+- EN: Deleted  | HI: डिलीट हो गया
+- EN: Deleted  | HI: डिलीटेड
+- EN: Deleted By  | HI: डिलीट करने वाला
+- EN: Deleted On  | HI: डिलीट किया गया
+- EN: Deleted Transaction  | HI: हटाया गया लेन-देन
+- EN: Deleted safely; history retained  | HI: सुरक्षित रूप से हटाया गया; history सुरक्षित है
+- EN: Discard  | HI: हटाएँ
+- EN: Discard this entry? It was never saved to your ledger.  | HI: यह एंट्री हटाएँ? यह आपके खाते में कभी जुड़ी नहीं थी।
+- EN: Download PDF  | HI: PDF डाउनलोड
+- EN: Due  | HI: वापसी
+- EN: Due date  | HI: वापसी की तारीख
+- EN: Due date cannot be before start date  | HI: वापसी की तारीख शुरुआत से पहले नहीं हो सकती
+- EN: Due today  | HI: आज वापसी
+- EN: Edit Business  | HI: व्यवसाय एडिट
+- EN: Edit Customer  | HI: ग्राहक एडिट
+- EN: Edit Customer  | HI: ग्राहक एडिट करें
+- EN: Edit Interest Paid  | HI: ब्याज एडिट
+- EN: Edit Loan  | HI: लोन एडिट
+- EN: Edit Loan Repayment  | HI: लोन वसूली एडिट
+- EN: Edit Payment  | HI: जमा एडिट
+- EN: Edit Payment  | HI: पेमेंट एडिट
+- EN: Edit loan  | HI: लोन एडिट
+- EN: Effective yearly rate  | HI: असल सालाना दर
+- EN: Email  | HI: ईमेल
+- EN: Empty = no limit  | HI: खाली = कोई सीमा नहीं
+- EN: Enable biometric lock  | HI: Biometric लॉक चालू करें
+- EN: Enter a rate between 0 and 100  | HI: दर 0 से 100 के बीच डालें
+- EN: Enter amount  | HI: रकम डालें
+- EN: Enter date  | HI: तारीख डालें
+- EN: Enter name  | HI: नाम डालें
+- EN: Enter principal  | HI: मूलधन डालें
+- EN: Enter rate  | HI: दर डालें
+- EN: Enter valid dates  | HI: सही तारीखें डालें
+- EN: Error — nothing was partially saved.  | HI: त्रुटि — डेटा आंशिक रूप से सेव नहीं हुआ।
+- EN: Exceeds principal  | HI: मूलधन से ज्यादा
+- EN: Excel-compatible data  | HI: CSV डेटा
+- EN: Export Data (JSON)  | HI: डेटा एक्सपोर्ट (JSON)
+- EN: Fill the details above — the result appears here instantly.  | HI: ऊपर की जानकारी भरते ही हिसाब यहीं दिख जाएगा।
+- EN: Find interest  | HI: ब्याज निकालें
+- EN: Find principal  | HI: मूलधन निकालें
+- EN: Find rate  | HI: दर निकालें
+- EN: Find time  | HI: समय निकालें
+- EN: From  | HI: शुरू
+- EN: From  | HI: से
+- EN: Full app dark mode  | HI: पूरे ऐप का डार्क मोड
+- EN: Full recovery JSON + checksum  | HI: पूरा बैकअप JSON + checksum
+- EN: Fully repaid  | HI: पूरा वापस
+- EN: Give Loan with Interest  | HI: ब्याज पर लोन / ब्याज सेटिंग
+- EN: Give Payment  | HI: पेमेंट दें
+- EN: Half-yearly  | HI: छमाही
+- EN: Half-yearly  | HI: हर 6 महीने
+- EN: Highest balance  | HI: सबसे ज़्यादा बकाया
+- EN: Home  | HI: होम
+- EN: INTEREST ACCRUAL  | HI: ब्याज जुड़ना
+- EN: In months  | HI: कुल माह
+- EN: Int. Paid  | HI: ब्याज भुगतान
+- EN: Interest Amount  | HI: ब्याज रकम
+- EN: Interest Calculator  | HI: ब्याज कैलकुलेटर
+- EN: Interest Paid  | HI: ब्याज भुगतान
+- EN: Interest Payment  | HI: ब्याज भुगतान
+- EN: Interest Settings  | HI: ब्याज सेटिंग्स
+- EN: Interest accrual  | HI: ब्याज का हिसाब
+- EN: Interest accrual  | HI: ब्याज जुड़ना
+- EN: Interest added to principal  | HI: ब्याज मूलधन में कब जुड़े
+- EN: Interest amount (₹)  | HI: ब्याज की रकम (₹)
+- EN: Interest calculation  | HI: ब्याज का हिसाब
+- EN: Interest compounds on each anniversary of the start date; the current period is pro-rated (days/30).  | HI: ब्याज शुरुआत तारीख की हर सालगिरह पर जुड़ता है; चालू अवधि दिन/30 के हिसाब से।
+- EN: Interest given  | HI: ब्याज पता है
+- EN: Interest keeps running on the full principal  | HI: ब्याज पूरे मूलधन पर चलता रहता है
+- EN: Interest on part-payments  | HI: वापसी पर ब्याज
+- EN: Interest on part-payments   | HI: वापसी पर ब्याज 
+- EN: Interest paid  | HI: ब्याज भुगतान
+- EN: Interest paid so far  | HI: अब तक ब्याज भुगतान
+- EN: Interest payment  | HI: ब्याज भुगतान
+- EN: Interest payment is managed by the parent loan.  | HI: ब्याज भुगतान मुख्य लोन रिकॉर्ड से नियंत्रित होता है।
+- EN: Interest rate (%)  | HI: ब्याज दर (%)
+- EN: Interest received  | HI: ब्याज मिला
+- EN: Interest type will change and interest will be recalculated. Continue?  | HI: ब्याज का प्रकार बदलेगा और ब्याज नए तरीके से दोबारा गिना जाएगा। आगे बढ़ें?
+- EN: Invalid email  | HI: ईमेल सही नहीं
+- EN: Invalid loan  | HI: लोन गलत है
+- EN: Invalid transaction  | HI: लेन-देन गलत है
+- EN: Invalid transaction type  | HI: लेन-देन प्रकार गलत है
+- EN: LENT  | HI: दिया
+- EN: LOAN  | HI: लोन
+- EN: Last 30 days  | HI: पिछले 30 दिन
+- EN: Last 7 Days  | HI: पिछले 7 दिन का लेन-देन
+- EN: Last activity  | HI: आख़िरी लेन-देन
+- EN: Last month  | HI: पिछला महीना
+- EN: Last payment  | HI: आखिरी भुगतान
+- EN: Loading more customers…  | HI: और ग्राहक लोड हो रहे हैं…
+- EN: Loan  | HI: लोन
+- EN: Loan & interest  | HI: लोन और ब्याज
+- EN: Loan Actions  | HI: लोन विकल्प
+- EN: Loan Repayment  | HI: लोन वापसी
+- EN: Loan created  | HI: लोन बनाया
+- EN: Loan created, but sync is pending  | HI: लोन बन गया, लेकिन sync बाकी है
+- EN: Loan deleted safely; history retained  | HI: लोन सुरक्षित रूप से हटाया गया; history सुरक्षित है
+- EN: Loan is active again  | HI: लोन फिर से सक्रिय
+- EN: Loan repayment  | HI: लोन वापसी
+- EN: Loan repayment is managed by the parent loan.  | HI: लोन वापसी मुख्य लोन रिकॉर्ड से नियंत्रित होती है।
+- EN: Loan settled  | HI: लोन सेटल हो गया
+- EN: Loan statement  | HI: लोन स्टेटमेंट
+- EN: Loan with payment history cannot be deleted.  | HI: भुगतान इतिहास वाला लोन डिलीट नहीं किया जा सकता।
+- EN: Logout? Data will be safe.  | HI: लॉगआउट करें? डेटा सुरक्षित रहेगा।
+- EN: Longest pending:   | HI: सबसे ज़्यादा लेट: 
+- EN: Mark settled  | HI: सेटल करें
+- EN: Mark this loan as settled? Remaining   | HI: इस लोन को सेटल मानें? बाकी 
+- EN: Method  | HI: तरीका
+- EN: Mobile  | HI: मोबाइल
+- EN: More options  | HI: और विकल्प
+- EN: Name A–Z  | HI: नाम A–Z
+- EN: Name, phone, email  | HI: नाम, फोन, ईमेल
+- EN: Nearest rupee  | HI: नज़दीकी रुपया
+- EN: Needs review  | HI: जाँच चाहिए
+- EN: New Customer  | HI: नया ग्राहक
+- EN: New Loan  | HI: नया लोन
+- EN: New link is created, old one stops  | HI: नया लिंक बनेगा, पुराना बंद हो जाएगा
+- EN: No active loans  | HI: कोई सक्रिय लोन नहीं
+- EN: No customers  | HI: कोई ग्राहक नहीं
+- EN: No customers in this group  | HI: इस समूह में कोई ग्राहक नहीं
+- EN: No data  | HI: डेटा नहीं
+- EN: No fingerprint/face is set up on this phone. Add one in phone Settings first.  | HI: इस फ़ोन में फिंगरप्रिंट/फेस सेट नहीं है। पहले फ़ोन की Settings में सेट करें।
+- EN: No internet. Not saved - please try again when online.  | HI: इंटरनेट नहीं है। सेव नहीं हुआ - ऑनलाइन होने पर दोबारा कोशिश करें।
+- EN: No part-payments yet  | HI: अभी कोई वापसी नहीं
+- EN: No payment yet  | HI: अभी तक भुगतान नहीं
+- EN: No pending recovery — all clear  | HI: कोई वसूली बाकी नहीं
+- EN: No reason given  | HI: कोई कारण नहीं दिया गया
+- EN: No transactions  | HI: कोई लेन-देन नहीं
+- EN: Not confirmed — biometric lock stays off  | HI: पुष्टि नहीं हुई — biometric लॉक चालू नहीं हुआ
+- EN: Not in balance until synced  | HI: सिंक होने तक बकाया में शामिल नहीं
+- EN: Not saved: phone storage unavailable  | HI: सेव नहीं हुआ: फ़ोन की स्टोरेज उपलब्ध नहीं
+- EN: Note  | HI: नोट
+- EN: Nothing to recover  | HI: किसी पर बकाया नहीं
+- EN: Nothing to sync  | HI: सिंक के लिए कुछ नहीं
+- EN: OUTSTANDING  | HI: बाकी
+- EN: OVERDUE  | HI: बकाया
+- EN: Offline queue  | HI: ऑफलाइन कतार
+- EN: Only a warning before giving more Payment — never blocks.  | HI: और पेमेंट देने से पहले सिर्फ़ चेतावनी आएगी — रोक नहीं लगेगी।
+- EN: Open loan details  | HI: लोन का पेज खोलें
+- EN: Opened  | HI: खोला गया
+- EN: Opens UPI app — confirm receipt separately  | HI: UPI ऐप खुलता है — पैसा आया या नहीं, अलग से दर्ज करें
+- EN: Optional  | HI: वैकल्पिक
+- EN: Optional deletion reason  | HI: हटाने का कारण (वैकल्पिक)
+- EN: Outstanding  | HI: बाकी
+- EN: Over 30 days  | HI: 30 दिन से ज़्यादा
+- EN: Overdue  | HI: बकाया लेट
+- EN: PART PAID  | HI: वापसी
+- EN: PART-PAYMENTS  | HI: आंशिक वापसी
+- EN: PRINCIPAL  | HI: मूलधन
+- EN: Paid  | HI: जमा
+- EN: Part-payment  | HI: आंशिक वापसी
+- EN: Part-payment (principal)  | HI: आंशिक वापसी (मूलधन)
+- EN: Part-payments  | HI: आंशिक वापसी
+- EN: Payment  | HI: जमा
+- EN: Payment  | HI: भुगतान
+- EN: Payment Deleted  | HI: भुगतान हटाया गया
+- EN: Payments received  | HI: जमा मिला
+- EN: Per month (%)  | HI: प्रति माह (%)
+- EN: Period end  | HI: अवधि समाप्त
+- EN: Period-wise interest table  | HI: अवधि-वार ब्याज तालिका
+- EN: Phone  | HI: मोबाइल
+- EN: Photo  | HI: फोटो
+- EN: Photo could not be created — sharing text instead.  | HI: फोटो नहीं बन सकी — टेक्स्ट भेज रहे हैं।
+- EN: Photo sharing is not available here — sharing text instead.  | HI: इस फ़ोन पर फोटो शेयर नहीं हो सकता — टेक्स्ट भेज रहे हैं।
+- EN: Please wait…  | HI: कृपया प्रतीक्षा करें…
+- EN: Preparing backup…  | HI: Backup तैयार हो रहा है…
+- EN: Principal (₹)  | HI: मूलधन (₹)
+- EN: Principal back  | HI: मूलधन भुगतान
+- EN: Principal cannot be changed after repayment.  | HI: वापसी होने के बाद मूलधन नहीं बदला जा सकता।
+- EN: Print / save PDF  | HI: इस ग्राहक का स्टेटमेंट
+- EN: Printable report  | HI: प्रिंट / PDF रिपोर्ट
+- EN: Profile saved  | HI: प्रोफाइल सेव
+- EN: Quarterly  | HI: तिमाही
+- EN: Quarterly  | HI: हर तिमाही
+- EN: Queue is empty  | HI: कतार खाली है
+- EN: Rate  | HI: दर
+- EN: Rate unit  | HI: दर की इकाई
+- EN: Reason  | HI: कारण
+- EN: Recorded  | HI: दर्ज
+- EN: Recorded, but sync is pending  | HI: दर्ज हो गया, लेकिन sync बाकी है
+- EN: Recovery due  | HI: वसूली बाकी
+- EN: Recovery list  | HI: वसूली सूची
+- EN: Remind Defaulters  | HI: बकायेदारों को याद दिलाएं
+- EN: Remind next  | HI: अगले को reminder
+- EN: Repaid  | HI: वापस
+- EN: Repayments reduce the interest base from their date  | HI: वापसी की तारीख से ब्याज का आधार घटता है
+- EN: Reports  | HI: रिपोर्ट
+- EN: Reset  | HI: रीसेट
+- EN: Revoke old link  | HI: पुराना लिंक बंद करें
+- EN: Round down  | HI: नीचे का रुपया
+- EN: Round up  | HI: ऊपर का रुपया
+- EN: Rounding  | HI: राउंडिंग
+- EN: SAVED  | HI: बचत
+- EN: SETTLED  | HI: सेटल
+- EN: STARTED  | HI: शुरुआत
+- EN: Save failed  | HI: सेव नहीं हुआ
+- EN: Saved  | HI: सेव
+- EN: Saved  | HI: सेव हो गया
+- EN: Saved, but sync is pending  | HI: सेव हो गया, sync बाकी है
+- EN: Select Loan  | HI: लोन चुनें
+- EN: Set rate, auto-calculate  | HI: दर तय करें, ऑटो ब्याज
+- EN: Settings  | HI: सेटिंग्स
+- EN: Settings / सेटिंग्स  | HI: सेटिंग्स
+- EN: Settings saved  | HI: सेटिंग सेव
+- EN: Settled / Closed Loans  | HI: सेटल / बंद लोन
+- EN: Settled manually  | HI: हाथ से सेटल
+- EN: Share & collect  | HI: शेयर और वसूली
+- EN: Share Hisaab  | HI: हिसाब शेयर करें
+- EN: Share Portal  | HI: ग्राहक लिंक कॉपी / शेयर
+- EN: Show rate as  | HI: दर किस रूप में
+- EN: Smart insights  | HI: स्मार्ट इनसाइट्स
+- EN: Sort  | HI: क्रम
+- EN: Sort customers  | HI: ग्राहक क्रम
+- EN: Start Date  | HI: शुरुआत तारीख
+- EN: Started  | HI: शुरुआत
+- EN: Statement & customer  | HI: स्टेटमेंट और ग्राहक
+- EN: Statement PDF  | HI: PDF स्टेटमेंट
+- EN: Still offline  | HI: अभी भी नेट नहीं है
+- EN: Support  | HI: सहायता
+- EN: Sync Successful  | HI: सिंक सफल
+- EN: Sync now  | HI: अभी सिंक करें
+- EN: TYPE  | HI: प्रकार
+- EN: Take Payment  | HI: भुगतान लें
+- EN: Tap to open Data & Backup  | HI: Data & Backup खोलने के लिए दबाएं
+- EN: Terms  | HI: शर्तें
+- EN: These entries are saved on this phone only. They are NOT counted in balances until they sync. Do not re-enter them.  | HI: ये एंट्री अभी सिर्फ़ इस फ़ोन में हैं। सिंक होने तक बकाया में नहीं गिनी जातीं। इन्हें दोबारा न डालें।
+- EN: This month  | HI: इस महीने
+- EN: Till  | HI: तक
+- EN: Till today  | HI: आज तक
+- EN: Time needed  | HI: ज़रूरी समय
+- EN: To  | HI: खत्म
+- EN: To  | HI: तक
+- EN: To the paisa (₹0.01)  | HI: पैसे तक (₹0.01)
+- EN: Today  | HI: आज
+- EN: Top Customers  | HI: टॉप ग्राहक
+- EN: Total Byaj  | HI: कुल ब्याज
+- EN: Total Due  | HI: कुल बकाया
+- EN: Total Income  | HI: कुल आय
+- EN: Total Paid  | HI: कुल जमा
+- EN: Total Payment  | HI: कुल पेमेंट
+- EN: Total amount (principal + interest)  | HI: कुल राशि (मूलधन + ब्याज)
+- EN: Total amount (₹)  | HI: कुल राशि (₹)
+- EN: Total due  | HI: कुल बकाया
+- EN: Total given  | HI: कुल राशि पता है
+- EN: Total interest  | HI: कुल ब्याज
+- EN: Transaction Alert Sent  | HI: लेन-देन अलर्ट भेजा गया
+- EN: Transaction Amount  | HI: लेन-देन राशि
+- EN: Transaction Date  | HI: लेन-देन तारीख
+- EN: Transaction Time  | HI: लेन-देन समय
+- EN: Type  | HI: प्रकार
+- EN: Payment  | HI: पेमेंट
+- EN: Payment Balance  | HI: पेमेंट बकाया
+- EN: Unlock BSR PRO  | HI: BSR PRO अनलॉक करें
+- EN: Unsettle this loan? It will count again.  | HI: इस लोन को अनसेटल करें? ये फिर से गिना जाएगा।
+- EN: Updated  | HI: अपडेट
+- EN: Updated  | HI: अपडेट हो गया
+- EN: Use PIN  | HI: PIN डालें
+- EN: Use fingerprint or face  | HI: फिंगरप्रिंट या फेस से अनलॉक करें
+- EN: Use this period → find interest  | HI: इस अवधि से ब्याज निकालें →
+- EN: Use this principal → find interest  | HI: इस मूलधन से ब्याज निकालें →
+- EN: Use this rate → find interest  | HI: इस दर से ब्याज निकालें →
+- EN: Verified backup exported  | HI: Verified backup export हो गया
+- EN: Vikram Singh Rajput  | HI: विक्रम सिंह राजपूत
+- EN: Waiting  | HI: इंतज़ार
+- EN: Waived  | HI: छोड़ा गया
+- EN: Waived at settlement  | HI: सेटल पर छोड़ा गया
+- EN: WhatsApp  | HI: WhatsApp
+- EN: Whole-business data (all customers)  | HI: पूरा बिज़नेस डेटा (सभी ग्राहक)
+- EN: With compound interest the same amount would be   | HI: चक्रवृद्धि लगाते तो ब्याज होता 
+- EN: With simple interest the same amount would be   | HI: साधारण लगाते तो ब्याज होता 
+- EN: Years / months / days  | HI: साल / महीने / दिन
+- EN: accrual  | HI: जुड़ना
+- EN: current  | HI: चालू
+- EN: customers overdue 30+ days:   | HI: ग्राहकों का 30+ दिन से बकाया: 
+- EN: customers owe  | HI: ग्राहकों पर बकाया
+- EN: days ago  | HI: दिन पहले
+- EN: entries  | HI: एंट्री
+- EN: entries need review  | HI: एंट्री को जाँच चाहिए
+- EN: entries waiting to sync  | HI: एंट्री सिंक बाकी
+- EN: in  | HI: में
+- EN: latest  | HI: अंतिम
+- EN: need review  | HI: जाँच चाहिए
+- EN: offline entries synced  | HI: ऑफलाइन एंट्री जुड़ गईं
+- EN: pending  | HI: बाकी
+- EN: per 6 months  | HI: प्रति छह माह
+- EN: per half-year  | HI: प्रति छमाही
+- EN: per month  | HI: प्रति माह
+- EN: per year  | HI: प्रति वर्ष
+- EN: received  | HI: मिले
+- EN: vs last week  | HI: पिछले हफ्ते से
+- EN: year  | HI: वर्ष
+- EN: yr  | HI: वर्ष
+- EN: 📴 Offline — saved in queue, will sync when online  | HI: 📴 ऑफलाइन — कतार में सेव है, नेट आने पर अपने-आप जुड़ेगा

@@ -24,5 +24,5 @@ Status: investigation only; no restore writes implemented.
 
 ## Initial audit findings
 - No Import/Restore UI or restore writer was found in dashboard.html.
-- Existing integrity check currently reconciles only udhaar minus jama for customer balance; loan principal/repayment/interest semantics need a separate ledger specification before restore can be called safe.
+- Existing integrity check currently reconciles only Payment minus jama for customer balance; loan principal/repayment/interest semantics need a separate ledger specification before restore can be called safe.
 - This document does not enable restore or change customer data.
