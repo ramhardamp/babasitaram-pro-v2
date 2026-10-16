@@ -1,0 +1,40 @@
+import asyncio
+from lib import *
+from t3_helpers import *
+async def go():
+    S=Session(); pg=await S.start(viewport=(390,844))
+    await pg.goto(BASE+'signup.html'); await pg.wait_for_timeout(700)
+    async def err(): return (await pg.evaluate("document.getElementById('signupError').textContent")).strip()
+    for e,p1,p2,label in [('bad','abcdef','abcdef','bad email'),('a@b.co','123','123','short pw'),('a@b.co','abcdef','abcdeg','mismatch')]:
+        await pg.fill('#signupEmail',e); await pg.fill('#signupPassword',p1); await pg.fill('#signupPassword2',p2)
+        await pg.click('#signupBtn'); await pg.wait_for_timeout(250)
+        chk('signup rejects '+label,await err()!='',await err())
+    await pg.fill('#signupEmail','new@shop.com'); await pg.fill('#signupPassword','Secret@123'); await pg.fill('#signupPassword2','Secret@123')
+    await pg.click('#signupBtn'); await pg.wait_for_timeout(800)
+    chk('verify screen shown',await active(pg)=='screen-verify',await active(pg))
+    await pg.click('#resendVerifyBtn'); await pg.wait_for_timeout(300)
+    chk('resend works',await pg.evaluate("window.__VSENT>=2"))
+    await pg.click('#checkVerifyBtn'); await pg.wait_for_timeout(600)
+    chk('not-verified stays on verify',await active(pg)=='screen-verify')
+    await pg.evaluate("localStorage.setItem('__VERIFY','1')")
+    await pg.click('#checkVerifyBtn'); await pg.wait_for_timeout(900)
+    chk('setup screen after verify',await active(pg)=='screen-setup',await active(pg))
+    await pg.click('#setupBtn'); await pg.wait_for_timeout(250)
+    chk('setup rejects empty',await active(pg)=='screen-setup')
+    await pg.fill('#shopName','Nayi Dukan'); await pg.fill('#ownerName','Mohan'); await pg.fill('#ownerPhone','12345')
+    await pg.click('#setupBtn'); await pg.wait_for_timeout(250); chk('setup rejects 5-digit phone',pg.url.endswith('signup.html'))
+    await pg.fill('#ownerPhone','98765 43210'); await pg.click('#setupBtn'); await pg.wait_for_timeout(2000)
+    print('url:',pg.url,'| screen:',await active(pg))
+    # first dashboard load -> PIN setup?
+    await pg.wait_for_timeout(1200); print('pin text:',(await pg.evaluate("document.getElementById('screen-pin')?.innerText||''")).replace('\n',' | ')[:150])
+    await pg.keyboard.type('4321',delay=70); await pg.wait_for_timeout(800)
+    print('after 1st entry screen:',await active(pg),'|',(await pg.evaluate("document.getElementById('screen-pin')?.innerText||''")).replace('\n',' | ')[:120])
+    await pg.keyboard.type('4321',delay=70); await pg.wait_for_timeout(2500)
+    chk('dashboard after PIN created',await active(pg)=='screen-dashboard',await active(pg))
+    u=await fsdoc(pg,[k for k in await pg.evaluate("Object.keys(JSON.parse(localStorage.getItem('__FS')))") if k.startswith('users/') and k.count('/')==1][0])
+    chk('profile saved w/ pin hash',u.get('shopName')=='Nayi Dukan' and u.get('phone')=='9876543210' and 'pinHash' in u,str({k:v for k,v in u.items() if k!='pinHash'}))
+    # forgot password
+    pg2=await S.ctx.new_page(); S.hook(pg2); await pg2.goto(BASE+'forgot-password.html'); await pg2.wait_for_timeout(500)
+    print('forgot inputs:',await pg2.evaluate("[...document.querySelectorAll('input,button')].map(e=>e.id+':'+e.type)"))
+    await S.stop(); print('errors:',S.errors)
+asyncio.run(go())
