@@ -1,1 +1,29 @@
-
+{
+  "project_info": {
+    "project_number": "221287206069",
+    "project_id": "babasitaram-pro-digital-1e8d6",
+    "storage_bucket": "babasitaram-pro-digital-1e8d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221287206069:android:ae7f0dfb81de7c29d902fc",
+        "android_client_info": {
+          "package_name": "com.bsrpro.digitalkhata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5q8Jgz-AHaiqptRALObupqiEpRuKvmuY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.bsrpro.digitalkhata'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.bsrpro.digitalkhata'
+        minSdk 23
+        targetSdk 35
+        versionCode 190900
+        versionName '19.9.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':capacitor-android')
+    implementation project(':capacitor-app')
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.biometric:biometric:1.1.0'
+    implementation 'com.google.firebase:firebase-messaging:24.1.0'
+}
+
+// Add android/app/google-services.json from Firebase Console to enable FCM at runtime.
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+} else {
+    logger.warn('BSR Pro: google-services.json is absent; APK may compile, but push registration will report not configured.')
+}
