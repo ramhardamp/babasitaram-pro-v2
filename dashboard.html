@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.json">
 <style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}:root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradient:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);--gradient-dark:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);--credit:#ef4444;--credit-bg:#fef2f2;--debit:#10b981;--debit-bg:#ecfdf5;--interest:#f59e0b;--interest-bg:#fffbeb;--info:#3b82f6;--info-bg:#eff6ff;--violet:#7c3aed;--violet-bg:#f5f3ff;--text:#0f172a;--text-muted:#64748b;--text-light:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--error:#ef4444;--error-bg:#fef2f2;--success:#10b981;--success-bg:#ecfdf5;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--radius-full:999px}html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:var(--text);font-size:16px;line-height:1.5;overflow-x:hidden}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}.app-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;max-height:100dvh;background:var(--bg);position:relative;box-shadow:none;overflow:hidden;display:flex;flex-direction:column}@media(min-width:500px){body{padding:0}.app-shell{height:100dvh;min-height:100dvh;max-height:none;border-radius:0}}.settings-header-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 36px}.settings-header-btn:active{background:rgba(99,102,241,.2)}.back-btn{background:rgba(99,102,241,.1);border:none;font-size:16px;color:var(--primary);cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}.back-btn:active{background:rgba(99,102,241,.2)}.lang-toggle{display:flex;background:rgba(99,102,241,.1);border-radius:20px;padding:3px;gap:2px}.lang-btn{border:none;background:transparent;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:inherit}.lang-btn.active{background:var(--primary);color:#fff}.lock-btn{background:rgba(99,102,241,.1);border:none;font-size:14px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-left:6px}.screen-container{flex:1 1 auto;height:0;min-height:0;width:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:0 0 calc(128px + env(safe-area-inset-bottom, 0px));scrollbar-gutter:stable;contain:layout style}.screen-container>.screen{width:100%;min-height:100%}.screen-container::-webkit-scrollbar{width:0}.screen{display:none;min-height:0}.screen.active{display:block}.loading-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}.loading-spinner{width:40px;height:40px;border:4px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}.pin-screen{padding:32px 20px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}.pin-logo{width:88px;height:88px;margin:0 auto 18px;background:var(--gradient);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 12px 40px rgba(99,102,241,.4);overflow:hidden}.pin-logo img{width:100%;height:100%;object-fit:cover}.pin-title{font-size:22px;font-weight:900;margin-bottom:8px}.pin-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.5}.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:18px;min-height:22px}.pin-dot{width:17px;height:17px;border-radius:50%;border:2.5px solid var(--primary);background:transparent;transition:all .18s}.pin-dot.filled{background:var(--primary);transform:scale(1.08)}.pin-native-input-wrap{width:min(320px,100%);margin:0 auto}.pin-native-input{width:100%;height:58px;border:2px solid var(--border);border-radius:16px;background:var(--white);color:var(--text);font-family:inherit;font-size:28px;font-weight:900;letter-spacing:12px;text-align:center;outline:none;padding:8px 14px;box-shadow:0 4px 16px rgba(15,23,42,.06);caret-color:var(--primary);-webkit-appearance:none;appearance:none}.pin-native-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}.pin-native-input::placeholder{font-size:14px;letter-spacing:0;color:var(--text-light);font-weight:700}.pin-native-input::-webkit-outer-spin-button,.pin-native-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.pin-native-help{font-size:11px;color:var(--text-muted);font-weight:700;margin-top:10px}.pin-error{color:var(--error);font-size:13px;margin-top:14px;font-weight:600;min-height:20px;line-height:1.4}@media(max-width:500px){.pin-screen{padding:24px 18px calc(32px + env(safe-area-inset-bottom,0px))}.pin-logo{width:78px;height:78px;margin-bottom:14px}.pin-title{font-size:21px}.pin-subtitle{margin-bottom:18px}.pin-native-input{height:56px;font-size:26px;letter-spacing:10px}}.dash-greeting{font-size:11px;opacity:.8;margin-bottom:4px;position:relative;letter-spacing:.5px;text-transform:uppercase;font-weight:700}.dash-shop{font-size:18px;font-weight:900;margin-bottom:16px;position:relative}.dash-total-label{font-size:11px;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;position:relative}.dash-total-amount{font-size:32px;font-weight:900;margin-top:4px;position:relative;letter-spacing:-1.2px;line-height:1}.skeleton-block{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 37%,#e2e8f0 63%);background-size:400% 100%;animation:skeletonShimmer 1.15s ease-in-out infinite;border-radius:8px}.dashboard-skeleton{pointer-events:none}@keyframes skeletonShimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}.detail-wrap{padding:14px 16px 24px;max-width:760px;width:100%;box-sizing:border-box;margin:0 auto}.ch-header,.ch-avatar,.ch-name,.ch-total-label,.ch-total-amount,.ch-split{display:none}.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.action-btn{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-md);padding:12px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:left}.action-btn:active{transform:scale(.97)}.action-btn.wide{grid-column:1/-1}.action-icon{font-size:22px;flex-shrink:0}.action-title{font-size:13px;font-weight:800;color:var(--text)}.action-sub{font-size:10px;color:var(--text-muted);margin-top:1px}.action-btn.udhaar{border-color:#e5322d;background:linear-gradient(135deg,#ef4444,#c81e1e);color:#fff}.action-btn.udhaar .action-title{color:#fff}.action-btn.jama{border-color:#1e8e3e;background:linear-gradient(135deg,#22a047,#166b2e);color:#fff}.action-btn.jama .action-title{color:#fff}.primary-actions .action-btn{min-height:54px;padding:8px 10px;border-radius:14px;box-shadow:0 4px 12px rgba(15,23,42,.10)}.primary-actions .action-icon{font-size:19px}.single-balance-summary{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border-radius:13px;background:#fff;border:1px solid var(--border);box-shadow:0 2px 8px rgba(15,23,42,.05);font-weight:800}.single-balance-summary span{font-size:14px;color:var(--text-muted)}.single-balance-summary strong{font-size:22px;letter-spacing:-.4px}.single-balance-summary.giving strong{color:var(--credit)}.single-balance-summary.received strong{color:var(--debit)}.single-balance-summary.neutral strong{color:var(--text-muted)}.txn-running-balance{font-size:10px;font-weight:800;margin-top:3px}.txn-running-balance.due{color:var(--credit)}.txn-running-balance.advance{color:var(--debit)}.txn-running-balance.clear{color:var(--text-muted)}.action-btn.loan{border-color:#fde68a;background:var(--interest-bg)}.action-btn.repay{border-color:#bfdbfe;background:var(--info-bg)}.action-btn.interest{border-color:#ddd6fe;background:var(--violet-bg)}.action-btn.edit{border-color:#e2e8f0}.action-btn.share{border-color:#bfdbfe;background:#eff6ff}.share-reminder{border-color:#bbf7d0;background:#ecfdf5}.share-reminder-preview{background:linear-gradient(135deg,#0f8f3e,#1aa34a);color:#fff;border-radius:18px;padding:14px;margin:0 0 14px;box-shadow:0 10px 24px rgba(16,185,129,.22)}.share-reminder-head{display:flex;align-items:center;gap:10px}.share-reminder-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;flex:0 0 48px;border:2px solid rgba(255,255,255,.45)}.share-reminder-name{font-size:15px;font-weight:900;line-height:1.2}.share-reminder-owner{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-phone{font-size:11px;opacity:.9;margin-top:2px}.share-reminder-due{background:#fff;color:#0f172a;border-radius:14px;margin-top:12px;padding:12px;text-align:center}.share-reminder-due-label{font-size:11px;color:#64748b;font-weight:800}.share-reminder-due-amount{font-size:30px;font-weight:900;line-height:1.1;margin-top:3px}.share-reminder-message{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px;white-space:pre-line;font-size:13px;line-height:1.6}.share-reminder-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.share-reminder-actions .btn{margin-top:0}.share-reminder-note{font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.45}.section-title{font-size:12px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px}.loan-card{background:var(--white);border:2px solid #fde68a;border-radius:var(--radius-md);padding:14px;margin-bottom:10px;position:relative}.loan-card.closed{border-color:#e2e8f0;opacity:.7}.loan-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px}.loan-title{font-size:13px;font-weight:900}.loan-note{font-size:11px;color:var(--text-muted);margin-top:3px}.loan-rate{font-size:11px;color:var(--interest);font-weight:800;background:var(--interest-bg);padding:4px 9px;border-radius:12px;flex-shrink:0}.loan-menu-btn{position:absolute;top:10px;right:10px;background:var(--bg);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;z-index:2}.loan-menu-btn:active{background:var(--primary-lighter)}.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.loan-item{padding:9px 10px;background:var(--bg);border-radius:8px}.loan-item-label{font-size:9px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.3px}.loan-item-value{font-size:14px;font-weight:900;margin-top:3px;letter-spacing:-.3px}.loan-item-value.amber{color:var(--interest)}.loan-item-value.red{color:var(--credit)}.loan-item-value.green{color:var(--debit)}.loan-item-value.blue{color:var(--info)}.loan-progress{margin-top:10px;background:var(--bg);border-radius:6px;height:6px;overflow:hidden}.loan-progress-bar{height:100%;background:var(--gradient);transition:width .4s}.loan-progress-text{font-size:10px;color:var(--text-muted);margin-top:5px;font-weight:700}.loan-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;margin-top:10px;letter-spacing:.3px}.loan-status.active{background:#dcfce7;color:#15803d}.customer-history-totals{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0 12px}.customer-history-total{min-width:0;display:flex;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid var(--border);border-radius:11px;background:var(--white)}.customer-history-total span{font-size:10px;font-weight:700;color:var(--text-muted)}.customer-history-total strong{font-size:14px;line-height:1.25;overflow-wrap:anywhere}.customer-history-total.received strong{color:var(--debit)}.customer-history-total.given strong{color:var(--credit)}.customer-history-total.balance{grid-column:1/-1;display:flex;flex-direction:row;align-items:center;justify-content:space-between}.customer-history-total.balance strong{font-size:16px;color:var(--text)}@media(max-width:360px){.customer-history-total{padding:8px}.customer-history-total strong{font-size:12px}}.customer-history-head{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap}.customer-history-head .section-title{flex:1;min-width:0;font-size:11px;letter-spacing:.6px;white-space:nowrap}.customer-history-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}.history-reminder-toggle{padding:7px 9px;font-size:11px}.customer-history-head .more-btn{min-height:34px;font-size:11px;padding:0 8px}
-/* 🎨 History totals colors — Giving = Red, Received = Green, Total = Gold */
+/* 🎨 NEW: History totals colors — Giving = Red, Received = Green, Total = Gold */
 .history-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}
 .history-totals>div{min-width:0;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;gap:4px;font-weight:800;position:relative;overflow:hidden}
 .history-totals>div span{font-size:10px;text-transform:uppercase;letter-spacing:.6px;opacity:.92;font-weight:800}
@@ -205,7 +205,8 @@
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.customer-history-head{flex:0 0 auto;margin-top:0}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.txn-history-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.loan-card,#screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.section-title{flex:0 0 auto}
-/* Home scroll hang fix — जब customer-mode हटती है, Home को normal scroll बहाल करो */
+/* 🔧 NEW: Home scroll hang fix — जब customer-mode class हटती है, तब यह rule Home को normal scroll बहाल करता है।
+   कुछ Android WebViews :has() और contain:layout की state cache कर लेते हैं, जिससे overflow:hidden अटक जाता है। */
 #screenContainer:not(.customer-mode){overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:calc(128px + env(safe-area-inset-bottom, 0px))!important}
 
 @media(max-width:380px){.customer-history-head .section-title{font-size:10px}.customer-history-actions{gap:4px}.customer-history-head .more-btn,.history-reminder-toggle{padding-left:6px;padding-right:6px;font-size:10px}}
@@ -369,10 +370,10 @@
               <span class="android-setting-chevron">⌄</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>👤 <b>नाम</b></span><em id="pOwnerName">-</em></div>
-              <div class="android-sub-row"><span>🏪 <b>Business Name</b></span><em id="sShopName">-</em></div>
-              <div class="android-sub-row"><span>📱 <b>मोबाइल</b></span><em id="pPhone">-</em><i>🔒</i></div>
-              <div class="android-sub-row"><span>📧 <b>ईमेल आईडी</b></span><em id="pEmail">-</em><i>🔒</i></div>
+              <div class="android-sub-row"><span>👤 <b>नाम</b></span><em id="pOwnerName">—</em></div>
+              <div class="android-sub-row"><span>🏪 <b>Business Name</b></span><em id="sShopName">—</em></div>
+              <div class="android-sub-row"><span>📱 <b>मोबाइल</b></span><em id="pPhone">—</em><i>🔒</i></div>
+              <div class="android-sub-row"><span>📧 <b>ईमेल आईडी</b></span><em id="pEmail">—</em><i>🔒</i></div>
               <div class="android-setting-note">🔒 मोबाइल और ईमेल locked हैं। नाम और Business Name को उनकी row पर क्लिक करके update किया जा सकता है।</div>
             </div>
           </section>
@@ -384,7 +385,7 @@
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>💳 <b>UPI ID</b></span><em id="sUpiId">-</em></div>
+              <div class="android-sub-row"><span>💳 <b>UPI ID</b></span><em id="sUpiId">—</em></div>
               <div class="android-setting-note">आपकी UPI ID ग्राहक के payment link और QR code में इस्तेमाल होगी।</div>
             </div>
           </section>
@@ -475,7 +476,9 @@
     </div>
   </div>
 
-  <button class="fab hidden" id="fab" onclick="openAddCustomer()">+</button>
+  <button class="fab hidden" id="fab" onclick="openAddCustomer()" aria-label="Add customer">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
 
   <div class="bottom-tabs hidden" id="bottomTabs">
     <button class="btab active" data-view="dashboard" onclick="switchTab('dashboard')"><div class="btab-icon">🏠</div><div class="btab-label" id="btH">होम</div></button>
@@ -701,6 +704,32 @@ initAppHistory();
 
 function fmt(n){return '₹'+Math.round(Math.abs(n)||0).toLocaleString('en-IN')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* ============================================================
+   ✅ CLEAN HELPERS — phone se +,-,space hatao; labels consistent
+============================================================ */
+function cleanPhone(phone){return String(phone||'').replace(/[^\d]/g,'')}
+function displayPhone(phone){
+  const c=cleanPhone(phone);
+  if(c.length===10)return c.replace(/(\d{5})(\d{5})/,'$1 $2');
+  if(c.length===12&&c.startsWith('91'))return c.slice(0,2)+' '+c.slice(2,7)+' '+c.slice(7);
+  return c||'';
+}
+/* एक ही transaction type label सब जगह — email, WhatsApp, SMS, PDF */
+function getTxnTypeLabel(type){
+  const labels={
+    udhaar:{hi:'पेमेंट दिया',en:'Payment Given'},
+    jama:{hi:'भुगतान प्राप्त',en:'Payment Received'},
+    byaj_loan:{hi:'ब्याज पर लोन',en:'Interest Loan'},
+    loan_repay:{hi:'लोन वसूली',en:'Loan Repayment'},
+    interest_paid:{hi:'ब्याज भुगतान',en:'Interest Payment'}
+  };
+  const l=labels[type];
+  if(!l)return type||'—';
+  return currentLang==='en'?l.en:l.hi;
+}
+/* ============================================================ */
+
 function t(en,hi){
   const lang = (window.BSR_I18N && BSR_I18N.supported.includes(currentLang)) ? currentLang : 'en';
   if (lang === 'hi') return hi;
@@ -749,12 +778,12 @@ function compareTxnAsc(a,b){
 }
 function dateStr(d){
   const date=toDateObject(d);
-  if(!date||Number.isNaN(date.getTime()))return '-';
+  if(!date||Number.isNaN(date.getTime()))return '—';
   return `${pad2(date.getDate())}/${pad2(date.getMonth()+1)}/${date.getFullYear()}`;
 }
 function dateTimeStr(value){
   const date=toDateObject(value);
-  if(!date||Number.isNaN(date.getTime()))return '-';
+  if(!date||Number.isNaN(date.getTime()))return '—';
   return `${pad2(date.getDate())}/${pad2(date.getMonth()+1)}/${date.getFullYear()}, ${date.toLocaleTimeString(currentLang==='hi'?'hi-IN':'en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})}`;
 }
 function txnDateTimeStr(tx){
@@ -920,7 +949,7 @@ function getCustomerViewLink(token){return CUSTOMER_VIEW_BASE_URL + '?token=' + 
 async function sendTransactionEmail(customer, txnType, amount, note, date, newBalance) {
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
-    const typeLabels = {udhaar:'पेमेंट दिया गया',jama:'भुगतान प्राप्त हुआ',byaj_loan:'ब्याज पर लोन',loan_repay:'लोन वसूली',interest_paid:'ब्याज भुगतान'};
+    // ✅ अब helper से label — WhatsApp/SMS/PDF के साथ consistent
     const fullCustomer=customers.find(x=>x.email===customer.email);
     const viewLink=fullCustomer&&fullCustomer.viewToken?getCustomerViewLink(fullCustomer.viewToken):'';
     console.log('📧 Sending customer email');
@@ -929,9 +958,9 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       customer_email: customer.email,
       shop_name: userData?.shopName || 'BSRPRO Digital Khata',
       shop_email: currentUser.email,
-      transaction_type: typeLabels[txnType] || txnType,
+      transaction_type: getTxnTypeLabel(txnType),
       amount: (amount || 0).toLocaleString('en-IN'),
-      note: note || '-',
+      note: note || '—',
       date: dateStr(date),
       balance: Math.abs(newBalance).toLocaleString('en-IN'),
       view_link: viewLink
@@ -947,7 +976,8 @@ async function fixAllBalances(){
   // Dry run: pehle sirf dikhao kya badlega, confirm ke baad hi likho
   const plan=Ledger.balanceFixPlan(customers,transactions);
   if(plan.length===0)return toast(t('All balances are already correct','सभी बैलेंस पहले से सही हैं'),'success');
-  const preview=plan.slice(0,8).map(p=>`${p.name||p.id}: ${fmt(p.from)} → ${fmt(p.to)}`).join('\n');
+  // ✅ arrow (→) हटाया, "से" लगाया
+  const preview=plan.slice(0,8).map(p=>`${p.name||p.id}: ${fmt(p.from)} से ${fmt(p.to)}`).join('\n');
   if(!confirm(`${plan.length} ग्राहकों का सेव्ड बैलेंस ट्रांज़ैक्शन से मेल नहीं खाता।\n\n${preview}${plan.length>8?'\n...':''}\n\nसही करें? (सिर्फ़ बैलेंस बदलेगा, ट्रांज़ैक्शन नहीं)`))return;
   try{
     toast('Balance fix हो रहा है...','success');
@@ -1004,17 +1034,6 @@ async function backfillViewTokens(){
 /* ============ PIN ============ */
 function showPinScreen(mode,title,subtitle,callback){
   if(pinInputTimer)clearTimeout(pinInputTimer);
-
-  /* 🔧 FIX 1: PIN screen से पहले कोई भी खुला modal / settings panel हटाओ।
-     वरना loan detail / more menu modal PIN के ऊपर या बीच में अटका रहता है। */
-  document.querySelectorAll('.modal-overlay, .settings-panel-overlay').forEach(el=>el.remove());
-  document.body.classList.remove('settings-panel-open');
-
-  /* 🔧 FIX 2: Screen container को top पर scroll करो।
-     अगर user लंबे screen पर था तो scrollTop > 0 था, इसलिए PIN prompt नीचे दिख रहा था। */
-  const sc=document.getElementById('screenContainer');
-  if(sc) sc.scrollTop=0;
-
   pinMode=mode;pendingPIN='';pinActionCallback=callback||null;
   if(mode.startsWith('change-') && !pinReturnScreen)pinReturnScreen='settings';
   pinOriginScreen=(currentScreen==='pin')?pinOriginScreen:((currentScreen&&currentScreen!=='loading')?currentScreen:null);
@@ -1033,10 +1052,6 @@ function showPinScreen(mode,title,subtitle,callback){
   document.getElementById('topTitle').textContent='🔐 PIN';
   const canGoBack=!!pinReturnScreen;
   document.getElementById('backBtn').classList.toggle('hidden',!canGoBack);
-
-  /* 🔧 FIX 2 (continued): DOM paint के बाद भी scrollTop 0 पर lock रखो। */
-  requestAnimationFrame(()=>{ if(sc) sc.scrollTop=0; });
-
   // Native mobile keyboard: focus after the PIN screen is visible.
   setTimeout(focusPinInput,80);
   // Biometric unlock (fingerprint / face) is offered on every PIN "verify" prompt when enabled on this device.
@@ -1351,8 +1366,8 @@ function showScreen(name, noPush){
   const screenContainer = document.getElementById('screenContainer');
   screenContainer.classList.toggle('dashboard-mode', name === 'dashboard');
   screenContainer.classList.toggle('customer-mode', name === 'customer');
-  // Force a synchronous style flush. Some Android WebViews cache :has() and
-  // contain:layout state; without this, Home can stay stuck with overflow:hidden
+  // 🔧 NEW: Home scroll hang fix — Force a synchronous style flush. Some Android WebViews cache
+  // :has() and contain:layout state; without this, Home can stay stuck with overflow:hidden
   // inherited from the previous customer-mode, and the page refuses to scroll.
   void screenContainer.offsetHeight;
   const restoreDash=(name==='dashboard'&&prevScreen==='customer'&&dashScrollSaved)?dashScrollSaved:null;
@@ -1631,7 +1646,7 @@ function renderDashboard(){
     const total=s.grandTotal;
     return`<div class="customer-card" data-customer-id="${esc(s.id)}" role="button" tabindex="0" aria-label="${esc(s.name||'Customer')}">
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
-         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div></div>
+         <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(displayPhone(s.phone)||'—')}</div></div></div>
        <div class="cc-breakdown">
         <div class="cc-stat"><div class="cc-box-label">${t('Udhaar','पेमेंट')}</div><div class="cc-box-value">${fmt(s.udhaarBalance)}</div></div>
         <div class="cc-stat"><div class="cc-box-label">${t('Byaj','ब्याज')}</div><div class="cc-box-value">${fmt(s.byajBalance)}</div></div>
@@ -1768,7 +1783,9 @@ function renderCustomerDetail(){
     ${loansHtml}${txnHtml}`;
 }
 
-/* ============ CUSTOMER "MORE" BOTTOM SHEET ============ */
+/* ============ CUSTOMER "MORE" BOTTOM SHEET ============
+   Every row calls an existing, real handler. The sheet is closed first so that
+   handlers which open their own modal (showModal) do not stack. */
 function moreRun(code){closeModal();setTimeout(()=>{try{(new Function('return ('+code+')'))()}catch(e){console.error('[MORE]',e);toast('Error: '+e.message,'error')}},60)}
 function openMoreMenu(){
   const c=customers.find(x=>String(x.id)===String(currentCustomerId));
@@ -1793,7 +1810,9 @@ function openMoreMenu(){
    <div class="modal-actions"><button class="btn btn-secondary" type="button" onclick="closeModal()">${t('Close','बंद करें')}</button></div>`);
 }
 
-/* ============ वसूली (RECOVERY) ============ */
+/* ============ वसूली (RECOVERY) ============
+   List = Recovery.buildRecoveryList (amount from the canonical Ledger, FIFO ageing).
+   WhatsApp opens a pre-filled message; "भेजा" only means the chat was OPENED, not delivered. */
 let recoveryFilter='all',recoveryOpened={};
 function getRecoveryRows(){
   return Recovery.buildRecoveryList(Ledger,customers,transactions,new Date(),{mode:APP_CONFIG.interestMode});
@@ -1818,13 +1837,13 @@ function openRecovery(filter){
   const lbl={ok:t('0-7 days','0-7 दिन'),due:t('8-30 days','8-30 दिन'),late:t('31-90 days','31-90 दिन'),critical:t('90+ days','90+ दिन')};
   const rowHtml=r=>{
     const sent=recoveryOpened[r.id];const id=JSON.stringify(String(r.id));
-    const ph=String(r.phone||'').replace(/\D/g,'').slice(-10);
+    const ph=cleanPhone(r.phone).slice(-10);
     return `<div class="rec-row"><div class="rec-top"><div class="rec-name">${esc(r.name)}</div><div class="rec-amt">${fmt(r.due)}</div></div>
       <div class="rec-meta"><span class="rec-badge ${r.bucket}">${r.daysOverdue} ${t('days','दिन')}</span>${r.sinceLastPayment!=null?`<span>${t('Last payment','आखिरी भुगतान')}: ${r.sinceLastPayment} ${t('days ago','दिन पहले')}</span>`:`<span>${t('No payment yet','अभी तक भुगतान नहीं')}</span>`}${r.interestDue>0?`<span>${t('Interest','ब्याज')} ${fmt(r.interestDue)}</span>`:''}</div>
       <div class="rec-actions"><button type="button" class="wa ${sent?'sent':''}" onclick='recoveryRemind(${id})'>${sent?'✔ '+t('Opened','खोला गया'):'💬 WhatsApp'}</button>
       ${ph.length===10?`<a href="tel:${ph}">📞 ${t('Call','कॉल')}</a>`:''}<button type="button" onclick='recoveryOpenCustomer(${id})'>${t('Open','खोलें')}</button></div></div>`;
   };
-  const nextRow=list.find(r=>!recoveryOpened[r.id]&&String(r.phone||'').replace(/\D/g,'').length>=10);
+  const nextRow=list.find(r=>!recoveryOpened[r.id]&&cleanPhone(r.phone).length>=10);
   showModal(`<div class="modal-handle"></div><div class="modal-title">⏰ ${t('Recovery list','वसूली सूची')}</div>
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${s.count} ${t('customers owe','ग्राहकों पर बकाया')} • <b style="color:var(--text)">${fmt(s.total)}</b></div>
     <div class="rec-chips">${chip('all',t('All','सभी'),s.count)}${['critical','late','due','ok'].map(k=>chip(k,lbl[k],s[k])).join('')}</div>
@@ -1843,7 +1862,10 @@ function recoveryRemind(id){
 }
 function recoveryOpenCustomer(id){closeModal();openCustomer(id)}
 
-/* ============ OFFLINE QUEUE (udhaar / jama) ============ */
+/* ============ OFFLINE QUEUE (udhaar / jama) ============
+   Used ONLY when the phone is offline; the normal online save is unchanged.
+   Each queued entry has its own Firestore doc id, so a retry can never create a duplicate
+   (the server is checked for that id first). Queued entries are NOT in any balance until synced. */
 let outboxSyncing=false;
 function getOutbox(){try{return currentUser?Outbox.create(window.localStorage,currentUser.uid):null}catch(e){return null}}
 function queueOfflineTxn({customerId,type,amt,note,date}){
@@ -1870,7 +1892,7 @@ async function syncOutbox(manual){
   outboxSyncing=true;
   try{
     await dataReady;
-    if(!customers.length)return;
+    if(!customers.length)return;                       // customers not loaded yet: do nothing (never mark failed by mistake)
     const base=db.collection('users').doc(currentUser.uid),FV=firebase.firestore.FieldValue,touched=new Set();
     const r=await Outbox.replay(ob,{
       isOnline:()=>navigator.onLine!==false,
@@ -1913,7 +1935,7 @@ function getProfilePhotoUrl(){
   return currentUser?.photoURL || userData?.photoURL || userData?.profilePhoto || userData?.profileImage || userData?.photo || '';
 }
 function getSharePhone(phone){
-  const clean=String(phone||'').replace(/\D/g,'');
+  const clean=cleanPhone(phone);
   if(clean.length===10)return '91'+clean;
   if(clean.length>=11)return clean;
   return '';
@@ -1922,7 +1944,7 @@ function getCustomerShareMessage(c,s){
   const name=String(c?.name||'ग्राहक').trim();
   const shop=String(userData?.shopName||'').trim();
   const owner=String(userData?.profileName||userData?.ownerName||'').trim();
-  const phone=String(userData?.phone||'').trim();
+  const phone=cleanPhone(userData?.phone); // ✅ +, -, space हटाओ
   const total=Math.max(0,Math.round(Number(s?.grandTotal)||0));
   const udhaar=Math.max(0,Math.round(Number(s?.udhaarBalance)||0));
   const loan=Math.max(0,Math.round(Number(s?.byajBalance)||0));
@@ -1944,13 +1966,14 @@ function getCustomerShareMessage(c,s){
   lines.push('');
   if(shop)lines.push(shop);
   if(owner)lines.push(owner);
-  if(phone)lines.push(`मोबाइल: ${phone}`);
+  if(phone)lines.push(`मोबाइल: ${displayPhone(phone)}`); // ✅ formatted, no +
   return lines.join('\n');
 }
 function getShareCardData(c,s){
   return {name:String(c?.name||'ग्राहक'),shop:String(userData?.shopName||'').trim(),owner:String(userData?.profileName||userData?.ownerName||'').trim(),phone:String(userData?.phone||'').trim(),amount:Math.max(0,Math.round(Number(s?.grandTotal)||0)),udhaar:Math.max(0,Math.round(Number(s?.udhaarBalance)||0)),loan:Math.max(0,Math.round(Number(s?.byajBalance)||0)),link:c?.viewToken?getCustomerViewLink(c.viewToken):'',upiId:String(userData?.upiId||'').trim(),upiUrl:buildUpiPaymentUrl(c,Math.max(0,Math.round(Number(s?.grandTotal)||0)))};
 }
 function buildUpiPaymentUrl(customer,amount){
+  // Validation + encoding Ledger.buildUpiUrl mein (portal bhi yahi use karta hai)
   return Ledger.buildUpiUrl(userData?.upiId,amount);
 }
 function openUpiPayment(id){
@@ -1969,7 +1992,7 @@ function openShareHisaab(id){
   const phoneState=getSharePhone(c.phone)?'':'<div style="color:var(--credit);font-size:11px;font-weight:800;margin-top:8px;text-align:center">⚠️ ग्राहक का सही मोबाइल नंबर सेव करें</div>';
   showModal(`<div class="modal-handle"></div><div class="modal-title">📤 ${t('Share Hisaab','हिसाब शेयर करें')}</div>
     <div class="share-reminder-preview">
-      <div class="share-reminder-head">${avatar}<div><div class="share-reminder-name">${esc(data.shop||'')}</div><div class="share-reminder-owner">${esc(data.owner||'')}</div><div class="share-reminder-phone">📞 ${esc(data.phone||'-')}</div></div></div>
+      <div class="share-reminder-head">${avatar}<div><div class="share-reminder-name">${esc(data.shop||'')}</div><div class="share-reminder-owner">${esc(data.owner||'')}</div><div class="share-reminder-phone">📞 ${esc(displayPhone(data.phone)||'—')}</div></div></div>
       <div class="share-reminder-due"><div class="share-reminder-due-label">${data.amount>0?'Payment Due Reminder!':'Hisaab Clear'}</div><div class="share-reminder-due-amount">₹${data.amount.toLocaleString('en-IN')}</div></div>
     </div>
     <div class="share-reminder-message">${esc(message)}</div>
@@ -2020,6 +2043,7 @@ async function buildShareReminderImage(id){
   bg.addColorStop(0,'#078b3d');bg.addColorStop(1,'#13843c');
   ctx.fillStyle=bg;ctx.fillRect(0,0,1080,740);
 
+  // Use the user's BSR PRO logo whenever a profile photo is not available.
   const photo=await loadShareCardImage(getProfilePhotoUrl());
   const logoUrl=new URL('assets/guru-shree-logo.jpg?v=20260929-5',location.href).href;
   const logo=await loadShareCardImage(logoUrl);
@@ -2037,15 +2061,17 @@ async function buildShareReminderImage(id){
   ctx.textAlign='left';ctx.fillStyle='#fff';
   ctx.font='800 39px Arial,sans-serif';ctx.fillText(d.owner||'Profile',224,91);
   ctx.font='600 27px Arial,sans-serif';ctx.fillStyle='rgba(255,255,255,.94)';
-  if(d.phone)ctx.fillText(d.phone,224,139);
+  if(d.phone)ctx.fillText(displayPhone(d.phone),224,139);
   if(d.shop)ctx.fillText(d.shop,224,176);
 
+  // Own branding only: BSR PRO / DIGITAL KHATA APP.
   if(logo){
     ctx.save();roundRect(ctx,662,42,82,82,18);ctx.clip();ctx.drawImage(logo,662,42,82,82);ctx.restore();
   }
   ctx.fillStyle='#fff';ctx.font='900 35px Arial,sans-serif';ctx.fillText('BSR PRO',760,78);
   ctx.font='800 24px Arial,sans-serif';ctx.fillText('DIGITAL KHATA APP',760,112);
 
+  // Main reminder card: the amount is the focus, like the supplied reference.
   roundRect(ctx,20,244,1040,342,34);ctx.fillStyle='#fff';ctx.fill();
   ctx.textAlign='center';ctx.fillStyle='#111827';
   ctx.font='800 36px Arial,sans-serif';
@@ -2053,6 +2079,7 @@ async function buildShareReminderImage(id){
   ctx.font='900 88px Arial,sans-serif';
   ctx.fillText('₹'+d.amount.toLocaleString('en-IN'),540,466);
 
+  // Bottom branding.
   if(logo){
     ctx.save();roundRect(ctx,455,625,70,70,16);ctx.clip();ctx.drawImage(logo,455,625,70,70);ctx.restore();
   }
@@ -2101,8 +2128,8 @@ function shareCustomerLinkWhatsApp(id){
   const c=customers.find(x=>x.id===id);
   if(!c||!c.phone)return toast('फोन नंबर नहीं है','error');
   const link=getCustomerViewLink(c.viewToken);
-  const msg=`नमस्ते ${c.name},\n\nआपका खाता देखने के लिए यह लिंक खोलें:\n${link}\n\n— ${userData.shopName||'दुकान'}${userData.ownerName?'\n'+userData.ownerName:''}${userData.phone?'\n📞 '+userData.phone:''}`;
-  const clean=(c.phone||'').replace(/\D/g,'');
+  const msg=`नमस्ते ${c.name},\n\nआपका खाता देखने के लिए यह लिंक खोलें:\n${link}\n\n— ${userData.shopName||'दुकान'}${userData.ownerName?'\n'+userData.ownerName:''}${userData.phone?'\n📞 '+displayPhone(userData.phone):''}`;
+  const clean=cleanPhone(c.phone);
   const fullPhone=clean.length===10?'91'+clean:clean;
   window.open(`https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
@@ -2111,7 +2138,7 @@ function showDeletedTxnDetails(id){
   const txn=transactions.find(t=>t.id===id);if(!txn)return;
   const amount=txn.type==='byaj_loan'?(Number(txn.principal)||Number(txn.amount)||0):Number(txn.amount)||0;
   const deletedAt=txn.deletedAt||txn.deletedAtLocal||null;
-  const typeLabel={udhaar:t('Udhaar','पेमेंट'),jama:t('Payment','जमा'),byaj_loan:t('Loan','लोन'),loan_repay:t('Loan Repayment','लोन वापसी'),interest_paid:t('Interest Paid','ब्याज भुगतान')}[txn.type]||txn.type;
+  const typeLabel={udhaar:t('Udhaar','पेमेंट'),jama:t('Payment','जमा'),byaj_loan:t('Loan','लोन'),loan_repay:t('Loan Repayment','लोन वसूली'),interest_paid:t('Interest Paid','ब्याज भुगतान')}[txn.type]||txn.type;
   showModal(`<div class="modal-handle"></div>
     <div class="modal-title">🗑️ ${t('Deleted Transaction','हटाया गया लेन-देन')}</div>
     <div class="deleted-detail-status">✓ ${t('Sync Successful','सिंक सफल')}</div>
@@ -2121,7 +2148,7 @@ function showDeletedTxnDetails(id){
       <div><span>${t('Transaction Date','लेन-देन तारीख')}</span><b>${dateStr(txn.date||txn.startDate)}</b></div>
       <div><span>${t('Transaction Time','लेन-देन समय')}</span><b>${txnDateTimeStr(txn).split(', ').slice(-1)[0]}</b></div>
       <div><span>${t('Deleted On','डिलीट किया गया')}</span><b>${dateTimeStr(deletedAt)}</b></div>
-      <div><span>${t('Deleted By','डिलीट करने वाला')}</span><b>${txn.deletedBy?'You':'-'}</b></div>
+      <div><span>${t('Deleted By','डिलीट करने वाला')}</span><b>${txn.deletedBy?'You':'—'}</b></div>
       <div class="full"><span>${t('Reason','कारण')}</span><b>${esc(txn.deletionReason||t('No reason given','कोई कारण नहीं दिया गया'))}</b></div>
     </div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Close','बंद करें')}</button></div>`);
@@ -2201,16 +2228,19 @@ function txnShareTime(txn){
     const n=Number(h); return `${pad2(n%12||12)}:${m} ${n>=12?'pm':'am'}`;
   });
 }
+/* ✅ FIX: अब c.balance (सिर्फ udhaar) की जगह getSummary().grandTotal (udhaar + loan principal + interest)
+   का इस्तेमाल होता है — WhatsApp message screen के बकाया के साथ match करेगा। */
 function getTxnShareMessage(txn,customer){
   const c=customer||getTxnShareCustomer(txn);
   const amount=txn?.type==='byaj_loan'?(Number(txn?.principal)||Number(txn?.amount)||0):Number(txn?.amount)||0;
-  const typeLabel={udhaar:'पेमेंट',jama:'जमा भुगतान',byaj_loan:'ब्याज पर लोन',loan_repay:'लोन वापसी',interest_paid:'ब्याज भुगतान'}[txn?.type]||'लेन-देन';
-  const due=Math.max(0,Math.round(Number(c?.balance)||0));
+  const typeLabel=getTxnTypeLabel(txn?.type);
+  const sum=c?getSummary(c.id):null;
+  const due=Math.max(0,Math.round(Number(sum?.grandTotal)||0));
   const customerName=shareDisplayName(c?.name,'ग्राहक');
   const shop=shareDisplayName(userData?.shopName);
   const owner=shareDisplayName(userData?.ownerName);
   const lines=[
-    'BSR-PRO-KHATABOOK-APP - लेन-देन सूचना',
+    'BSRPRO Digital Khata - लेन-देन सूचना',
     '',
     `नमस्ते ${customerName} जी,`,
     `लेन-देन: ${typeLabel}`,
@@ -2271,6 +2301,7 @@ async function saveEditedTxn(id){
   const newAmt=parseFloat(document.getElementById('mAmt')?.value);
   const newNote=document.getElementById('mNote')?.value.trim()||'';
   const newDate=document.getElementById('mDate')?.value||'';
+  // Edit time is automatic: use the current local time when the edit is saved.
   const newTime=localTimeInputValue(new Date());
   if(!newAmt||newAmt<=0)return toast(t('Enter amount','रकम डालें'),'error');
   if(!newDate)return toast(t('Enter date','तारीख डालें'),'error');
@@ -2294,10 +2325,12 @@ async function saveEditedTxn(id){
       const oldAmt=Number(current.amount)||0;
       const oldType=String(current.type||'');
 
+      // Derived loan-payment records must remain aligned with parent-loan history.
       if(oldType==='loan_repay'||oldType==='interest_paid'){
         throw new Error('Derived loan transaction cannot be edited independently');
       }
 
+      // Only normal Udhaar/Jama transactions affect the party balance.
       let balanceDelta=0;
       if(oldType==='udhaar')balanceDelta-=oldAmt;
       else if(oldType==='jama')balanceDelta+=oldAmt;
@@ -2412,6 +2445,7 @@ async function saveEditedLoan(id){
     const editLoanTime=localTimeInputValue(new Date());
     const editLoanDateTime=makeDateTimeISO(newStart,editLoanTime);
     const updateData = {principal:newP,rate:newR,startDate:newStart,note:newNote,date:newStart,time:editLoanTime,dateTime:editLoanDateTime,transactionAt:editLoanDateTime,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+    /* Byaj ke terms: Simple <-> Compound, frequency, rate unit, due date (sirf badle hue fields likhe jate hain) */
     const FV=firebase.firestore.FieldValue;
     const _unitRaw=document.getElementById('mRateUnit')?.value;const _unit=_unitRaw==='year'?'year':(_unitRaw==='halfyear'?'halfyear':'month');
     const _it=document.getElementById('mIntType')?.value==='compound'?'compound':'simple';
@@ -2484,6 +2518,8 @@ function openAddCustomer(){
   setTimeout(()=>document.getElementById('mName')?.focus(),300);
 }
 async function pickCustomerFromContacts(){
+  // Native Android picker opens only after an explicit tap and returns one selected name/phone.
+  // It does not enumerate the address book or upload contact data in the background.
   try{
     const nativePicker=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.BsrContactsPicker;
     if(nativePicker&&typeof nativePicker.pickContact==='function'){
@@ -2496,6 +2532,7 @@ async function pickCustomerFromContacts(){
       return;
     }
   }catch(e){ if(e&&e.message&&/cancel/i.test(e.message))return; console.warn('Native contact picker failed; trying browser picker',e); }
+  // Browser Contact Picker fallback. It returns only fields explicitly selected by the user.
   const picker=navigator.contacts;
   if(!picker || typeof picker.select!=='function'){
     toast(t('Contact picker is not supported on this device. Enter details manually.','इस डिवाइस पर कॉन्टैक्ट पिकर उपलब्ध नहीं है। जानकारी हाथ से भरें।'),'error');
@@ -2531,6 +2568,8 @@ async function saveCustomer(){
     const partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc();
     const batch=db.batch();
     
+    // Customer creation is intentionally balance-neutral. Udhaar/Jama must be recorded
+    // afterward through the transaction flow, where date and time can be entered/edited.
     const partyData = {name,phone,email,balance:0,viewToken};
     batch.set(partyRef, partyData);
     
@@ -2587,6 +2626,9 @@ async function deleteCustomer(){
     const customerId=String(currentCustomerId||'').trim();
     if(!uid||!customerId)throw new Error('Invalid customer');
 
+    // Never destructively delete a customer that has ledger history.
+    // The previous implementation deleted transactions in batches first,
+    // which could leave permanent partial deletion if a later write failed.
     const txCol=db.collection('users').doc(uid).collection('transactions');
     const txSnap=await txCol.where('partyId','==',customerId).limit(1).get();
     if(!txSnap.empty){
@@ -2603,6 +2645,7 @@ async function deleteCustomer(){
       ? db.collection('publicViews').doc(String(c.viewToken))
       : null;
 
+    // No ledger history exists, so remove the party and public view together.
     await db.runTransaction(async(transaction)=>{
       const partySnap=await transaction.get(partyRef);
       if(!partySnap.exists)throw new Error('Customer not found');
@@ -2667,12 +2710,14 @@ async function saveTxn(type){
   if(!customerId||!c)return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
   if(type!=='udhaar'&&type!=='jama')return toast(t('Invalid transaction type','लेन-देन प्रकार गलत है'),'error');
 
+  /* Credit limit: warn only (customers without a limit are not affected at all). */
   if(type==='udhaar'&&Number(c.creditLimit)>0){
     const cur=Ledger.customerState(getPartyTransactions(customerId),new Date(),{mode:APP_CONFIG.interestMode}).totalOutstanding;
     const lm=Recovery.checkLimit(c.creditLimit,cur,amt);
     if(lm.exceeds&&!confirm(t('Credit limit '+fmt(lm.limit)+' will be crossed (new due '+fmt(lm.newDue)+'). Add anyway?','पेमेंट सीमा '+fmt(lm.limit)+' पार हो जाएगी (नया बकाया '+fmt(lm.newDue)+')। फिर भी जोड़ें?')))return;
   }
 
+  /* Offline: queue safely (see OFFLINE QUEUE). The online path below is unchanged. */
   if(typeof navigator!=='undefined'&&navigator.onLine===false){queueOfflineTxn({customerId,type,amt,note,date});return}
   if(!requireOnline())return;
   ledgerWriteBusy=true;
@@ -2699,6 +2744,8 @@ async function saveTxn(type){
     closeModal();
     toast(t('Saved','सेव हो गया'),'success');
 
+    // Financial write is already committed. Public view/email are secondary;
+    // their failure must never make the user retry the ledger write.
     try{
       const freshParty=await partyRef.get();
       if(!freshParty.exists)throw new Error('Customer not found after save');
@@ -2717,7 +2764,9 @@ async function saveTxn(type){
           const smsSent=await sendNativeSms(c,smsMessageForTransaction(c,type,amt,newBal));
           if(smsSent)setTimeout(()=>toast('📱 SMS भेज दिया गया','success'),1400);
         }
-        if(type==='udhaar') await scheduleUdhaarReminder(c,{id:txnRef.id,date},newBal);
+        /* ✅ FIX: नया udhaar आने पर पुराने सारे 7-day reminders भी fresh balance के साथ rebuild होंगे
+           (पहले सिर्फ नया जुड़ता था — पुराने stale amount के साथ जाते थे) */
+        if(type==='udhaar') await refreshCustomerSmsReminders(c,newBal,{id:txnRef.id,date});
         if(type==='jama') await refreshCustomerSmsReminders(c,newBal);
       }
     }catch(syncErr){
@@ -3033,7 +3082,7 @@ function renderReports(){
     cancelAnimationFrame(raf);
     raf=requestAnimationFrame(()=>{
       let kb=vv?Math.round(window.innerHeight-vv.height-vv.offsetTop):0;
-      if(!(kb>80))kb=0;
+      if(!(kb>80))kb=0; /* chhote farak (URL bar/inset) ignore */
       root.style.setProperty('--kb',kb+'px');
       if(kb)setTimeout(keepVisible,60);
     });
@@ -3094,6 +3143,7 @@ async function cancelAllSmsReminders(){
   const plugin=getSmsPlugin(); if(!plugin)return;
   await Promise.all(customers.map(c=>cancelCustomerSmsReminders(c.id)));
 }
+/* Settings se wapas aate hi (ek baar) permission check: mil gayi ho to Automatic SMS khud ON. Nahi mili to kuch nahi (koi loop nahi). */
 let _smsResumeArmed=false;
 function armSmsResumeCheck(){
   if(_smsResumeArmed)return; _smsResumeArmed=true;
@@ -3108,6 +3158,9 @@ function armSmsResumeCheck(){
   };
   document.addEventListener('visibilitychange',onVis);
 }
+/* Android 13+: APK file se install (side-load) hui app ko SMS permission "Restricted settings" me block milti hai
+   (dialog: "App was denied access to SMS"). Code se bypass nahi hota; user ko App info me "Allow restricted settings"
+   karna padta hai. Ye guide wahi page khol deta hai. */
 async function showSmsRestrictedGuide(){
   const plugin=getSmsPlugin();
   const msg='SMS permission block है (Android security).\n\nऐसे चालू करें:\n1) App info खुलेगा → ऊपर कोने में ⋮ (3 dots) दबाएँ\n2) "Allow restricted settings" चुनें (फ़ोन lock/PIN माँग सकता है)\n3) Permissions → SMS → Allow\n4) ऐप में वापस आते ही Automatic SMS अपने आप ON हो जाएगा\n\nApp info अभी खोलें?';
@@ -3161,19 +3214,27 @@ async function scheduleUdhaarReminder(customer,txn,balance){
   if(triggerAt<=Date.now())return false;
   try{
     if(!(await ensureSmsPermission()))return false;
-    const name=String(customer.name||'ग्राहक'),amount=Number(balance||0).toLocaleString('en-IN'),shop=String(userData?.shopName||((typeof currentLang!=='undefined' && currentLang==='en')?'Your Shop':'आपका व्यवसाय')),owner=String(userData?.profileName||userData?.ownerName||''),mobile=String(userData?.phone||'');
-    const footer=(typeof currentLang!=='undefined' && currentLang==='en')?'Shop Name: '+shop+(owner?'\nOwner Name: '+owner:'')+(mobile?'\nMobile: '+mobile:''):'दुकान का नाम: '+shop+(owner?'\nमालिक का नाम: '+owner:'')+(mobile?'\nमोबाइल: '+mobile:'');
+    const name=String(customer.name||'ग्राहक'),amount=Number(balance||0).toLocaleString('en-IN'),shop=String(userData?.shopName||((typeof currentLang!=='undefined' && currentLang==='en')?'Your Shop':'आपका व्यवसाय')),owner=String(userData?.profileName||userData?.ownerName||''),mobile=cleanPhone(userData?.phone);
+    const footer=(typeof currentLang!=='undefined' && currentLang==='en')?'Shop Name: '+shop+(owner?'\nOwner Name: '+owner:'')+(mobile?'\nMobile: '+displayPhone(mobile):''):'दुकान का नाम: '+shop+(owner?'\nमालिक का नाम: '+owner:'')+(mobile?'\nमोबाइल: '+displayPhone(mobile):'');
     const message=(typeof currentLang!=='undefined' && currentLang==='en')?'BSRPRO DIGITAL KHATA BOOK\n\nReminder: '+name+' Ji,\nYou have an outstanding balance of ₹'+amount+'.\nPlease make the payment as soon as possible.\n\n'+footer:'BSRPRO डिजिटल खाता बुक\n\nयाद दिलाना: '+name+' जी,\nआपका ₹'+amount+' का बकाया है।\nकृपया जल्द से जल्द पेमेंट करें।\n\n'+footer;
     await plugin.scheduleReminder({id:'udhaar7:'+customer.id+':'+txn.id,phone:String(customer.phone).trim(),message,triggerAt});
     return true;
   }catch(e){console.warn('7-day SMS schedule failed:',e);return false}
 }
-async function refreshCustomerSmsReminders(customer,newBal){
+/* ✅ FIX: अब extraTxn भी accept करता है — नया udhaar आने पर वह भी शेड्यूल होगा, और पुराने सारे reminders
+   fresh balance के साथ दोबारा बनेंगे (stale amount कभी नहीं जाएगा)। */
+async function refreshCustomerSmsReminders(customer,newBal,extraTxn){
   await cancelCustomerSmsReminders(customer.id);
   if(Number(newBal||0)<=0)return;
   const s=getSmsSettings(); if(!s.enabled||!s.reminderSms)return;
   const pending=transactions.filter(tx=>tx.type==='udhaar'&&String(tx.partyId)===String(customer.id)&&tx.status!=='deleted'&&!tx.deletedAt);
-  for(const tx of pending)await scheduleUdhaarReminder(customer,tx,Number(newBal)||0);
+  const all=extraTxn?[...pending,extraTxn]:pending;
+  const seen=new Set();
+  for(const tx of all){
+    if(!tx?.id||seen.has(tx.id))continue;
+    seen.add(tx.id);
+    await scheduleUdhaarReminder(customer,tx,Number(newBal)||0);
+  }
 }
 async function cancelCustomerSmsReminders(customerId){
   const plugin=getSmsPlugin(); if(!plugin)return;
@@ -3213,8 +3274,8 @@ function openSettingsPanel(name){
     body.innerHTML=`<div class="settings-profile-form">
       <div class="settings-field"><label>👤 नाम</label><input id="panelProfileName" class="text-input" value="${esc(userData?.profileName||userData?.ownerName||'')}" autocomplete="name"></div>
       <div class="settings-field"><label>🏪 Business Name</label><input id="panelShopName" class="text-input" value="${esc(userData?.shopName||'')}" autocomplete="organization"></div>
-      <div class="settings-field locked"><label>📱 मोबाइल <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profilePhone||userData?.phone||'-')}</div></div>
-      <div class="settings-field locked"><label>📧 ईमेल आईडी <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profileEmail||currentUser?.email||'-')}</div></div>
+      <div class="settings-field locked"><label>📱 मोबाइल <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(displayPhone(userData?.profilePhone||userData?.phone)||'—')}</div></div>
+      <div class="settings-field locked"><label>📧 ईमेल आईडी <span>🔒 Locked</span></label><div class="settings-locked-value">${esc(userData?.profileEmail||currentUser?.email||'—')}</div></div>
       <div class="settings-form-note">नाम और Business Name को एक साथ Save किया जाएगा। मोबाइल और ईमेल सुरक्षित रूप से locked हैं।</div>
     </div>`;
   }else if(name==='upi'){
@@ -3247,7 +3308,9 @@ async function saveSettingsPanel(name){
     try{
       await db.collection('users').doc(currentUser.uid).set({upiId:upiId||'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
       userData.upiId=upiId||'';
-      const el=document.getElementById('sUpiId');if(el)el.textContent=userData.upiId||'-';
+      const el=document.getElementById('sUpiId');if(el)el.textContent=userData.upiId||'—';
+      // Refresh existing customer portal snapshots so newly added/changed UPI ID
+      // immediately appears with the current outstanding amount.
       for(const customer of customers){
         if(customer.viewToken){
           try{await updatePublicView(customer.id,customer.viewToken,customer)}catch(e){console.warn('Portal UPI refresh skipped:',customer.id,e)}
@@ -3300,19 +3363,21 @@ function renderSettings(){
   if(!userData){showScreen('dashboard',true);return}
   try{updateSmsSettingsUI()}catch(e){console.warn(e)}
   try{updateBiometricUI()}catch(e){console.warn(e)}
-  document.getElementById('pOwnerName').textContent=userData.profileName||userData.ownerName||'-';
-  document.getElementById('pPhone').textContent=userData.profilePhone||userData.phone||'-';
-  document.getElementById('pEmail').textContent=userData.profileEmail||currentUser?.email||'-';
-  const shopEl=document.getElementById('sShopName'); if(shopEl)shopEl.textContent=userData.shopName||'-';
-  const phoneEl=document.getElementById('sPhone'); if(phoneEl)phoneEl.textContent=userData.profilePhone||userData.phone||'-';
+  // ✅ phone display formatted, blank के लिए em dash
+  document.getElementById('pOwnerName').textContent=userData.profileName||userData.ownerName||'—';
+  document.getElementById('pPhone').textContent=displayPhone(userData.profilePhone||userData.phone)||'—';
+  document.getElementById('pEmail').textContent=userData.profileEmail||currentUser?.email||'—';
+  const shopEl=document.getElementById('sShopName'); if(shopEl)shopEl.textContent=userData.shopName||'—';
+  const phoneEl=document.getElementById('sPhone'); if(phoneEl)phoneEl.textContent=displayPhone(userData.profilePhone||userData.phone)||'—';
   const rateEl=document.getElementById('sDefaultRate'); if(rateEl)rateEl.value=userData.defaultRate||2;
+  const upiEl=document.getElementById('sUpiId'); if(upiEl)upiEl.textContent=userData.upiId||'—';
   document.getElementById('topTitle').textContent='⚙️ '+t('Settings / सेटिंग्स','सेटिंग्स');
 }
 function editShop(){
   showModal(`<div class="modal-handle"></div><div class="modal-title">${t('Edit Business','व्यवसाय एडिट')}</div>
     <div class="input-group"><label class="input-label">${t('Business Name','व्यवसाय का नाम')}</label>
       <input type="text" id="mShopName" class="text-input" value="${esc(userData.shopName||'')}"></div>
-    <div style="padding:8px 0 2px;color:var(--text-muted);font-size:11px">🔒 मोबाइल ${esc(userData.phone||'-')} — प्रोफाइल में लॉक है</div>
+    <div style="padding:8px 0 2px;color:var(--text-muted);font-size:11px">🔒 मोबाइल ${esc(displayPhone(userData.phone)||'—')} — प्रोफाइल में लॉक है</div>
     <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">${t('Cancel','रद्द')}</button>
       <button class="btn btn-primary" onclick="saveShop()">${t('Save','सेव')}</button></div>`);
 }
@@ -3363,6 +3428,11 @@ async function loadExportLibrary(url,globalName){
   window.__bspExportLibraries[globalName]=p;try{return await p}catch(e){delete window.__bspExportLibraries[globalName];throw e}
 }
 function buildExportTables(data){
+  // Export tables must describe the exact verified backup snapshot, not a later live state.
+  // This synchronous guard fails closed if customer/transaction listeners changed data after
+  // the backup was hashed; no mixed-snapshot workbook or CSV is emitted.
+  // Backup exports pass a verified payload and must match its exact snapshot. Print reports
+  // intentionally use a live, read-only view and do not pass through the backup pipeline.
   if(data?.data){
     const liveSnapshot=JSON.stringify({user:BackupImport.sanitizeUser(userData),customers:customers.map(BackupImport.sanitizeCustomer),transactions});
     if(liveSnapshot!==JSON.stringify(data.data))throw new Error('Data changed after backup verification; please retry the export.');
@@ -3400,7 +3470,7 @@ function printExportWindow(title,bodyHtml){
   const logoUrl=new URL('assets/guru-shree-logo.svg?v=20261010-1',window.location.href).href;
   const fallbackLogoUrl=new URL('assets/guru-shree-logo.jpg',window.location.href).href;
   const owner=esc(userData?.profileName||userData?.ownerName||'');
-  const phone=esc(userData?.phone||'');
+  const phone=esc(displayPhone(userData?.phone));
   const brandBlock='<div class="brand-head"><img src="'+logoUrl+'" onerror="this.onerror=null;this.src=\''+fallbackLogoUrl+'\'" alt="BSRPRO Digital Khata logo"><div><div class="brand-name">BSRPRO Digital Khata</div><div class="brand-shop">'+shop+'</div>'+ (owner?'<div class="brand-meta">'+owner+'</div>':'') + (phone?'<div class="brand-meta">📞 '+phone+'</div>':'') +'</div></div>';
   const html='<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+ 'body{font-family:Arial,"Noto Sans Devanagari",sans-serif;color:#111827;margin:24px;font-size:11px}'+ '.brand-head{display:flex;align-items:center;gap:14px;padding:0 0 12px;margin-bottom:14px;border-bottom:2px solid #1e1b4b}'+ '.brand-head img{width:58px;height:58px;object-fit:cover;border-radius:14px;border:1px solid #e5e7eb;background:#fff;flex:0 0 58px}'+ '.brand-name{font-size:18px;font-weight:900;letter-spacing:1px}.brand-shop{font-size:16px;font-weight:800;margin-top:2px}.brand-meta{font-size:10px;color:#4b5563;margin-top:2px}'+ 'h1{font-size:22px;margin:0 0 4px}h2{font-size:14px;margin:18px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}'+ '.meta{color:#4b5563;margin-bottom:14px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 18px}.box{border:1px solid #ddd;border-radius:8px;padding:8px}.label{font-size:9px;color:#6b7280}.value{font-size:14px;font-weight:800;margin-top:3px}'+ 'table{width:100%;border-collapse:collapse;margin-top:6px}th,td{border:1px solid #d1d5db;padding:5px 6px;text-align:left;vertical-align:top}th{background:#f3f4f6;font-weight:800}.right{text-align:right}'+ '@media print{body{margin:10mm}.no-print{display:none!important}table{page-break-inside:auto}tr{page-break-inside:avoid;page-break-after:auto}thead{display:table-header-group}.brand-head{break-inside:avoid}}</style></head><body>'+brandBlock+bodyHtml+'<div class="no-print" style="margin-top:20px;color:#6b7280">Generated by BSRPRO Digital Khata</div></body></html>';
   try{w.document.open();w.document.write(html);w.document.close();w.focus()}catch(e){try{w.close()}catch(_){}throw e}
@@ -3413,7 +3483,7 @@ function exportBusinessPdf(){
 function _exportBusinessPdf(){
   try{
     const totals=getTotals();const sorted=buildExportTables({integrity:{orphanTransactions:0,balanceMismatches:0}}).customerRows.slice().sort((a,b)=>(Number(b.grandTotal)||0)-(Number(a.grandTotal)||0));
-    const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
+    const rows=sorted.map(c=>'<tr><td>'+esc(c.name||'—')+'</td><td>'+esc(displayPhone(c.phone)||'—')+'</td><td class="right">'+fmt(c.udhaarBalance)+'</td><td class="right">'+fmt(c.byajBalance)+'</td><td class="right">'+fmt(c.grandTotal)+'</td></tr>').join('');
     const body='<h1>'+esc(userData?.shopName||'BSRPRO Digital Khata')+'</h1><div class="meta">Business Report • '+dateStr(new Date())+'</div>'+
       '<div class="summary"><div class="box"><div class="label">Customers</div><div class="value">'+customers.length+'</div></div><div class="box"><div class="label">Payment</div><div class="value">'+fmt(totals.udhaar)+'</div></div><div class="box"><div class="label">Interest</div><div class="value">'+fmt(totals.byaj)+'</div></div><div class="box"><div class="label">Outstanding</div><div class="value">'+fmt(totals.total)+'</div></div></div>'+
       '<h2>Customer Balance</h2><table><thead><tr><th>Customer</th><th>Phone</th><th>Payment</th><th>Interest</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
@@ -3421,6 +3491,7 @@ function _exportBusinessPdf(){
     printExportWindow('BSRPRO Digital Khata Business Report',body);
   }catch(e){console.error('PDF report failed:',e);toast('PDF report failed: '+(e.message||'Unknown error'),'error')}
 }
+/* Wrappers: a failure while building/printing must show a clear error, never a silent half-success. */
 function exportCustomerStatementPdf(id,range){
   try{return _exportCustomerStatementPdf(id,range)}catch(e){console.error('Statement PDF failed:',e);toast('PDF नहीं बन पाया: '+(e?.message||'Unknown error'),'error')}
 }
@@ -3429,7 +3500,7 @@ function _exportCustomerStatementPdf(id,range){
   const today=localDateInputValue(new Date());
   const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(new Date(s+'T12:00:00').getTime())&&localDateInputValue(new Date(s+'T12:00:00'))===s;
   let fromDate='',toDate='';
-  if(range&&typeof range==='object'){
+  if(range&&typeof range==='object'){ /* naye Statement sheet se aaya: prompt() nahi */
     fromDate=String(range.from||'').trim();toDate=String(range.to||'').trim();
     if(fromDate&&(!validDate(fromDate)||!validDate(toDate)||fromDate>toDate)){toast('सही तारीखें डालें और शुरुआत की तारीख, आखिरी तारीख से पहले रखें।','error');return;}
     if(!fromDate)toDate='';
@@ -3459,7 +3530,7 @@ function _exportCustomerStatementPdf(id,range){
     if(tx.type==='udhaar')ordinary+=amount;
     else if(tx.type==='jama')ordinary-=amount;
     else if(tx.type==='byaj_loan')loan+=amount;
-    else if(tx.type==='loan_repay')loan-=amount;
+    else if(tx.type==='loan_repay')loan-=amount; // interest_paid principal nahi ghatata (alag track hota hai)
     return {ordinary,loan};
   };
   if(fromDate){
@@ -3486,7 +3557,7 @@ function _exportCustomerStatementPdf(id,range){
     const parsedDate=toDateObject(tx.dateTime)||toDateObject(tx.transactionAt);
     const hasStoredTime=!!((parsedDate&&!Number.isNaN(parsedDate.getTime()))||(tx.date&&tx.time));
     const when=hasStoredTime?dateTimeStr(stamp):dateStr(tx.date||tx.startDate)+' • समय उपलब्ध नहीं';
-    return '<tr><td>'+esc(when)+'</td><td>'+esc(typeLabels[tx.type]||tx.type||'-')+'</td><td>'+esc(tx.note||'')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(runningGross)+'</td><td class="right">'+fmt(runningUdhaar)+(runningUdhaar<0?' एडवांस':'')+'</td><td class="right">'+fmt(runningLoanNet)+'</td></tr>';
+    return '<tr><td>'+esc(when)+'</td><td>'+esc(typeLabels[tx.type]||tx.type||'—')+'</td><td>'+esc(tx.note||'')+'</td><td class="right">'+fmt(amt)+'</td><td class="right">'+fmt(runningGross)+'</td><td class="right">'+fmt(runningUdhaar)+(runningUdhaar<0?' एडवांस':'')+'</td><td class="right">'+fmt(runningLoanNet)+'</td></tr>';
   }).join('');
   const asOfEnd=fromDate?new Date(toDate+'T23:59:59'):new Date();
   const stEnd=Ledger.customerState(allTxns.filter(tx=>transactionDateTimeValue(tx)<=asOfEnd.getTime()),asOfEnd,{mode:APP_CONFIG.interestMode});
@@ -3496,7 +3567,7 @@ function _exportCustomerStatementPdf(id,range){
   const brand='BSRPRO Digital Khata';
   const termsRows=getLoans(c.id).map((ln,i)=>{const cm=ln.interestType==='compound';const fq={daily:'रोज़',monthly:'मासिक',quarterly:'तिमाही',halfyearly:'छमाही',yearly:'सालाना'}[ln.compoundFreq||'monthly'];return '<tr><td>लोन #'+(i+1)+'</td><td>'+fmt(ln.principal)+'</td><td>'+esc(String(ln.rate))+'% / '+(ln.rateUnit==='year'?'वर्ष':(ln.rateUnit==='halfyear'?'छह माह':'माह'))+'</td><td>'+(cm?'चक्रवृद्धि ('+fq+')':'साधारण')+'</td><td>'+dateStr(ln.startDate)+'</td><td>'+(ln.dueDate?dateStr(ln.dueDate):'—')+'</td><td>'+(cm?(ln.partPaymentInterest===false?'वापसी पर ब्याज: बंद':'वापसी पर ब्याज: चालू'):'—')+'</td></tr>'}).join('');
   const termsBlock=termsRows?'<h2>ब्याज गणना की शर्तें</h2><table><thead><tr><th>लोन</th><th>मूलधन</th><th>दर</th><th>प्रकार</th><th>शुरुआत</th><th>वापसी तारीख</th><th>वापसी पर ब्याज</th></tr></thead><tbody>'+termsRows+'</tbody></table><div class="meta">चक्रवृद्धि में ब्याज शुरुआत तारीख की हर सालगिरह पर जुड़ता है; चालू अवधि दिन/30 के हिसाब से गिनी जाती है।</div>':'';
-  const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(c.phone||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(brand)+' • '+esc(userData?.shopName||'')+'<br>रिपोर्ट दिनांक: '+dateStr(new Date())+'<br>रिपोर्ट अवधि: '+esc(periodLabel)+'</div>'+
+  const body='<h1>'+esc(c.name||'Customer Statement')+'</h1><div class="meta">'+esc(displayPhone(c.phone)||'')+(c.email?' • '+esc(c.email):'')+'<br>'+esc(brand)+' • '+esc(userData?.shopName||'')+'<br>रिपोर्ट दिनांक: '+dateStr(new Date())+'<br>रिपोर्ट अवधि: '+esc(periodLabel)+'</div>'+
     periodBlock+
     '<div class="summary"><div class="box"><div class="label">वर्तमान सामान्य पेमेंट बाकी</div><div class="value">'+fmt(s?.udhaarBalance||0)+'</div></div><div class="box"><div class="label">वर्तमान ब्याज / लोन बाकी (सक्रिय लोन गणना)</div><div class="value">'+fmt(s?.byajBalance||0)+'</div></div><div class="box"><div class="label">कुल वर्तमान बाकी</div><div class="value">'+fmt(s?.grandTotal||0)+'</div></div></div>'+
     '<div class="summary"><div class="box"><div class="label">कुल दिया</div><div class="value">'+fmt(scopeGiven)+'</div></div><div class="box"><div class="label">कुल लिया</div><div class="value">'+fmt(scopeReceived)+'</div></div><div class="box"><div class="label">कुल लेन-देन (ग्रॉस)</div><div class="value">'+fmt(scopeGiven+scopeReceived)+'</div></div></div>'+
@@ -3529,6 +3600,11 @@ async function verifyBackupPayloadChecksum(data){
 async function exportData(){
   try{toast(t('Preparing backup…','Backup तैयार हो रहा है…'),'success');const data=await buildBackupPayload();await verifyBackupPayloadChecksum(data);const json=JSON.stringify(data,null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`babasitaram_backup_v2_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);try{localStorage.setItem('bsp_lastBackup',String(Date.now()))}catch(_){}toast(t('Verified backup exported','Verified backup export हो गया'),'success')}catch(e){console.error(e);toast(t('Backup failed','Backup विफल'),'error')}
 }
+/* ============ IMPORT BACKUP (add-only, previewed, per-customer atomic) ============
+   Never overwrites or deletes. Each customer is imported as one unit:
+   new customer -> create party, then ONE batch (its transactions + balance update);
+   if that batch fails the empty party is removed, so no half ledger is left behind.
+   Success is reported only after Firestore commits. */
 let importPending=null;
 function openImportBackup(){
   if(!requireOnline())return;
@@ -3617,6 +3693,7 @@ async function confirmImportBackup(){
 async function verifyDataIntegrity(showResult=true){
   try{
     await dataReady;
+    // Read-only audit (ledger.js integrityReport). Kuch auto-fix nahi hota.
     const report=Ledger.integrityReport({customers,transactions});
     console.log('DATA_INTEGRITY',{ok:report.ok,errors:report.errors,warnings:report.warnings,counts:report.counts});
     if(showResult){

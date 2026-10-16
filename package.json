@@ -1,12 +1,16 @@
 {
   "name": "babasitaram-pro-v2",
-  "version": "6.8.2",
+  "version": "19.9.1",
   "private": true,
   "scripts": {
     "verify:web": "node scripts/verify-web.mjs",
+    "sync:version": "node scripts/sync-version.mjs",
     "prepare:web": "node scripts/prepare-web.mjs",
-    "android:sync": "npm run prepare:web && npx cap sync android",
-    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace"
+    "android:sync": "npm run prepare:web && npm run android:prepare && npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827' --splashBackgroundColor '#1e1b4b' --splashBackgroundColorDark '#0f172a' && npx cap sync android",
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace",
+    "test": "node --test tests/*.test.mjs",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-bsrpro \"node --test tests/rules/*.test.mjs\"",
+    "android:prepare": "node scripts/prepare-android.mjs"
   },
   "dependencies": {
     "@capacitor/android": "7.4.1",
@@ -15,6 +19,9 @@
   },
   "devDependencies": {
     "@capacitor/cli": "7.4.1",
-    "@capacitor/assets": "3.0.5"
+    "@capacitor/assets": "3.0.5",
+    "@firebase/rules-unit-testing": "3.0.4",
+    "firebase": "10.14.1",
+    "firebase-tools": "13.29.1"
   }
 }

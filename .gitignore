@@ -1,0 +1,9 @@
+node_modules/
+www/
+dist/
+*.keystore
+*.jks
+.env
+.env.*
+firebase-debug.log
+firestore-debug.log
