@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+# Small pinned Gradle bootstrap for environments without a system Gradle install.
+# The Android SDK and npm/Capacitor dependencies must still be installed separately.
+set -eu
+VERSION=8.11.1
+if command -v gradle >/dev/null 2>&1; then exec gradle "$@"; fi
+GHOME=${GRADLE_USER_HOME:-"$HOME/.gradle"}
+DIST="$GHOME/manual-gradle/gradle-$VERSION"
+if [ ! -x "$DIST/bin/gradle" ]; then
+  command -v curl >/dev/null 2>&1 || { echo 'curl is required to bootstrap Gradle 8.11.1' >&2; exit 127; }
+  command -v unzip >/dev/null 2>&1 || { echo 'unzip is required to bootstrap Gradle 8.11.1' >&2; exit 127; }
+  mkdir -p "$GHOME/manual-gradle"
+  TMP="$GHOME/manual-gradle/gradle-$VERSION.zip.tmp"
+  URL="https://services.gradle.org/distributions/gradle-$VERSION-bin.zip"
+  echo "Downloading official Gradle $VERSION distribution..." >&2
+  curl --fail --location --silent --show-error "$URL" -o "$TMP"
+  unzip -q -o "$TMP" -d "$GHOME/manual-gradle"
+  rm -f "$TMP"
+fi
+exec "$DIST/bin/gradle" "$@"

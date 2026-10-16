@@ -1,0 +1,9 @@
+pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+// NOTE: do NOT use RepositoriesMode.FAIL_ON_PROJECT_REPOS here. The root build.gradle (allprojects { repositories })
+// and Capacitor's own modules (@capacitor/android, @capacitor/app) declare project-level repositories,
+// which makes Gradle abort at android/build.gradle:8.
+dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS); repositories { google(); mavenCentral() } }
+rootProject.name = 'BSRPro'
+include ':app', ':capacitor-android', ':capacitor-app'
+project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
