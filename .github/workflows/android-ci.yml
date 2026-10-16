@@ -1,0 +1,174 @@
+name: Android CI (debug build + emulator smoke)
+
+on:
+  workflow_dispatch:
+    inputs:
+      direct_sms:
+        description: 'Direct/automatic SMS build (SEND_SMS). Not for Play Store.'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - main
+      - production-okcredit-safety-fix-20260929
+      - separate-install-guru-shree-20260929
+    paths-ignore:
+      - 'bsrpro-upload.zip'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ENABLE_DIRECT_SMS: ${{ inputs.direct_sms == false && 'false' || 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Unit + portal + PIN + Android-generator tests
+        run: npm test
+      - name: Verify web features
+        run: npm run verify:web
+      - name: Verify single-source version
+        run: node scripts/sync-version.mjs --check
+      - name: Prepare Capacitor web assets
+        run: npm run prepare:web
+      - name: Add Android platform
+        run: |
+          # bsr-gs-backup: zip/repo may contain a stale hand-made android/ scaffold -> regenerate a clean Capacitor project
+          GS=android/app/google-services.json
+          if [ -f "$GS" ]; then cp "$GS" "$RUNNER_TEMP/google-services.json"; fi
+          rm -rf android
+          npx cap add android
+          if [ -f "$RUNNER_TEMP/google-services.json" ]; then cp "$RUNNER_TEMP/google-services.json" android/app/google-services.json; fi
+      - name: Set Android versionName/versionCode from package.json
+        run: node scripts/set-android-version.mjs
+      - name: Prepare native Android SMS scheduler
+        run: node scripts/prepare-android.mjs
+      - name: Verify SMS plugin is registered BEFORE super.onCreate (else SMS never works)
+        run: grep -q 'registerPlugin(BsrSmsSchedulerPlugin.class); registerPlugin(BsrBiometricPlugin.class); super.onCreate(savedInstanceState);' android/app/src/main/java/com/bsrpro/digitalkhata/MainActivity.java && grep -q 'androidx.biometric:biometric' android/app/build.gradle
+      - name: Generate branded Android icon and splash
+        run: npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827' --splashBackgroundColor '#1e1b4b' --splashBackgroundColorDark '#0f172a'
+      - name: Sync Android
+        run: npx cap sync android
+      - name: Use the SAME persistent signing key for every APK (needed for in-place update)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            KEYSTORE_PATH="$RUNNER_TEMP/release.keystore" node scripts/configure-android-signing.mjs --debug
+            echo "KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "PERSISTENT_KEY=true" >> "$GITHUB_ENV"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "::warning::PR build: signing secrets unavailable, APK uses a random debug key (cannot update an installed app)."
+          else
+            echo "::error::ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD secrets missing. Without them every build gets a different random signature and the phone refuses to update the installed app (App not installed). See docs/release-process.md"
+            exit 1
+          fi
+      - name: Build debug-signed APK
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew assembleDebug --stacktrace
+      - name: Locate APK
+        id: apk
+        shell: bash
+        run: |
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -f "$APK"
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "APK=$APK"
+      - name: Verify APK signature
+        run: |
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          APKSIGNER=$(find "$SDK/build-tools" -type f -name apksigner | sort -V | tail -1)
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "${{ steps.apk.outputs.path }}" | tee apk-certs.txt
+          # Har build par SHA-256 certificate digest SAME hona chahiye, tabhi purani app ke upar update hoga
+          grep -i "SHA-256 digest" apk-certs.txt
+      - name: Verify APK manifest with aapt
+        run: |
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          AAPT=$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -1)
+          test -n "$AAPT"
+          "$AAPT" dump badging "${{ steps.apk.outputs.path }}" | tee apk-badging.txt
+          grep -q "package: name='com.bsrpro.digitalkhata'" apk-badging.txt
+          EXPECTED_VERSION=$(node -p "require('./package.json').version")
+          grep -q "versionName='${EXPECTED_VERSION}'" apk-badging.txt
+          if [ "$ENABLE_DIRECT_SMS" = "true" ]; then
+            "$AAPT" dump permissions "${{ steps.apk.outputs.path }}" | grep -q "android.permission.SEND_SMS"
+          else
+            ! "$AAPT" dump permissions "${{ steps.apk.outputs.path }}" | grep -q "android.permission.SEND_SMS"
+          fi
+      - name: Verify APK archive
+        run: |
+          unzip -t "${{ steps.apk.outputs.path }}"
+          unzip -l "${{ steps.apk.outputs.path }}" | grep -Eq "mipmap|launcher"
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BABASITARAM-PRO-debug-signed-${{ github.run_number }}
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Emulator install + runtime smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          force-avd-creation: true
+          emulator-boot-timeout: 900
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb wait-for-device
+            sleep 5
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            adb shell am force-stop com.bsrpro.digitalkhata
+            adb logcat -c
+            adb shell am start -W -n com.bsrpro.digitalkhata/.MainActivity
+            sleep 8
+            adb shell pidof com.bsrpro.digitalkhata
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "com.bsrpro.digitalkhata"
+            adb logcat -d -t 500 | tee runtime-logcat.txt
+            grep -Eiq "FATAL EXCEPTION|AndroidRuntime.*FATAL" runtime-logcat.txt && exit 1 || true
+      - name: Publish debug pre-release (NOT a production release)
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="debug-build-${GITHUB_RUN_ID}"
+          gh release create "$TAG" "${{ steps.apk.outputs.path }}" --prerelease --title "DEBUG build $TAG (not for distribution)" --notes "Debug-signed APK from CI. NOT a production/signed release. Production releases are built by release.yml on v* tags."

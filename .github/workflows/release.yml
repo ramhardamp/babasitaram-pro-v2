@@ -1,0 +1,101 @@
+name: Release (signed APK + AAB)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # Owner's own APK: automatic/transaction/7-day-reminder SMS must be switchable ON.
+      # (Play Store would need the SMS permission declaration; this is a sideloaded APK.)
+      ENABLE_DIRECT_SMS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Tag must match package.json version
+        run: test "${GITHUB_REF_NAME}" = "v$(node -p "require('./package.json').version")"
+      - name: Require signing secrets (fail clearly if missing)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          for v in KEYSTORE_B64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!v}" ]; then echo "::error::Missing secret for $v (ANDROID_KEYSTORE_BASE64 / _PASSWORD / ANDROID_KEY_ALIAS / _PASSWORD)"; exit 1; fi
+          done
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+      - run: npm install --no-audit --no-fund
+      - name: Tests + web contract + version sync
+        run: |
+          npm test
+          npm run verify:web
+          node scripts/sync-version.mjs --check
+      - run: npm run prepare:web
+      - name: Add Android platform (clean regenerate, keep google-services.json)
+        run: |
+          GS=android/app/google-services.json
+          if [ -f "$GS" ]; then cp "$GS" "$RUNNER_TEMP/google-services.json"; fi
+          rm -rf android
+          npx cap add android
+          if [ -f "$RUNNER_TEMP/google-services.json" ]; then cp "$RUNNER_TEMP/google-services.json" android/app/google-services.json; fi
+      - run: node scripts/set-android-version.mjs
+      - run: node scripts/prepare-android.mjs
+      - name: Verify SMS plugin is registered BEFORE super.onCreate
+        run: grep -q 'registerPlugin(BsrSmsSchedulerPlugin.class); registerPlugin(BsrBiometricPlugin.class); super.onCreate(savedInstanceState);' android/app/src/main/java/com/bsrpro/digitalkhata/MainActivity.java && grep -q 'androidx.biometric:biometric' android/app/build.gradle
+      - name: Generate branded Android icon and splash
+        run: npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827' --splashBackgroundColor '#1e1b4b' --splashBackgroundColorDark '#0f172a'
+      - run: npx cap sync android
+      - name: Configure release signing (env based, no secrets in files)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: node scripts/configure-android-signing.mjs
+      - name: Build signed release APK + AAB
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease bundleRelease --stacktrace
+      - name: Verify signature, package, version, permissions
+        shell: bash
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -f "$APK"; test -f "$AAB"
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          BT=$(ls -d "$SDK"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs "$APK"
+          "$BT/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.bsrpro.digitalkhata'" apk-badging.txt
+          grep -q "versionName='$(node -p "require('./package.json').version")'" apk-badging.txt
+          "$BT/aapt" dump permissions "$APK" | grep -q "android.permission.SEND_SMS"
+          "$BT/aapt" dump permissions "$APK" | grep -q "android.permission.RECEIVE_BOOT_COMPLETED"
+          unzip -tq "$APK"
+          mkdir -p dist && cp "$APK" "dist/BSRPRO-DigitalKhata-${GITHUB_REF_NAME}.apk" && cp "$AAB" "dist/BSRPRO-DigitalKhata-${GITHUB_REF_NAME}.aab"
+          (cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ github.ref_name }}
+          path: dist/*
+          if-no-files-found: error
+      - name: Create DRAFT GitHub Release (review before publishing)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --draft --notes-file RELEASE_NOTES.md --title "BSR PRO Digital Khata $GITHUB_REF_NAME"
