@@ -949,7 +949,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
     
-    // Color Logic: Jama = Green, Udhaar = Red
+    // Color Logic: Jama, Loan Repay, Interest Paid = Green. Baaki (Udhaar/Loan) = Red
     let amountColor = "#f87171"; // Red
     if (txnType === 'jama' || txnType === 'loan_repay' || txnType === 'interest_paid') {
       amountColor = "#4ade80"; // Green
@@ -958,10 +958,10 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
     const fullCustomer = customers.find(x => x.email === customer.email);
     const viewLink = fullCustomer && fullCustomer.viewToken ? getCustomerViewLink(fullCustomer.viewToken) : '';
     
-    console.log('📧 Sending customer email');
+    console.log('📧 Sending customer email with Color:', amountColor);
     
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
-      // YEH NAYE VARIABLES HAIN (Inhi se email bharega)
+      // VIP Template ke Variables
       to_name: customer.name || 'Customer', 
       transaction_type: getTxnTypeLabel(txnType),
       amount: (amount || 0).toLocaleString('en-IN'), 
@@ -972,7 +972,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       shop_name: userData?.shopName || 'BSRPRO Digital Khata',
       shop_email: currentUser.email,
       
-      // Purane variables (Bypass ke liye, taaki koi error na aaye)
+      // Purane variables (Safety ke liye)
       customer_name: customer.name || 'Customer',
       customer_email: customer.email,
       note: note || '—',
