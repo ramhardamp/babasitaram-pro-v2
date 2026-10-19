@@ -113,6 +113,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
     
+    // Color Logic: Jama/Loan/Interest = Green, Baaki = Red
     let amountColor = "#f87171"; // Red
     if (txnType === 'jama' || txnType === 'loan_repay' || txnType === 'interest_paid') {
       amountColor = "#4ade80"; // Green
