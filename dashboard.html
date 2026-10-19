@@ -11,8 +11,19 @@
 <title>BSRPRO Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
-<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}:root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradien[...]</style>
-<!-- (rest of the head and large inline styles unchanged) -->
+<style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}:root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#e0e7ff;--primary-lighter:#eef2ff;--gradien[...]
+@keyframes spin{to{transform:rotate(360deg)}}.pin-screen{padding:32px 20px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;min-height:100%;display:flex;flex-direction:column;align-i[...]
+/* 🎨 NEW: History totals colors — Giving = Red, Received = Green, Total = Gold */
+.history-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}
+.history-totals>div{min-width:0;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;gap:4px;font-weight:800;position:relative;overflow:hidden}
+.history-totals>div span{font-size:10px;text-transform:uppercase;letter-spacing:.6px;opacity:.92;font-weight:800}
+.history-totals>div b{font-size:16px;font-weight:900;letter-spacing:-.3px;overflow-wrap:anywhere}
+.history-totals>div:nth-child(1){background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.28)}
+.history-totals>div:nth-child(2){background:linear-gradient(135deg,#22c55e,#15803d);color:#fff;box-shadow:0 4px 12px rgba(34,197,94,.28)}
+.history-totals>div:nth-child(3){background:linear-gradient(135deg,#fbbf24,#d97706);color:#1a1a1a;box-shadow:0 4px 12px rgba(251,191,36,.32)}
+@media(max-width:380px){.history-totals>div{padding:8px 10px}.history-totals>div b{font-size:14px}}
+/* ... rest of original inline CSS preserved ... */
+</style>
 </head>
 <body>
 <div class="app-shell" id="appShell">
@@ -33,7 +44,44 @@
 
   <div class="screen-container" id="screenContainer">
 
-    <!-- ... rest of the page unchanged ... -->
+    <div id="screen-pin" class="screen">
+      <div class="pin-screen">
+        <div class="pin-logo"><img src="assets/guru-shree-logo.svg?v=20261010-1" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" loading="eager" decoding="sync" alt="BSR PRO"></div>
+        <div class="pin-title" id="pinTitle">PIN डालें</div>
+        <div class="pin-subtitle" id="pinSubtitle">अपना 4-अंकों का PIN डालें</div>
+        <div class="pin-dots" id="pinDots" aria-hidden="true">
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+        </div>
+        <div class="pin-native-input-wrap">
+          <input
+            id="pinInput"
+            class="pin-native-input"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            minlength="4"
+            autocomplete="one-time-code"
+            enterkeyhint="done"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="4 अंकों का PIN"
+            placeholder="PIN दर्ज करें"
+            oninput="pinInputChanged(this)"
+            onkeydown="pinInputKeydown(event)"
+          >
+          <div class="pin-native-help">मोबाइल के अपने keyboard से PIN दर्ज करें</div>
+        </div>
+        <button type="button" id="pinBioBtn" class="btn btn-secondary hidden" onclick="tryBiometricUnlock()" style="margin:6px auto 0;max-width:320px">🔐 फिंगरप्रिंट / फिंगर</button>
+        <div class="pin-error" id="pinError" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- ... rest of original HTML content preserved, unchanged ... -->
 
     <div id="screen-settings" class="screen">
       <div class="android-settings">
@@ -47,7 +95,7 @@
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>🕉️ <b>BSRPRO Digital Khata</b><small>Version <span id="appVersionLabel">19.10.0</span></small></span></div>
+              <div class="android-sub-row"><span>🕉️ <b>BSRPRO Digital Khata</b><small>Version <span id="appVersionLabel">19.10.1</span></small></span></div>
               <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitaram@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
@@ -106,13 +154,14 @@ if (typeof emailjs !== 'undefined') {
   console.log('✅ EmailJS initialized');
 }
 
-// ... rest of JS unchanged up to EMAIL function ...
+// ... original JS preserved ...
 
 /* ============ EMAIL ============ */
 async function sendTransactionEmail(customer, txnType, amount, note, date, newBalance) {
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
     
+    // Color Logic: Jama, Loan Repay, Interest Paid = Green. Baaki (Udhaar/Loan) = Red
     let amountColor = "#f87171"; // Red
     if (txnType === 'jama' || txnType === 'loan_repay' || txnType === 'interest_paid') {
       amountColor = "#4ade80"; // Green
@@ -124,6 +173,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
     console.log('📧 Sending customer email with Color:', amountColor);
     
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
+      // VIP Template ke Variables
       to_name: customer.name || 'Customer', 
       transaction_type: getTxnTypeLabel(txnType),
       amount: (amount || 0).toLocaleString('en-IN'), 
@@ -149,7 +199,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
   }
 }
 
-// ... rest of file unchanged ...
+// ... rest of original JS preserved ...
 </script>
 </body>
 </html>
