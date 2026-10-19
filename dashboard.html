@@ -949,27 +949,46 @@ function getCustomerViewLink(token){return CUSTOMER_VIEW_BASE_URL + '?token=' + 
 async function sendTransactionEmail(customer, txnType, amount, note, date, newBalance) {
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
+    
+    // ✅ 1. Color Logic: Jama, Loan Repay, Interest Paid ke liye Green. Baaki (Udhaar/Loan) ke liye Red.
+    let amountColor = "#f87171"; // Red (Default)
+    if (txnType === 'jama' || txnType === 'loan_repay' || txnType === 'interest_paid') {
+      amountColor = "#4ade80"; // Green
+    }
+
     // ✅ अब helper से label — WhatsApp/SMS/PDF के साथ consistent
-    const fullCustomer=customers.find(x=>x.email===customer.email);
-    const viewLink=fullCustomer&&fullCustomer.viewToken?getCustomerViewLink(fullCustomer.viewToken):'';
+    const fullCustomer = customers.find(x => x.email === customer.email);
+    const viewLink = fullCustomer && fullCustomer.viewToken ? getCustomerViewLink(fullCustomer.viewToken) : '';
+    
     console.log('📧 Sending customer email');
+    
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
+      // Naye VIP Template ke Variables
+      to_name: customer.name || 'Customer',
+      transaction_type: getTxnTypeLabel(txnType),
+      amount: (amount || 0).toLocaleString('en-IN'),
+      total_balance: Math.abs(newBalance).toLocaleString('en-IN'),
+      date: dateStr(date),
+      amount_color: amountColor, // Yahan color pass ho raha hai
+      dashboard_link: viewLink,  // Template me button ke liye
+      
+      // Purane Variables (Agar future me zaroorat pade toh safe side)
       customer_name: customer.name || 'Customer',
       customer_email: customer.email,
       shop_name: userData?.shopName || 'BSRPRO Digital Khata',
       shop_email: currentUser.email,
-      transaction_type: getTxnTypeLabel(txnType),
-      amount: (amount || 0).toLocaleString('en-IN'),
       note: note || '—',
-      date: dateStr(date),
       balance: Math.abs(newBalance).toLocaleString('en-IN'),
       view_link: viewLink
     });
+    
     console.log('✅ Customer email sent');
     return true;
-  } catch (e) { console.error('❌ Email error:', e); return false; }
+  } catch (e) { 
+    console.error('❌ Email error:', e); 
+    return false; 
+  }
 }
-
 /* ============ FIX ALL BALANCES ============ */
 async function fixAllBalances(){
   if(!requireOnline())return;
