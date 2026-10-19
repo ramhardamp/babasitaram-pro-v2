@@ -6,7 +6,7 @@
     "verify:web": "node scripts/verify-web.mjs",
     "sync:version": "node scripts/sync-version.mjs",
     "prepare:web": "node scripts/prepare-web.mjs",
-    "android:sync": "npm run prepare:web && npm run android:prepare && npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827' --splashBackgroundColor '#1e1b4b' --splashBackgroundColorDark '#0f172a' && npx cap sync android",
+    "android:sync": "npm run prepare:web && npm run android:prepare && npx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#1e1b4b' --iconBackgroundColorDark '#111827'",
     "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug --stacktrace",
     "test": "node --test tests/*.test.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-bsrpro \"node --test tests/rules/*.test.mjs\"",
