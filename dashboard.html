@@ -944,42 +944,39 @@ async function updatePublicView(partyId, viewToken, partyData, opts){
 }
 
 function getCustomerViewLink(token){return CUSTOMER_VIEW_BASE_URL + '?token=' + token;}
-
 /* ============ EMAIL ============ */
 async function sendTransactionEmail(customer, txnType, amount, note, date, newBalance) {
   try {
     if (!customer || !customer.email) { console.log('ℹ️ No customer email'); return false; }
     
-    // ✅ 1. Color Logic: Jama, Loan Repay, Interest Paid ke liye Green. Baaki (Udhaar/Loan) ke liye Red.
-    let amountColor = "#f87171"; // Red (Default)
+    // Color Logic: Jama = Green, Udhaar = Red
+    let amountColor = "#f87171"; // Red
     if (txnType === 'jama' || txnType === 'loan_repay' || txnType === 'interest_paid') {
       amountColor = "#4ade80"; // Green
     }
 
-    // ✅ अब helper से label — WhatsApp/SMS/PDF के साथ consistent
     const fullCustomer = customers.find(x => x.email === customer.email);
     const viewLink = fullCustomer && fullCustomer.viewToken ? getCustomerViewLink(fullCustomer.viewToken) : '';
     
     console.log('📧 Sending customer email');
     
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
-      // Naye VIP Template ke Variables
-      to_name: customer.name || 'Customer',
+      // YEH NAYE VARIABLES HAIN (Inhi se email bharega)
+      to_name: customer.name || 'Customer', 
       transaction_type: getTxnTypeLabel(txnType),
-      amount: (amount || 0).toLocaleString('en-IN'),
-      total_balance: Math.abs(newBalance).toLocaleString('en-IN'),
+      amount: (amount || 0).toLocaleString('en-IN'), 
+      total_balance: Math.abs(newBalance).toLocaleString('en-IN'), 
       date: dateStr(date),
-      amount_color: amountColor, // Yahan color pass ho raha hai
-      dashboard_link: viewLink,  // Template me button ke liye
-      
-      // Purane Variables (Agar future me zaroorat pade toh safe side)
-      customer_name: customer.name || 'Customer',
-      customer_email: customer.email,
+      amount_color: amountColor, 
+      dashboard_link: viewLink,
       shop_name: userData?.shopName || 'BSRPRO Digital Khata',
       shop_email: currentUser.email,
+      
+      // Purane variables (Bypass ke liye, taaki koi error na aaye)
+      customer_name: customer.name || 'Customer',
+      customer_email: customer.email,
       note: note || '—',
-      balance: Math.abs(newBalance).toLocaleString('en-IN'),
-      view_link: viewLink
+      balance: Math.abs(newBalance).toLocaleString('en-IN')
     });
     
     console.log('✅ Customer email sent');
@@ -989,7 +986,8 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
     return false; 
   }
 }
-/* ============ FIX ALL BALANCES ============ */
+
+  /* ============ FIX ALL BALANCES ============ */
 async function fixAllBalances(){
   if(!requireOnline())return;
   // Dry run: pehle sirf dikhao kya badlega, confirm ke baad hi likho
