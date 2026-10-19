@@ -1,6 +1,6 @@
 {
   "name": "babasitaram-pro-v2",
-  "version": "19.9.1",
+  "version": "19.10.0",
   "private": true,
   "scripts": {
     "verify:web": "node scripts/verify-web.mjs",
