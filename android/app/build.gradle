@@ -1,35 +1,59 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.bsrpro.digitalkhata'
-    compileSdk 35
+    namespace "com.bsrpro.digitalkhata"
+    compileSdk rootProject.ext.compileSdkVersion
+
     defaultConfig {
-        applicationId 'com.bsrpro.digitalkhata'
-        minSdk 23
-        targetSdk 35
-        versionCode 190900
-        versionName '19.9.0'
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        applicationId "com.bsrpro.digitalkhata"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "19.10.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
 
 dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
-    implementation project(':capacitor-app')
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-    implementation 'androidx.core:core-splashscreen:1.0.1'
+    
+    // YEH LINE ANDROID CI TEST KE LIYE ZAROORI HAI
     implementation 'androidx.biometric:biometric:1.1.0'
-    implementation 'com.google.firebase:firebase-messaging:24.1.0'
+    
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
 }
 
-// Add android/app/google-services.json from Firebase Console to enable FCM at runtime.
-if (file('google-services.json').exists()) {
-    apply plugin: 'com.google.gms.google-services'
-} else {
-    logger.warn('BSR Pro: google-services.json is absent; APK may compile, but push registration will report not configured.')
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
