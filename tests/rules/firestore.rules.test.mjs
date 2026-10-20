@@ -110,9 +110,7 @@ test('publicViews: owner update ok but partyId / businessUid badal nahi sakta', 
   await assertFails(updateDoc(r, { businessUid: B }));
 });
 test('publicViews: revoked / expired link public ko nahi, owner ko dikhta hai', async () => {
-  // ✅ FIX: ek hi test me withSecurityRulesDisabled dobara call nahi karte
-  // (rules-unit-testing v3 limitation: "Firestore has already been started" error aata hai).
-  // Owner A ke through seed karte hain — publicViews create rule revokedAt/expiresAt ko allow karta hai.
+  // ✅ FIX: Ek hi test me withSecurityRulesDisabled dobara call nahi karte. Owner A ke through seed karte hain.
   await assertSucceeds(setDoc(doc(dbA(), `publicViews/${TOK2}`), { businessUid: A, partyId: 'p1', revokedAt: Timestamp.now() }));
   await assertSucceeds(setDoc(doc(dbA(), `publicViews/${TOK.replace('A', 'Q')}`), { businessUid: A, partyId: 'p1', expiresAt: Timestamp.fromDate(new Date('2001-01-01')) }));
   await assertFails(getDoc(doc(dbN(), `publicViews/${TOK2}`)));
