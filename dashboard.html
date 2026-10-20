@@ -195,11 +195,6 @@
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.customer-history-head{flex:0 0 auto;margin-top:0}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.txn-history-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 #screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.loan-card,#screenContainer.customer-mode:has(#customerDetail .txn-history-list) #customerDetail>.section-title{flex:0 0 auto}
-/* Defensive: some Android WebViews cache :has()/contain:layout state from
-   customer-mode, leaving #screenContainer stuck with overflow:hidden after
-   the class is removed. This rule is only active when customer-mode is NOT
-   present, so it re-asserts normal vertical scroll on Home. */
-#screenContainer:not(.customer-mode){overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:calc(128px + env(safe-area-inset-bottom, 0px))!important}
 
 @media(max-width:380px){.customer-history-head .section-title{font-size:10px}.customer-history-actions{gap:4px}.customer-history-head .more-btn,.history-reminder-toggle{padding-left:6px;padding-right:6px;font-size:10px}}
 
@@ -456,7 +451,7 @@
               <span class="android-setting-chevron">›</span>
             </button>
             <div class="android-setting-content">
-              <div class="android-sub-row"><span>🕉️ <b>BSRPRO Digital Khata</b><small>Version <span id="appVersionLabel">19.9.0</span></small></span></div>
+              <div class="android-sub-row"><span>🕉️ <b>BSRPRO Digital Khata</b><small>Version <span id="appVersionLabel">19.10.0</span></small></span></div>
               <a class="android-sub-row action" href="mailto:babasitaram@gmail.com"><span>📧 <b>Support</b><small>babasitaram@gmail.com</small></span><i>›</i></a>
             </div>
           </section>
@@ -1329,10 +1324,6 @@ function showScreen(name, noPush){
   const screenContainer = document.getElementById('screenContainer');
   screenContainer.classList.toggle('dashboard-mode', name === 'dashboard');
   screenContainer.classList.toggle('customer-mode', name === 'customer');
-  // Force a synchronous style flush. Some Android WebViews cache :has() and
-  // contain:layout state; without this, Home can stay stuck with overflow:hidden
-  // inherited from the previous customer-mode, and the page refuses to scroll.
-  void screenContainer.offsetHeight;
   const restoreDash=(name==='dashboard'&&prevScreen==='customer'&&dashScrollSaved)?dashScrollSaved:null;
   if(restoreDash)customerRenderLimit=Math.max(customerRenderLimit,restoreDash.limit||0);
   else if(name!=='customer')dashScrollSaved=null;   /* keep it while the customer screen is open */
