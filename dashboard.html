@@ -698,6 +698,9 @@ const TXN_RECEIVED_TYPES=['jama','loan_repay','interest_paid'];
 function txnAmountColor(type){return TXN_GIVEN_TYPES.includes(type)?AMT_COLORS.red:TXN_RECEIVED_TYPES.includes(type)?AMT_COLORS.green:AMT_COLORS.muted}
 function balanceColor(n){n=Number(n)||0;return n>0?AMT_COLORS.red:n<0?AMT_COLORS.green:AMT_COLORS.muted}
 function balanceTone(n){n=Number(n)||0;return n>0?'amt-red':n<0?'amt-green':'amt-muted'}
+/* Inline style: service-worker ux-pro.css ko cache se deta hai, isliye rang CSS file par depend nahi karta.
+   0 balance par rang nahi lagta (purana default look). */
+function balanceStyle(n){n=Number(n)||0;return n>0?'style="color:'+AMT_COLORS.red+'"':n<0?'style="color:'+AMT_COLORS.green+'"':''}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function t(en,hi){
   const lang = (window.BSR_I18N && BSR_I18N.supported.includes(currentLang)) ? currentLang : 'en';
@@ -1616,8 +1619,8 @@ function renderDashboard(){
       <div class="cc-header"><div class="cc-avatar cc-avatar-brand">${brandLogo}</div>
          <div class="cc-info"><div class="cc-name">${esc(s.name)}</div><div class="cc-phone">${esc(s.phone||'-')}</div></div></div>
        <div class="cc-breakdown">
-        <div class="cc-stat"><div class="cc-box-label">${t('Udhaar','पेमेंट')}</div><div class="cc-box-value ${balanceTone(s.udhaarBalance)}">${fmt(s.udhaarBalance)}</div></div>
-        <div class="cc-stat"><div class="cc-box-label">${t('Byaj','ब्याज')}</div><div class="cc-box-value ${balanceTone(s.byajBalance)}">${fmt(s.byajBalance)}</div></div>
+        <div class="cc-stat"><div class="cc-box-label">${t('Udhaar','पेमेंट')}</div><div class="cc-box-value ${balanceTone(s.udhaarBalance)}" ${balanceStyle(s.udhaarBalance)}>${fmt(s.udhaarBalance)}</div></div>
+        <div class="cc-stat"><div class="cc-box-label">${t('Byaj','ब्याज')}</div><div class="cc-box-value ${balanceTone(s.byajBalance)}" ${balanceStyle(s.byajBalance)}>${fmt(s.byajBalance)}</div></div>
         <div class="cc-stat cc-stat-total${total>0?'':' cc-zero'}"><div class="cc-box-label">${t('Total','कुल')}</div><div class="cc-box-value">${fmt(total)}</div></div>
       </div></div>`;
 
