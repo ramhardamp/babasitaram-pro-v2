@@ -72,9 +72,10 @@ body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh
 .txn-amt{font-size:15px;font-weight:900;letter-spacing:-.3px;flex-shrink:0}
 .txn-amt.udhaar{color:var(--credit)}
 .txn-amt.jama{color:var(--debit)}
-.txn-amt.byaj_loan{color:var(--interest)}
-.txn-amt.loan_repay{color:var(--info)}
-.txn-amt.interest_paid{color:var(--violet)}
+.txn-amt.byaj_loan{color:var(--credit)}
+.txn-amt.loan_repay{color:var(--debit)}
+.txn-amt.interest_paid{color:var(--debit)}
+.ch-balance-amount.bal-due{color:#f87171}.ch-balance-amount.bal-adv{color:#4ade80}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
 .empty-icon{font-size:56px;margin-bottom:12px;opacity:.4}
 .empty-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
@@ -354,7 +355,7 @@ function renderView(data){
       <div class="ch-greeting">${cvT('ui.fix.167','नमस्ते,')}</div>
       <div class="ch-customer-name">${esc(data.customerName || 'Customer')}</div>
       <div class="ch-balance-label">${balLabel}</div>
-      <div class="ch-balance-amount">${fmt(Math.abs(balance))}</div>
+      <div class="ch-balance-amount ${balance>0?'bal-due':balance<0?'bal-adv':''}">${fmt(Math.abs(balance))}</div>
       ${balSub ? `<div class="ch-balance-sub">${balSub}</div>` : ''}
     </div>
 

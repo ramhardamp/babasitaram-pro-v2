@@ -65,6 +65,7 @@
 .cc-stat{min-width:0;padding:8px 6px;border-radius:12px;background:var(--bg);text-align:center}
 .cc-box-label{font-size:11px;font-weight:700;line-height:1.2;color:var(--text-muted)}
 .cc-box-value{margin-top:2px;font-size:15px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;color:var(--text);overflow:hidden;text-overflow:ellipsis}
+.cc-box-value.amt-red{color:var(--credit)}.cc-box-value.amt-green{color:var(--debit)}.cc-box-value.amt-muted{color:var(--text-muted)}
 .cc-stat-total{background:var(--credit-bg)}.cc-stat-total .cc-box-value{color:var(--credit)}
 .cc-stat-total.cc-zero{background:var(--bg)}.cc-stat-total.cc-zero .cc-box-value{color:var(--text-muted)}
 
