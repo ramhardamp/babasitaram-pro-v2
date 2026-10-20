@@ -141,20 +141,6 @@ html,body{background:#f4f7f5}
 .text-input:focus,input:focus,select:focus,textarea:focus{border-color:var(--primary)}
 /* Loading */
 .loading-spinner{border-color:var(--primary-light);border-top-color:var(--primary)}
-/* 🎨 FIX: Customer-view hero — सफ़ेद text light gradient पर अदृश्य हो रहा था */
-.cust-hero{background:#fff!important;color:var(--text)!important;border:1px solid var(--border)!important;box-shadow:0 2px 10px rgba(16,24,40,.06)!important}
-.cust-hero::before{display:none!important}
-.ch-shop-label{color:var(--text-muted)!important;opacity:1!important}
-.ch-shop-name{color:var(--text)!important}
-.ch-greeting{color:var(--text-muted)!important;opacity:1!important}
-.ch-customer-name{color:var(--text)!important}
-.ch-balance-label{color:var(--text-muted)!important;opacity:1!important}
-.ch-balance-amount{color:var(--primary)!important}
-.ch-balance-sub{color:var(--text-muted)!important;opacity:1!important}
-/* Balance state colors: due=red, advance=green, settled=gray */
-.cust-hero[data-bal="due"] .ch-balance-amount{color:var(--credit)!important}
-.cust-hero[data-bal="advance"] .ch-balance-amount{color:var(--debit)!important}
-.cust-hero[data-bal="settled"] .ch-balance-amount{color:var(--text-muted)!important}
 /* ===== /OK-THEME ===== */
 </style>
 <link rel="stylesheet" href="theme.css">
@@ -313,8 +299,6 @@ function renderView(data){
     balLabel = cvT('ui.fix.173','हिसाब साफ');
     balSub = cvT('ui.fix.174','कोई बकाया नहीं');
   }
-  /* 🔧 NEW: Balance state for CSS color control (due=red, advance=green, settled=gray) */
-  const balState = balance > 0 ? 'due' : (balance < 0 ? 'advance' : 'settled');
 
   let txnHtml = '';
   if(transactions.length === 0){
@@ -364,7 +348,7 @@ function renderView(data){
   const summaryHtml = v2 ? v2Grid : legacyGrid;
 
   content.innerHTML = `
-    <div class="cust-hero" data-bal="${balState}">
+    <div class="cust-hero">
       <div class="ch-shop-label">${cvT('ui.fix.166','दुकान का नाम')}</div>
       <div class="ch-shop-name">${esc(data.shopName || 'BSR PRO')}</div>
       <div class="ch-greeting">${cvT('ui.fix.167','नमस्ते,')}</div>
