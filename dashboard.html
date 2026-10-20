@@ -926,7 +926,8 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
     const fullCustomer=customers.find(x=>x.email===customer.email);
     const viewLink=fullCustomer&&fullCustomer.viewToken?getCustomerViewLink(fullCustomer.viewToken):'';
     console.log('📧 Sending customer email');
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, {
+    const balText=Math.abs(newBalance || 0).toLocaleString('en-IN');
+    const emailParams={
       customer_name: customer.name || 'Customer',
       customer_email: customer.email,
       shop_name: userData?.shopName || 'BSRPRO Digital Khata',
@@ -940,8 +941,13 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       balance: Math.abs(newBalance || 0).toLocaleString('en-IN'),
       balance_color: balanceColor(newBalance),    // baaki = red, advance / zero = green
       balance_label: (Number(newBalance)||0)<0 ? 'एडवांस राशि' : 'कुल बकाया राशि',  // advance ho to label badal jata hai
-      view_link: viewLink
-    });
+      view_link: viewLink,
+      // Template me balance ka variable-naam alag ho sakta hai -> sab common naam par same value (extra params harmless)
+      balance_display: '₹' + balText,
+      total_balance: balText, total_due: balText, outstanding: balText, new_balance: balText, balance_amount: balText
+    };
+    console.log('📧 Email params:', emailParams);   // F12 console me dekho: balance ki value ja rahi hai ya nahi
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TXN_TEMPLATE_ID, emailParams);
     console.log('✅ Customer email sent');
     return true;
   } catch (e) { console.error('❌ Email error:', e); return false; }
