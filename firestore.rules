@@ -44,7 +44,7 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && validParty();
         allow update: if isOwner(userId) && validParty();
-        // history-check app ki transaction mein hota hai; rules sirf owner enforce karte hain
+        // ✅ FIX: delete sirf owner kar sakta hai (isSignedIn nahi, isOwner hai)
         allow delete: if isOwner(userId);
       }
 
