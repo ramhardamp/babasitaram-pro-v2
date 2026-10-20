@@ -696,7 +696,8 @@ const AMT_COLORS={red:'#ef4444',green:'#10b981',muted:'#94a3b8'};
 const TXN_GIVEN_TYPES=['udhaar','byaj_loan'];
 const TXN_RECEIVED_TYPES=['jama','loan_repay','interest_paid'];
 function txnAmountColor(type){return TXN_GIVEN_TYPES.includes(type)?AMT_COLORS.red:TXN_RECEIVED_TYPES.includes(type)?AMT_COLORS.green:AMT_COLORS.muted}
-function balanceColor(n){n=Number(n)||0;return n>0?AMT_COLORS.red:n<0?AMT_COLORS.green:AMT_COLORS.muted}
+/* Email balance: baaki (>0) = red | advance (<0) ya ZERO (hisaab saaf) = green */
+function balanceColor(n){n=Number(n)||0;return n>0?AMT_COLORS.red:AMT_COLORS.green}
 function balanceTone(n){n=Number(n)||0;return n>0?'amt-red':n<0?'amt-green':'amt-muted'}
 /* Inline style: service-worker ux-pro.css ko cache se deta hai, isliye rang CSS file par depend nahi karta.
    0 balance par rang nahi lagta (purana default look). */
@@ -937,7 +938,7 @@ async function sendTransactionEmail(customer, txnType, amount, note, date, newBa
       note: note || '-',
       date: dateStr(date),
       balance: Math.abs(newBalance || 0).toLocaleString('en-IN'),
-      balance_color: balanceColor(newBalance),    // baaki = red, advance = green, 0 = grey
+      balance_color: balanceColor(newBalance),    // baaki = red, advance / zero = green
       balance_label: (Number(newBalance)||0)<0 ? 'एडवांस राशि' : 'कुल बकाया राशि',  // advance ho to label badal jata hai
       view_link: viewLink
     });
