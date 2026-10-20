@@ -145,6 +145,70 @@ html,body{background:#f4f7f5}
 /* ===== /OK-THEME ===== */
 </style>
 <link rel="stylesheet" href="theme.css">
+<style id="vip-theme">
+/* ===== VIP-THEME v1: Black + Gold (email jaisa). Sirf CSS override, logic/JS/IDs untouched =====
+   Rule: diya = LAL #ef4444, mila / advance / zero = HARA #10b981, section/label = GOLD #d4af37 */
+:root,html[data-theme="dark"],html[data-theme="light"]{
+  color-scheme:dark;
+  --primary:#d4af37;--primary-dark:#b8932b;--primary-light:#3a3115;--primary-lighter:#1f1b0d;
+  --gradient:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);--gradient-dark:#000000;
+  --credit:#ef4444;--credit-bg:rgba(239,68,68,.12);--debit:#10b981;--debit-bg:rgba(16,185,129,.12);
+  --interest:#d4af37;--interest-bg:rgba(212,175,55,.12);--info-bg:rgba(59,130,246,.14);--violet-bg:rgba(139,92,246,.14);
+  --text:#ffffff;--text-muted:#9a9a9a;--text-light:#6b6b6b;--border:#2a2a2a;--bg:#111111;--white:#1a1a1a;
+}
+html,body,html[data-theme="dark"],html[data-theme="dark"] body,html[data-theme="light"] body{background:#050505;color:#fff}
+.app-shell{background:#111111;border:1px solid rgba(212,175,55,.45);box-shadow:0 0 60px rgba(0,0,0,.7)}
+/* Header */
+.brand-header{background:#000;border-bottom:1px solid #d4af37;border-radius:0 0 24px 24px;box-shadow:none}
+.brand-header::before{background:radial-gradient(circle,rgba(212,175,55,.22) 0%,transparent 70%)}
+.brand-logo{background:#000;border:1.5px solid #d4af37}
+.brand-title{color:#fff;font-family:Georgia,'Times New Roman',serif;letter-spacing:3px}
+.brand-title-line2{color:#d4af37}
+.brand-tagline{color:#bdbdbd}
+/* Hero */
+.cust-hero{background:#000;color:#fff;border:1px solid #d4af37;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.cust-hero::before{background:radial-gradient(circle,rgba(212,175,55,.20) 0%,transparent 70%)}
+.ch-shop-label{color:#9a9a9a;opacity:1;letter-spacing:3px}
+.ch-shop-name{color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:24px}
+.ch-greeting{color:#bdbdbd;opacity:1}
+.ch-customer-name{color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:20px}
+.ch-balance-label{color:#d4af37;opacity:1}
+.ch-balance-amount{font-size:46px;color:#10b981}              /* zero / hisaab saaf = hara */
+.ch-balance-amount.bal-due{color:#ef4444}                      /* baaki = lal */
+.ch-balance-amount.bal-adv{color:#10b981}                      /* advance = hara */
+.ch-balance-sub{color:#bdbdbd;opacity:1}
+/* Summary cards */
+.summary-card{background:#1a1a1a;border:1px solid #2a2a2a}
+.summary-card.udhaar{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.40)}
+.summary-card.jama{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.40)}
+.summary-card.udhaar .summary-label{color:#fca5a5}
+.summary-card.jama .summary-label{color:#6ee7b7}
+.summary-card.udhaar .summary-value{color:#ef4444}
+.summary-card.jama .summary-value{color:#10b981}
+/* Transactions */
+.section-title{color:#d4af37;letter-spacing:2px}
+.txn-item{background:#1a1a1a;border:1px solid #2a2a2a}
+.txn-title{color:#fff}.txn-date{color:#9a9a9a}
+.txn-icon.udhaar,.txn-icon.byaj_loan{background:rgba(239,68,68,.15)}
+.txn-icon.jama,.txn-icon.loan_repay,.txn-icon.interest_paid{background:rgba(16,185,129,.15)}
+.txn-amt{font-size:18px}
+.txn-amt.udhaar,.txn-amt.byaj_loan{color:#ef4444}
+.txn-amt.jama,.txn-amt.loan_repay,.txn-amt.interest_paid{color:#10b981}
+.empty-title{color:#fff}
+/* UPI */
+.upi-pay-card{background:#000;border:1px solid #d4af37;box-shadow:none}
+.upi-pay-title{color:#d4af37}
+.upi-id-box{background:#1a1a1a;border:1px solid #2a2a2a;color:#fff}
+.upi-pay-btn{background:#d4af37;color:#111;letter-spacing:.5px}
+.upi-copy-btn{background:transparent;border:1px solid #d4af37;color:#d4af37}
+.upi-link-box{background:#1a1a1a;color:#9a9a9a}
+/* Contact + footer */
+.contact-box{background:#1a1a1a;border:1px solid #2a2a2a}
+.contact-box-label{color:#d4af37}
+.contact-box-value{color:#fff}.contact-box-value a,.footer-bar a{color:#d4af37}
+.footer-bar{color:#6b6b6b}
+.loading-spinner{border-color:#3a3115;border-top-color:#d4af37}
+</style>
 </head>
 <body>
 <div class="app-shell">
