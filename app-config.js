@@ -7,7 +7,7 @@
    ============================================================ */
 (function (g) {
   var CFG = {
-    appVersion: '19.9.1',
+    appVersion: '19.9.2',
     appId: 'com.bsrpro.digitalkhata',
     // Loan interest rule: 'legacy' (purana, DEFAULT - history nahi badalti) | 'timeline' (repayment ke baad kam principal par byaj)
     interestMode: 'legacy',

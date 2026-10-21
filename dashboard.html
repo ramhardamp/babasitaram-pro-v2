@@ -7,7 +7,7 @@
 <script src="errlog.js"></script>
 <script src="theme.js"></script>
 <link rel="stylesheet" href="ux-pro.css">
-<meta name="theme-color" content="#1e8e3e">
+<meta name="theme-color" content="#000000">
 <title>BSRPRO Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
@@ -216,6 +216,80 @@
 /* ===== /OK-THEME ===== */
 </style>
 <link rel="stylesheet" href="theme.css">
+<style id="vip-theme">
+/* ===== VIP-THEME v1: Black + Gold (customer-view / login / email jaisa). Sirf CSS override, logic/JS/IDs untouched =====
+   Rang rule: diya = LAL, mila = HARA, gold = brand/accent. Light/Dark dono me same VIP look (toggle chhupa hai). */
+:root,html[data-theme="dark"],html[data-theme="light"]{
+  color-scheme:dark;
+  --primary:#d4af37;--primary-dark:#b8932b;--primary-light:rgba(212,175,55,.22);--primary-lighter:rgba(212,175,55,.10);
+  --gradient:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);--gradient-dark:#000000;
+  --credit:#ef4444;--credit-bg:rgba(239,68,68,.12);--debit:#10b981;--debit-bg:rgba(16,185,129,.12);
+  --interest:#d4af37;--interest-bg:rgba(212,175,55,.12);--info:#60a5fa;--info-bg:rgba(59,130,246,.14);--violet:#a58bff;--violet-bg:rgba(139,92,246,.14);
+  --error:#ef4444;--error-bg:rgba(239,68,68,.12);--success:#10b981;--success-bg:rgba(16,185,129,.12);
+  --text:#ffffff;--text-muted:#9a9a9a;--text-light:#6b6b6b;--border:#2a2a2a;--bg:#111111;--white:#1a1a1a;
+}
+html,body,html[data-theme="dark"],html[data-theme="light"],html[data-theme="dark"] body,html[data-theme="light"] body{background:#050505;color:#fff}
+html.booting #bootSplash,html[data-theme="dark"].booting #bootSplash{background:#050505;color:#d4af37}
+.theme-btn,.theme-fab{display:none!important}   /* VIP me ek hi theme, isliye toggle ka kaam nahi */
+:focus-visible{outline:3px solid rgba(212,175,55,.6)}
+.app-shell{background:#111111;border:1px solid rgba(212,175,55,.35)}
+/* Top bar */
+.top-title{color:#fff;font-family:Georgia,'Times New Roman',serif}
+.brand-logo{border:1.5px solid #d4af37;background:#000}
+.back-btn,.lock-btn,.settings-header-btn{background:rgba(212,175,55,.12);color:#d4af37}
+.back-btn:active,.lock-btn:active,.settings-header-btn:active{background:rgba(212,175,55,.25)}
+.lang-toggle{background:rgba(212,175,55,.12)}.lang-btn.active{background:#d4af37;color:#111}
+/* Dashboard hero + customer cards + chips */
+.customer-search{background:#1a1a1a;border:1px solid #2a2a2a;color:#fff}
+.customer-search:focus{border-color:#d4af37;box-shadow:0 0 0 3px rgba(212,175,55,.18)}
+.tab,.ux-chip{background:#1a1a1a;border:1px solid #2a2a2a;color:#bdbdbd}
+.tab.active,.ux-chip.on{background:#d4af37;border-color:#d4af37;color:#111}
+.cc-name{color:#fff}
+/* FAB + bottom nav */
+.btab{color:#9a9a9a}.btab.active{color:#d4af37}.btab.active .btab-icon{background:rgba(212,175,55,.18)}
+/* Buttons */
+.btn-primary{background:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);color:#111;font-weight:800;box-shadow:0 6px 20px rgba(212,175,55,.28)}
+.btn-primary:disabled{background:#3a3a3a;color:#808080;box-shadow:none}
+.btn-primary .spinner{border-color:rgba(0,0,0,.25);border-top-color:#111}
+.btn-secondary,.more-btn,.rec-actions button,.rec-actions a,.calc-act{background:transparent}
+.btn-danger,.settings-logout-last,.android-logout{border-color:rgba(239,68,68,.45)!important}
+.settings-panel-save{background:#d4af37;color:#111}
+html[data-theme="dark"] .settings-panel-save{color:#111!important}
+.sms-toggle{background:#3a3a3a}.sms-toggle.on{background:#10b981}
+/* Inputs */
+.text-input,.select-input,.calc-in,.pin-native-input,.settings-inline-input,.android-rate-input,textarea,select,
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]){background:#0f0f0f;color:#fff;border-color:#2a2a2a}
+.text-input:focus,.select-input:focus,.calc-in:focus,input:focus,select:focus,textarea:focus{background:#0f0f0f;border-color:#d4af37;box-shadow:0 0 0 3px rgba(212,175,55,.18)}
+.txn-sheet .text-input,.txn-sheet .text-input:focus{background:#0f0f0f}
+input::placeholder,textarea::placeholder{color:#6b6b6b}
+/* Modals / sheets */
+.modal-overlay,html[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,.78)}
+.modal,html[data-theme="dark"] .modal{background:#1a1a1a;color:#fff;border-top:1px solid #d4af37}
+.txn-x,.txn-actions .txn-cancel,html[data-theme="dark"] .txn-x,html[data-theme="dark"] .txn-actions .txn-cancel{background:#262626;color:#fff}
+.settings-panel{border:1px solid rgba(212,175,55,.45)}
+.settings-hero,.android-settings-hero{background:#000;border:1px solid #d4af37;box-shadow:none}
+/* Action / status cards (hard-coded light bg ko dark kiya) */
+.action-btn.loan{border-color:rgba(212,175,55,.45)}.action-btn.repay{border-color:rgba(59,130,246,.45)}.action-btn.interest{border-color:rgba(167,139,250,.45)}
+.action-btn.edit{border-color:#2a2a2a}
+.action-btn.share{border-color:rgba(59,130,246,.45);background:rgba(59,130,246,.12)}
+.share-reminder{border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.10)}
+.share-reminder-due{background:#1a1a1a;color:#fff}.share-reminder-due-label{color:#9a9a9a}
+.loan-card{border-color:rgba(212,175,55,.5)}.loan-card.closed{border-color:#2a2a2a}
+.loan-status.active{background:rgba(16,185,129,.18);color:#10b981}
+.history-balance-item.received{border-color:rgba(16,185,129,.45);color:#10b981}
+.history-balance-item.giving{border-color:rgba(239,68,68,.45);color:#ef4444}
+.single-balance-summary{background:#1a1a1a;border-color:#2a2a2a}
+.single-balance-summary.received{color:#10b981;background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.45)}
+.single-balance-summary.giving{color:#ef4444;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.45)}
+.warning-note{color:#e6c34a}
+.calc-hero{color:#111}
+.skeleton-block{background:linear-gradient(90deg,#222 25%,#2e2e2e 37%,#222 63%);background-size:400% 100%}
+.txn-icon.deleted{background:#262626;color:#808080}
+.lp-toggle,html[data-theme="dark"] .lp-toggle{background:#000;border:1px solid #d4af37}
+/* Toast + loader */
+.toast{background:#1a1a1a;color:#fff;border:1px solid #d4af37}
+.loading-spinner{border-color:rgba(212,175,55,.2);border-top-color:#d4af37}
+</style>
 </head>
 <style id="premium-whatsapp-share-style">.whatsapp-share-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:8px}.whatsapp-share-icon{width:22px;height:22px;display:inline-block;flex:0 0 22px}</style>
 <body>

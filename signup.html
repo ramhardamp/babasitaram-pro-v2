@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <script src="native-shim.js"></script>
-<meta name="theme-color" content="#1e8e3e">
+<meta name="theme-color" content="#000000">
 <title>Signup - BSRPRO Digital Khata</title>
 <link rel="icon" href="assets/guru-shree-logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
@@ -222,6 +222,59 @@ html,body{background:#f4f7f5}
 /* ===== /OK-THEME ===== */
 </style>
 <link rel="stylesheet" href="theme.css">
+<style id="vip-theme">
+/* ===== VIP-THEME v1: Black + Gold (customer-view / email jaisa). Sirf CSS override, logic/JS/IDs untouched =====
+   Header white-on-white bug fix: ok-theme --gradient-dark ko white kar deta tha, title #fff tha -> invisible. */
+:root,html[data-theme="dark"],html[data-theme="light"]{
+  color-scheme:dark;
+  --primary:#d4af37;--primary-dark:#b8932b;--primary-light:rgba(212,175,55,.22);--primary-lighter:rgba(212,175,55,.10);
+  --gradient:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);--gradient-dark:#000000;
+  --error:#ef4444;--error-bg:rgba(239,68,68,.12);--success:#10b981;--success-bg:rgba(16,185,129,.12);--info-bg:rgba(212,175,55,.10);
+  --text:#ffffff;--text-muted:#9a9a9a;--text-light:#6b6b6b;--border:#2a2a2a;--bg:#111111;--white:#1a1a1a;
+}
+html,body,html[data-theme="dark"],html[data-theme="light"],html[data-theme="dark"] body,html[data-theme="light"] body{background:#050505;color:#fff}
+html.booting #bootSplash{background:#050505;color:#d4af37}
+#bootSplash .boot-spin{border-color:rgba(212,175,55,.2);border-top-color:#d4af37}
+.app-shell{background:#111111;border:1px solid rgba(212,175,55,.45);box-shadow:0 0 60px rgba(0,0,0,.7)}
+/* Header */
+.brand-header{background:#000;border-bottom:1px solid #d4af37;box-shadow:none}
+.brand-header::before{background:radial-gradient(circle,rgba(212,175,55,.22) 0%,transparent 70%)}
+.brand-header::after{background:radial-gradient(circle,rgba(212,175,55,.12) 0%,transparent 70%)}
+.brand-logo-top{background:#000;border:1.5px solid #d4af37;backdrop-filter:none}
+.brand-title{color:#fff;font-family:Georgia,'Times New Roman',serif;text-shadow:none}
+.brand-title-line2{color:#d4af37}
+.brand-newtagline{color:#bdbdbd}
+/* Card + inputs */
+.card{background:#1a1a1a;border:1px solid #2a2a2a;box-shadow:none}
+.card-title,.input-label,.success-title{color:#fff}
+.card-subtitle,.success-subtitle,.helper-text{color:#9a9a9a}
+.text-input,.email-input,.password-input{background:#0f0f0f;border:2px solid #2a2a2a;color:#fff}
+.text-input:focus,.email-input:focus,.password-input:focus{border-color:#d4af37;box-shadow:0 0 0 4px rgba(212,175,55,.18)}
+.text-input::placeholder,.email-input::placeholder,.password-input::placeholder{color:#6b6b6b}
+.password-toggle{color:#9a9a9a}.password-toggle:active{background:#2a2a2a}
+.forgot-link,.footer-bar a{color:#d4af37}
+.footer-bar{color:#9a9a9a}.footer-bar .terms-link{color:#9a9a9a}
+/* Buttons */
+.btn-primary{background:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);color:#111;font-weight:800;box-shadow:0 6px 20px rgba(212,175,55,.28)}
+.btn-primary:disabled{background:#3a3a3a;color:#808080;box-shadow:none}
+.btn-primary .spinner,.btn-primary.loading .spinner{border-color:rgba(0,0,0,.25);border-top-color:#111}
+.btn-outline{background:transparent;color:#d4af37;border:2px solid #d4af37}
+.btn-outline:active{background:rgba(212,175,55,.12)}
+.btn-secondary{background:transparent;color:#fff;border:2px solid #2a2a2a}
+.btn-secondary:active{background:#1f1f1f;border-color:#d4af37}
+.divider{color:#6b6b6b}
+/* Messages */
+.error-text{color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.40)}
+.success-text{color:#6ee7b7;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.40)}
+.helper-text.good{color:#10b981}.helper-text.bad{color:#ef4444}
+.info-box{background:rgba(212,175,55,.10);color:#e6c34a;border:1px solid rgba(212,175,55,.35)}
+.trust-badge{background:#1a1a1a;border:1px solid #2a2a2a;color:#bdbdbd}
+.pw-strength-bar{background:#2a2a2a}.pw-strength-bar.weak{background:#ef4444}.pw-strength-bar.medium{background:#d4af37}.pw-strength-bar.strong{background:#10b981}
+.success-icon{background:linear-gradient(135deg,#e6c34a 0%,#b8932b 100%);box-shadow:0 12px 40px rgba(212,175,55,.35)}
+.email-display{background:#0f0f0f;border:1px solid #2a2a2a;color:#d4af37}
+.toast{background:#1a1a1a;color:#fff;border:1px solid #d4af37}
+.toast.success{background:#064e3b;border-color:#10b981}.toast.error{background:#4c0519;border-color:#ef4444}
+</style>
 </head>
 <body>
 
