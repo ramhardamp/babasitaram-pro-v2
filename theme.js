@@ -20,7 +20,7 @@
   function effective(m) { m = m || get(); return (m === 'dark' || (m === 'system' && sysDark())) ? 'dark' : 'light'; }
   function paint(m, eff) {
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', eff === 'dark' ? '#141c17' : (meta.getAttribute('data-light') || meta.getAttribute('content') || '#1e8e3e'));
+    if (meta) meta.setAttribute('content', eff === 'dark' ? '#000000' : (meta.getAttribute('data-light') || meta.getAttribute('content') || '#1e8e3e'));
     document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
       b.textContent = eff === 'dark' ? '☀️' : '🌙';
       b.setAttribute('aria-pressed', eff === 'dark' ? 'true' : 'false');
@@ -52,7 +52,8 @@
 
   function ready() {
     // Jin pages par top-bar toggle nahi hai (login, signup, forgot-password, customer-view) wahan chhota floating toggle
-    if (!document.querySelector('[data-theme-toggle]') && !document.getElementById('appShell')) {
+    /* <html data-no-theme-toggle> wale pages (login, signup, forgot-password): floating toggle nahi, toggle sirf Settings me */
+    if (!document.querySelector('[data-theme-toggle]') && !document.getElementById('appShell') && !(root.hasAttribute && root.hasAttribute('data-no-theme-toggle'))) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'theme-fab'; b.setAttribute('data-theme-toggle', ''); document.body.appendChild(b);
     }
     apply(false);

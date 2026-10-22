@@ -1,6 +1,6 @@
 # Fix.md — BSRPRO Digital Khata (Source of Truth)
 
-Last updated: 2026-10-20 · App version: v19.9.1 -> **v19.9.4** (patch)
+Last updated: 2026-10-20 · App version: v19.9.1 -> **v19.9.5** (patch)
 
 Is file me jo likha hai wahi final logic hai. Jo yahan nahi hai, uske liye pehle poocho: *"Ye scenario Fix.md me nahi hai, exact logic bataiye."* Koi naya feature, schema ya data format apne aap nahi badlega. Saare badlav backward compatible hain.
 
@@ -50,6 +50,8 @@ Rule ek hi jagah define hai: `dashboard.html` me `AMT_COLORS`, `txnAmountColor()
 | 18 | High | **Save 3-5 sec** (Payment/Jama; Loan, Customer add/edit bhi, D2): `saveTxn` `await batch.commit()` karta tha (server ack ka intezaar). User dobara entry kar deta tha. | `saveTxn`: Optimistic UI. `batch.commit()` await nahi; modal band + **"Entry Successful ✅"** toast turant; form clear; sync background. Net slow/band => Firestore SDK local me rakh kar apne aap sync karta hai. Server reject => error toast (entry chupchap gayab nahi). Offline queue, credit-limit warning, email/SMS/public-view waise hi (commit ke baad background me) |
 | 19 | Low | Login/Signup/Forgot-password par theme toggle (chand ka icon). | `theme.js` ab `<html data-no-theme-toggle>` manta hai; teeno pages me laga. Toggle sirf Settings me |
 | 20 | Info | **Local-first data:** pehle se maujood. Firestore offline persistence (`enablePersistence`) hi local DB hai, `onSnapshot` reactive stream hai (dashboard cache se turant paint). Naya Hive/SQLite nahi joda (is stack me hai hi nahi, duplicate data se balance mismatch ka risk). | Koi badlav nahi; sirf spinner ki jagah splash, aur biometric paint se pehle |
+| 21 | High | **Jis phone me fingerprint/face nahi, sirf PIN/pattern/password hai, wahan App Lock chalu hi nahi hota tha.** Native plugin `BIOMETRIC_WEAK` (sirf fingerprint/face) maanta tha, to `isAvailable` false, Settings me "फिंगरप्रिंट सेट नहीं है" error, aur startup lock skip. | Native `BsrBiometricPlugin`: `BIOMETRIC_WEAK \| DEVICE_CREDENTIAL` (phone ka PIN/pattern/password bhi), negative button hata (credential ke saath crash karta hai), `isAvailable` ab `available/biometric/credential` deta hai. Teeno jagah (template `scripts/prepare-android.mjs` + 2 Java copies) |
+| 22 | Medium | Phone me koi lock hi na ho, ya browser/PWA: App Lock bana hi nahi sakte the. | JS lock mode: `'1'` = system prompt (fingerprint/face/phone PIN-pattern), `'2'` = **ऐप ka apna PIN** startup par (plugin ki zaroorat nahi). Toggle khud sahi mode chunta hai. Startup, boot aur 30s background relock dono modes me. Cancel/fail => hamesha ऐप PIN screen (lockout nahi) |
 
 Detail aur exact code diff: `FIXES-2026-10-20-amount-colors.md`.
 
@@ -63,9 +65,11 @@ Detail aur exact code diff: `FIXES-2026-10-20-amount-colors.md`.
 | `customer-view.html` | Loan type rang, hero balance class, VIP theme block |
 | `index.html`, `signup.html`, `forgot-password.html` | VIP theme block (sirf CSS, JS/IDs/logic same) |
 | `ux-pro.css` | `.cc-box-value.amt-*` + `.top-bar`, `.dash-hero`, `.bottom-tabs`, `.fab` VIP rang (in-place) |
-| `manifest.json`, `package.json`, `app-config.js`, `service-worker.js` | theme rang + version 19.9.4 + cache name |
+| `manifest.json`, `package.json`, `app-config.js`, `service-worker.js` | theme rang + version 19.9.5 + cache name |
 | `theme.js` | `data-no-theme-toggle` opt-out; dark status-bar rang `#000000` |
 | `index.html`, `signup.html`, `forgot-password.html` | `<html data-no-theme-toggle>`; index me returning-user redirect |
+| `BsrBiometricPlugin.java` (root + `android/app/src/main/java/com/bsrpro/digitalkhata/`), `scripts/prepare-android.mjs` | phone PIN/pattern/password unlock (DEVICE_CREDENTIAL). **APK dobara build karna zaroori** |
+| `tests/app-lock.test.mjs` (naya) | native + lock-mode guard tests |
 | `tests/launch-optimistic.test.mjs` (naya) | launch flow / optimistic save / theme toggle ke guard tests |
 | `www/*` | Generated copy, `npm run prepare:web` se update hota hai |
 | EmailJS `template_vhuakzs` | `emailjs-template-txn.html` se poora replace |
@@ -97,16 +101,17 @@ Extra balance aliases (harmless): `balance_display`, `total_balance`, `total_due
 
 ## 6. Testing
 
-- `npm test`: 211/211 pass (9 naye guard tests). `verify:web`: PASS. Pehli baar VIP block me 2 guard tests fail hue the (`#a78bfa` hardcode, aur ek component ki CSS do jagah), dono theek kiye, test dheela nahi kiya.
+- `npm test`: 215/215 pass (13 naye guard tests). `verify:web`: PASS. Pehli baar VIP block me 2 guard tests fail hue the (`#a78bfa` hardcode, aur ek component ki CSS do jagah), dono theek kiye, test dheela nahi kiya.
 - `customer-view.html` Chromium me mock data se render check: baaki, zero, advance teeno sahi.
 - `index`, `signup`, `forgot-password` Chromium screenshot: header title padhne layak, input/button/footer VIP.
 - `dashboard.html` Chromium (mock state): home, customer, reports, settings screens VIP, JS error nahi.
+- Lock scenarios (Chromium, mock plugin): PIN/pattern-only phone => lock chalu, launch par system prompt; phone me koi lock nahi => ऐप PIN mode, launch par seedha PIN screen; browser/no plugin => ऐप PIN; prompt cancel => PIN screen; 40s background relock; Settings text.
 - Chromium flow tests (mock Firebase + mock biometric): returning user login skip; stale session loop nahi; biometric splash ke upar (dashboard neeche tayyar), success => dashboard, cancel => PIN; fresh user par login pages me theme toggle 0; save: server 3s slow ho tab bhi toast **63 ms** me, server reject par error toast aur pending 0.
 
 ## 7. NOT TESTED
 
 - Asli email delivery (sandbox me network band). EmailJS template aapke account me hai.
-- Real Android WebView, asli Firebase, **asli fingerprint/face prompt** (plugin mock tha), Gmail dark mode.
+- Real Android WebView, asli Firebase, **asli fingerprint/face/PIN/pattern prompt** (plugin mock tha; Java compile bhi sandbox me nahi hua, APK build par dekhna), Gmail dark mode.
 - Live GitHub Pages deploy.
 
 ## 8. Developer decisions (pehle open sawal the, ab fix ho gaye)
@@ -122,3 +127,4 @@ Extra balance aliases (harmless): `balance_display`, `total_balance`, `total_due
 1. Gmail dark mode me red/green ka alag shade chahiye? (abhi email me `#ef4444` / `#10b981`)
 2. Dashboard card me zero balance par bhi green chahiye? (abhi default rang)
 3. `deleteLoan`, `saveEditedLoan`, `settleLoan` bhi `runTransaction`/read-modify-write jaisi hain, isliye D2 ke rule se optimistic nahi kiye.
+4. Android 9/10 (API 28-29) par `BIOMETRIC_WEAK \| DEVICE_CREDENTIAL` androidx.biometric 1.1.0 ke fallback se chalta hai; asli purane phone par ek baar test karna.

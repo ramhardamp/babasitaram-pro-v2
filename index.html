@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-no-theme-toggle>
 <head>
 <script src="theme.js"></script>
 <meta charset="UTF-8">
@@ -85,7 +85,12 @@ body{display:flex;flex-direction:column;overflow-y:hidden}
 <script>
 /* Returning user: show a splash (not the login form) until Firebase restores the saved session.
    Without this the login page flashed for a few seconds on every app start, then jumped to the dashboard. */
-try{if(localStorage.getItem('bsp_userId'))document.documentElement.classList.add('booting')}catch(e){}
+/* LAUNCH FLOW: saved login (bsp_userId) hai to Login screen poori tarah skip: seedha dashboard.html (wahan splash -> biometric -> dashboard).
+   Session expire ho gaya ho to dashboard bsp_userId hata kar wapas yahan bhejta hai (loop nahi). ?login=1 se auto-skip band. */
+try{
+  var __uid=localStorage.getItem('bsp_userId');
+  if(__uid&&!/[?&]login(=|&|$)/.test(location.search)){document.documentElement.classList.add('booting');location.replace('dashboard.html');}
+}catch(e){}
 </script>
 <style>
 #bootSplash{display:none}

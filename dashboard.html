@@ -472,7 +472,7 @@ input::placeholder,textarea::placeholder{color:#6b6b6b}
             </button>
             <div class="android-setting-content">
               <button class="android-sub-row action" type="button" onclick="changePIN()"><span>🔐 <b>PIN / Security</b><small>PIN बदलें</small></span><i>›</i></button>
-              <div class="android-sub-row action" onclick="toggleBiometricLock()"><span>🧬 <b>Biometric Lock</b><small id="bioState">OFF</small></span><button type="button" class="sms-toggle" id="bioToggle" onclick="event.stopPropagation();toggleBiometricLock()"></button></div>
+              <div class="android-sub-row action" onclick="toggleBiometricLock()"><span>🧬 <b>App Lock</b><small id="bioState">OFF</small></span><button type="button" class="sms-toggle" id="bioToggle" onclick="event.stopPropagation();toggleBiometricLock()"></button></div>
               <div class="android-sub-row"><span>🌐 <b>Language</b><small>English / हिंदी · ગુજરાતી · मराठी · नेपाली · తెలుగు</small></span><select id="langSelect" aria-label="App language" onchange="setLang(this.value)" style="max-width:145px;border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--surface,#fff);color:var(--text);font:inherit;font-size:12px"><option value="en">English</option><option value="hi">हिंदी</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option><option value="ne">नेपाली</option><option value="te">తెలుగు</option></select></div>
             </div>
           </section>
@@ -1239,13 +1239,19 @@ var appLocked=false,bioBusy=false,startupLockDone=false,lastHiddenAt=0;
 const BIO_RELOCK_MS=30000; /* lock again when the app was in background for 30s or more */
 function getBioPlugin(){try{return window.Capacitor?.Plugins?.BsrBiometric||null}catch(e){return null}}
 function bioKey(){return 'bsp_bio_'+(currentUser?.uid||'x')}
-function biometricEnabled(){try{return localStorage.getItem(bioKey())==='1'}catch(e){return false}}
+/* App lock mode (localStorage bsp_bio_<uid>): '1' = system prompt (fingerprint/face YA phone PIN/pattern/password), '2' = ऐप ka apna PIN
+   (phone me koi screen-lock/biometric nahi, ya browser/PWA). Dono me startup + 30s background relock chalta hai. */
+function lockMode(){try{return localStorage.getItem(bioKey())||''}catch(e){return ''}}
+function biometricEnabled(){return lockMode()==='1'}
+function appPinLockEnabled(){return lockMode()==='2'}
+function startupLockReady(){const m=lockMode();return m==='2'||(m==='1'&&!!getBioPlugin())}
 function setBiometricEnabled(on){try{if(on)localStorage.setItem(bioKey(),'1');else localStorage.removeItem(bioKey())}catch(e){}}
+function setAppPinLock(){try{localStorage.setItem(bioKey(),'2')}catch(e){}}
 function updateBiometricUI(){
-  const on=biometricEnabled()&&!!getBioPlugin();
+  const on=startupLockReady();
   document.getElementById('bioToggle')?.classList.toggle('on',on);
   const st=document.getElementById('bioState');
-  if(st)st.textContent=on?'ON — ऐप खुलने पर फिंगरप्रिंट/फेस से अनलॉक':(getBioPlugin()?'OFF':'सिर्फ़ Android APK में');
+  if(st)st.textContent=on?(appPinLockEnabled()?'ON — ऐप खुलने पर ऐप का PIN':'ON — ऐप खुलने पर फिंगरप्रिंट / फेस / फ़ोन PIN-पैटर्न से अनलॉक'):'OFF';
 }
 async function runBiometricPrompt(title,subtitle){
   const p=getBioPlugin();
@@ -1271,20 +1277,24 @@ async function tryBiometricUnlock(){
   if(!r.ok)setTimeout(focusPinInput,120); /* cancelled / failed -> PIN keyboard fallback */
 }
 async function toggleBiometricLock(){
-  if(biometricEnabled()){
+  if(startupLockReady()){
     /* turning it OFF needs the PIN (or biometric) */
-    requirePIN(()=>{setBiometricEnabled(false);updateBiometricUI();toast(t('Biometric lock off','Biometric लॉक बंद'),'success')});
+    requirePIN(()=>{setBiometricEnabled(false);updateBiometricUI();toast(t('App lock off','ऐप लॉक बंद'),'success')});
     return;
   }
   if(!storedPIN){toast(t('Create a PIN first','पहले PIN बनाएं'),'error');return}
-  if(!getBioPlugin()){toast(t('Biometric lock works only in the Android APK','Biometric लॉक सिर्फ़ Android APK में चलता है'),'error');return}
-  let avail;
-  try{avail=await getBioPlugin().isAvailable()}catch(e){toast(t('Biometric plugin problem: ','Biometric plugin में दिक्कत: ')+String((e&&e.message)||e).slice(0,80),'error');return}
-  if(!avail||avail.available!==true){toast(t('No fingerprint/face is set up on this phone. Add one in phone Settings first.','इस फ़ोन में फिंगरप्रिंट/फेस सेट नहीं है। पहले फ़ोन की Settings में सेट करें।'),'error');return}
-  const r=await runBiometricPrompt(t('Enable biometric lock','Biometric लॉक चालू करें'),t('Confirm with your fingerprint or face','अपने फिंगरप्रिंट या फेस से पुष्टि करें'));
-  if(!r.ok){toast(t('Not confirmed — biometric lock stays off','पुष्टि नहीं हुई — biometric लॉक चालू नहीं हुआ'),'error');return}
-  setBiometricEnabled(true);updateBiometricUI();
-  toast(t('Biometric lock on','Biometric लॉक चालू'),'success');
+  /* Phone ka system lock (fingerprint / face / PIN / pattern / password) mile to wahi; warna ऐप ka apna PIN startup par */
+  let avail=null;
+  if(getBioPlugin()){try{avail=await getBioPlugin().isAvailable()}catch(e){console.warn('isAvailable failed',e)}}
+  if(avail&&avail.available===true){
+    const r=await runBiometricPrompt(t('Enable app lock','ऐप लॉक चालू करें'),t('Confirm with fingerprint, face or phone PIN/pattern','फिंगरप्रिंट, फेस या फ़ोन के PIN/पैटर्न से पुष्टि करें'));
+    if(!r.ok){toast(t('Not confirmed — app lock stays off','पुष्टि नहीं हुई — ऐप लॉक चालू नहीं हुआ'),'error');return}
+    setBiometricEnabled(true);updateBiometricUI();
+    toast(avail.biometric?t('App lock on — fingerprint / face','ऐप लॉक चालू — फिंगरप्रिंट / फेस'):t('App lock on — phone PIN / pattern','ऐप लॉक चालू — फ़ोन का PIN / पैटर्न'),'success');
+    return;
+  }
+  setAppPinLock();updateBiometricUI();
+  toast(t('No phone lock found — app PIN will be asked when the app opens','फ़ोन में लॉक/फिंगरप्रिंट नहीं मिला — ऐप खुलने पर ऐप का PIN माँगा जाएगा'),'success');
 }
 function lockApp(auto){
   if(!storedPIN)return;
@@ -1301,7 +1311,7 @@ function maybeStartupLock(){
   startupLockDone=true;
   let skip=false;
   try{skip=sessionStorage.getItem('bsp_skip_lock')==='1';sessionStorage.removeItem('bsp_skip_lock')}catch(e){}
-  if(skip||!storedPIN||!biometricEnabled()||!getBioPlugin())return;
+  if(skip||!storedPIN||!startupLockReady())return;
   lockApp(true);
 }
 /* ===== LAUNCH FLOW (splash -> biometric overlay -> dashboard) =====
@@ -1317,8 +1327,9 @@ async function bootShowDashboard(){
   startupLockDone=true;
   let skip=false;
   try{skip=sessionStorage.getItem('bsp_skip_lock')==='1';sessionStorage.removeItem('bsp_skip_lock')}catch(e){}
-  if(skip||!storedPIN||!biometricEnabled()||!getBioPlugin()){endBoot();return}
+  if(skip||!storedPIN||!startupLockReady()){endBoot();return}
   appLocked=true;
+  if(appPinLockEnabled()){lockApp(true);endBoot();return}   /* ऐप ka apna PIN: system prompt nahi, seedha PIN screen */
   const r=await runBiometricPrompt(t('Unlock BSR PRO','BSR PRO अनलॉक करें'),t('Use fingerprint or face','फिंगरप्रिंट या फेस से अनलॉक करें'));
   if(r.ok){appLocked=false;endBoot();return}
   lockApp(true);endBoot(); /* cancelled/failed -> PIN keyboard */
@@ -1328,7 +1339,7 @@ document.addEventListener('visibilitychange',()=>{
   if(document.hidden){if(!bioBusy)lastHiddenAt=Date.now();return}
   const away=lastHiddenAt?Date.now()-lastHiddenAt:0;lastHiddenAt=0;
   if(bioBusy||away<BIO_RELOCK_MS)return;
-  if(!currentUser||!storedPIN||!biometricEnabled()||!getBioPlugin())return;
+  if(!currentUser||!storedPIN||!startupLockReady())return;
   if(currentScreen==='pin'||currentScreen==='loading'||!currentScreen)return;
   lockApp(true);
 });
