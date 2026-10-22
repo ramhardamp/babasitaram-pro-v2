@@ -6,6 +6,7 @@
 <script src="native-shim.js"></script>
 <script src="errlog.js"></script>
 <script src="theme.js"></script>
+<script>document.documentElement.classList.add('booting')</script>
 <link rel="stylesheet" href="ux-pro.css">
 <meta name="theme-color" content="#000000">
 <title>BSRPRO Digital Khata</title>
@@ -216,6 +217,15 @@
 /* ===== /OK-THEME ===== */
 </style>
 <link rel="stylesheet" href="theme.css">
+<style id="boot-splash">
+/* Splash: app khulte hi turant (spinner wali "loading" screen nahi). Biometric isi ke upar aata hai, success par seedha dashboard. */
+#bootSplash{display:none}
+html.booting #bootSplash{display:flex;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:#050505}
+#bootSplash img{width:88px;height:88px;border-radius:22px;border:1.5px solid #d4af37;background:#000;object-fit:cover}
+#bootSplash .boot-title{color:#fff;font:700 22px Georgia,'Times New Roman',serif;letter-spacing:4px}
+#bootSplash .boot-spin{width:30px;height:30px;border-radius:50%;border:4px solid rgba(212,175,55,.2);border-top-color:#d4af37;animation:bspBootSpin .8s linear infinite}
+@keyframes bspBootSpin{to{transform:rotate(360deg)}}
+</style>
 <style id="vip-theme">
 /* ===== VIP-THEME v1: Black + Gold (customer-view / login / email jaisa). Sirf CSS override, logic/JS/IDs untouched =====
    Rang rule: diya = LAL, mila = HARA, gold = brand/accent. Light/Dark dono me same VIP look (toggle chhupa hai). */
@@ -286,6 +296,8 @@ input::placeholder,textarea::placeholder{color:#6b6b6b}
 .skeleton-block{background:linear-gradient(90deg,#222 25%,#2e2e2e 37%,#222 63%);background-size:400% 100%}
 .txn-icon.deleted{background:#262626;color:#808080}
 .lp-toggle,html[data-theme="dark"] .lp-toggle{background:#000;border:1px solid #d4af37}
+/* VIP ek hi brand theme hai: Settings ka Light/Dark/System chooser ab kuch badalta nahi, isliye chhupa hai (App Health rows rehti hain) */
+[data-theme-set],.android-export-title:has(#uxThemeState){display:none!important}
 /* Toast + loader */
 .toast{background:#1a1a1a;color:#fff;border:1px solid #d4af37}
 .loading-spinner{border-color:rgba(212,175,55,.2);border-top-color:#d4af37}
@@ -293,6 +305,7 @@ input::placeholder,textarea::placeholder{color:#6b6b6b}
 </head>
 <style id="premium-whatsapp-share-style">.whatsapp-share-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:8px}.whatsapp-share-icon{width:22px;height:22px;display:inline-block;flex:0 0 22px}</style>
 <body>
+<div id="bootSplash" aria-live="polite"><img src="assets/guru-shree-logo.svg?v=20261010-1" onerror="this.onerror=null;this.src='assets/guru-shree-logo.jpg'" alt=""><div class="boot-title">BSRPRO</div><div class="boot-spin"></div></div>
 <div class="app-shell" id="appShell">
 
   <div class="top-bar">
@@ -603,7 +616,11 @@ let userData = null;
 let customers = [];
 let transactions = [];
 let unsubCustomers = null;
-let unsubTransactions = null;let ledgerWriteBusy = false;
+let unsubTransactions = null;let ledgerWriteBusy = false;let pendingLedgerWrites = 0;
+/* Optimistic writes ka "Sync pending" counter (saveTxn / saveLoan / saveCustomer / updateCustomer) */
+function ledgerSyncDone(){pendingLedgerWrites=Math.max(0,pendingLedgerWrites-1);if(!pendingLedgerWrites)setSyncStatus(navigator.onLine!==false,false,false)}
+/* Jo writes server transaction (read-modify-write) par chalte hain unme optimistic nahi ho sakta: Save button turant "Saving…" + disable (double entry nahi) */
+function setSaveBusy(on){document.querySelectorAll('.modal .btn-primary,.modal .txn-save').forEach(b=>{if(on){if(!b.dataset.lbl)b.dataset.lbl=b.textContent;b.disabled=true;b.textContent='⏳ '+t('Saving…','सेव हो रहा है…')}else{b.disabled=false;if(b.dataset.lbl){b.textContent=b.dataset.lbl;delete b.dataset.lbl}}})}
 
 let storedPIN = null;
 let pendingPIN = '';
@@ -1089,6 +1106,7 @@ async function backfillViewTokens(){
 
 /* ============ PIN ============ */
 function showPinScreen(mode,title,subtitle,callback){
+  endBoot();
   if(pinInputTimer)clearTimeout(pinInputTimer);
   pinMode=mode;pendingPIN='';pinActionCallback=callback||null;
   if(mode.startsWith('change-') && !pinReturnScreen)pinReturnScreen='settings';
@@ -1286,6 +1304,25 @@ function maybeStartupLock(){
   if(skip||!storedPIN||!biometricEnabled()||!getBioPlugin())return;
   lockApp(true);
 }
+/* ===== LAUNCH FLOW (splash -> biometric overlay -> dashboard) =====
+   Splash (#bootSplash) tab tak rehta hai jab tak unlock na ho jaye. Dashboard neeche tayyar hota hai (Firestore local cache se),
+   biometric splash ke upar aata hai; success => splash hata, dashboard turant. Cancel/fail => PIN screen. */
+let bootPainted=false;
+function endBoot(){document.documentElement.classList.remove('booting')}
+setTimeout(endBoot,12000); /* safety net: splash 12s se zyada nahi rukega */
+async function bootShowDashboard(){
+  if(bootPainted)return;bootPainted=true;
+  showScreen('dashboard',true);
+  if(startupLockDone){endBoot();return}
+  startupLockDone=true;
+  let skip=false;
+  try{skip=sessionStorage.getItem('bsp_skip_lock')==='1';sessionStorage.removeItem('bsp_skip_lock')}catch(e){}
+  if(skip||!storedPIN||!biometricEnabled()||!getBioPlugin()){endBoot();return}
+  appLocked=true;
+  const r=await runBiometricPrompt(t('Unlock BSR PRO','BSR PRO अनलॉक करें'),t('Use fingerprint or face','फिंगरप्रिंट या फेस से अनलॉक करें'));
+  if(r.ok){appLocked=false;endBoot();return}
+  lockApp(true);endBoot(); /* cancelled/failed -> PIN keyboard */
+}
 /* Lock again after coming back from the background. */
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){if(!bioBusy)lastHiddenAt=Date.now();return}
@@ -1461,6 +1498,7 @@ function switchTab(tab){
 let appInitWatchdog=null;
 
 function showLoadError(message){
+  endBoot();
   const el=document.getElementById('loadingScreen');
   if(!el)return;
   if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}
@@ -1499,7 +1537,7 @@ try{
     throw new Error('Firebase configuration load नहीं हुई');
   }
   auth.onAuthStateChanged(async(user)=>{
-    if(!user){window.location.href='index.html';return}
+    if(!user){try{localStorage.removeItem('bsp_userId')}catch(e){}window.location.href='index.html';return}
     currentUser=user;
     try{
       await loadUserData();
@@ -1545,8 +1583,7 @@ async function loadUserData(){
       userData=cachedProfile;
       storedPIN=cachedProfile.pinHash?'v2':String(cachedProfile.pin);
       document.getElementById('sDefaultRate').value=userData.defaultRate||2;
-      showScreen('dashboard',true);
-      maybeStartupLock();
+      bootShowDashboard();
       markBoot('dashboard painted from profile cache');
       if(appInitWatchdog){clearTimeout(appInitWatchdog);appInitWatchdog=null}
     }
@@ -1583,8 +1620,7 @@ async function loadUserData(){
 
     document.getElementById('sDefaultRate').value=userData.defaultRate||2;
     if(!wasPainted){
-      showScreen('dashboard',true);
-      maybeStartupLock();
+      bootShowDashboard();
       markBoot('dashboard painted after profile');
     }else{
       // Re-render once authoritative profile identity/settings arrive.
@@ -1968,12 +2004,20 @@ function openOutbox(){
   const rows=ob.list();
   const nm=id=>esc((customers.find(c=>String(c.id)===String(id))||{}).name||'?');
   const row=e=>`<div class="rec-row"><div class="rec-top"><div class="rec-name">${nm(e.customerId)}</div><div class="rec-amt" style="color:${e.type==='udhaar'?'var(--credit)':'var(--debit)'}">${fmt(e.amount)}</div></div>
-    <div class="rec-meta"><span class="rec-badge ${e.status==='failed'?'critical':'due'}">${e.status==='failed'?t('Needs review','जाँच चाहिए'):t('Waiting','इंतज़ार')}</span><span>${e.type==='udhaar'?t('Udhaar','पेमेंट'):t('Payment','भुगतान')} • ${esc(String(e.date||''))}</span>${e.note?`<span>${esc(e.note)}</span>`:''}${e.error?`<span style="color:var(--debit)">${esc(e.error)}</span>`:''}</div>
-    <div class="rec-actions"><button type="button" onclick='discardOutboxEntry(${JSON.stringify(e.key)})'>🗑 ${t('Discard','हटाएँ')}</button></div></div>`;
+    <div class="rec-meta"><span class="rec-badge ${e.status==='failed'?'critical':'due'}">${e.status==='failed'?t('Needs review','जाँच चाहिए'):t('Waiting','इंतज़ार')}</span><span>${e.type==='udhaar'?t('Udhaar','पेमेंट'):t('Payment','भुगतान')} • ${esc(String(e.date||''))}</span>${e.note?`<span>${esc(e.note)}</span>`:''}${e.error?`<span style="color:var(--credit)">${esc(e.error)}</span>`:''}</div>${e.status==='failed'?`<div style="font-size:12px;color:var(--text-muted);margin:6px 0">${t('Not saved to your ledger. Check the reason and re-enter if needed.','खाते में सेव नहीं हुई। कारण देखकर ज़रूरत हो तो दोबारा डालें।')}</div>`:''}
+    <div class="rec-actions">${e.status==='failed'?`<button type="button" onclick='reenterOutboxEntry(${JSON.stringify(e.key)})'>✏️ ${t('Re-enter','दोबारा डालें')}</button>`:''}<button type="button" onclick='discardOutboxEntry(${JSON.stringify(e.key)})'>🗑 ${t('Discard','हटाएँ')}</button></div></div>`;
   showModal(`<div class="modal-handle"></div><div class="modal-title">⏳ ${t('Offline queue','ऑफलाइन कतार')}</div>
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5">${t('These entries are saved on this phone only. They are NOT counted in balances until they sync. Do not re-enter them.','ये एंट्री अभी सिर्फ़ इस फ़ोन में हैं। सिंक होने तक बकाया में नहीं गिनी जातीं। इन्हें दोबारा न डालें।')}</div>
     <div id="outboxList" class="rec-list">${rows.length?rows.map(row).join(''):`<div style="text-align:center;padding:20px;color:var(--text-muted)">${t('Queue is empty','कतार खाली है')}</div>`}</div>
     <div class="modal-actions"><button class="btn btn-secondary" type="button" onclick="closeModal()">${t('Close','बंद करें')}</button><button class="btn btn-primary" type="button" onclick="syncOutbox(true)">🔄 ${t('Sync now','अभी सिंक करें')}</button></div>`);
+}
+function reenterOutboxEntry(key){
+  const ob=getOutbox();if(!ob)return;
+  const e=ob.list().find(x=>x.key===key);if(!e)return;
+  if(!customers.some(c=>String(c.id)===String(e.customerId)))return toast(t('Customer not found','ग्राहक नहीं मिला'),'error');
+  ob.remove(key);updateOutboxBanner();closeModal();
+  currentCustomerId=e.customerId;openTxnModal(e.type);
+  setTimeout(()=>{const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v};set('mAmt',e.amount);set('mNote',e.note||'');set('mDate',e.date)},60);
 }
 function discardOutboxEntry(key){
   if(!confirm(t('Discard this entry? It was never saved to your ledger.','यह एंट्री हटाएँ? यह आपके खाते में कभी जुड़ी नहीं थी।')))return;
@@ -2622,10 +2666,19 @@ async function saveCustomer(){
     const partyData = {name,phone,email,balance:0,viewToken};
     batch.set(partyRef, partyData);
     
-    await batch.commit();
+    /* OPTIMISTIC UI: ग्राहक list me turant, server sync background me */
+    const custP=batch.commit();
+    pendingLedgerWrites++;setSyncStatus(navigator.onLine!==false,false,true);
     closeModal();
     toast(t('Customer added','ग्राहक जोड़ा'),'success');
-    try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:0},{isNew:true})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
+    custP.then(async()=>{
+      ledgerSyncDone();
+      try{await updatePublicView(partyRef.id,viewToken,{name,phone,balance:0},{isNew:true})}catch(viewErr){console.warn('Public view sync failed after customer save:',viewErr)}
+    },e=>{
+      ledgerSyncDone();
+      console.error('saveCustomer background sync failed:',e);
+      toast(t('Customer could not sync — please add again: ','ग्राहक sync नहीं हुआ — दोबारा जोड़ें: ')+(e&&e.message||''),'error');
+    });
   }catch(e){console.error(e);toast('Error: '+e.message,'error')}
 }
 
@@ -2663,9 +2716,18 @@ async function updateCustomer(){
     const limRaw=String(document.getElementById('mLimit')?.value||'').trim();
     if(limRaw===''){if(c&&c.creditLimit!=null)updateData.creditLimit=firebase.firestore.FieldValue.delete()}
     else{const lim=Number(limRaw);if(!isFinite(lim)||lim<0||lim>1000000000)return toast(t('Credit limit is not valid','पेमेंट सीमा सही नहीं'),'error');updateData.creditLimit=lim}
-    await db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
+    /* OPTIMISTIC UI: edit turant dikhe, server sync background me */
+    const updP=db.collection('users').doc(currentUser.uid).collection('parties').doc(currentCustomerId).update(updateData);
+    pendingLedgerWrites++;setSyncStatus(navigator.onLine!==false,false,true);
     closeModal();toast(t('Updated','अपडेट'),'success');
-    if(c&&c.viewToken){try{await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}catch(viewErr){console.warn('Public view sync failed after customer update:',viewErr)}}
+    updP.then(async()=>{
+      ledgerSyncDone();
+      if(c&&c.viewToken){try{await updatePublicView(currentCustomerId,c.viewToken,{name,phone:newPhone,balance:c.balance||0})}catch(viewErr){console.warn('Public view sync failed after customer update:',viewErr)}}
+    },e=>{
+      ledgerSyncDone();
+      console.error('updateCustomer background sync failed:',e);
+      toast(t('Update could not sync — please edit again: ','अपडेट sync नहीं हुआ — दोबारा एडिट करें: ')+(e&&e.message||''),'error');
+    });
   }catch(e){console.error(e);toast('Error','error')}
 }
 async function deleteCustomer(){
@@ -2769,32 +2831,36 @@ async function saveTxn(type){
   /* Offline: queue safely (see OFFLINE QUEUE). The online path below is unchanged. */
   if(typeof navigator!=='undefined'&&navigator.onLine===false){queueOfflineTxn({customerId,type,amt,note,date});return}
   if(!requireOnline())return;
-  ledgerWriteBusy=true;
-  let committed=false;
+  /* ===== OPTIMISTIC UI =====
+     Firestore ka local cache (IndexedDB persistence) write ko turant apply karta hai aur onSnapshot turant fire hota hai.
+     Isliye server ack (3-5s) ka intezaar nahi: modal band + "Entry Successful" toast turant, server sync background me.
+     - Net slow/band: SDK entry local me rakhta hai aur net aate hi apne aap sync karta hai.
+     - Server reject kare (rules/permission): error toast aata hai, local entry apne aap hat jati hai. */
+  let commitP,txnRef,partyRef,time,dateTime;
   try{
-    const partyRef=db.collection('users').doc(currentUser.uid)
-      .collection('parties').doc(customerId);
-    const txCol=db.collection('users').doc(currentUser.uid)
-      .collection('transactions');
-    const txnRef=txCol.doc();
+    partyRef=db.collection('users').doc(currentUser.uid).collection('parties').doc(customerId);
+    const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
+    txnRef=txCol.doc();
     const delta=type==='udhaar'?amt:-amt;
     const batch=db.batch();
-
-    const now=new Date();
-    const time=localTimeInputValue(now);
-    const dateTime=makeDateTimeISO(date,time);
+    time=localTimeInputValue(new Date());
+    dateTime=makeDateTimeISO(date,time);
     batch.set(txnRef,{partyId:customerId,type,amount:amt,note,date,time,dateTime,transactionAt:dateTime,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     batch.update(partyRef,{balance:firebase.firestore.FieldValue.increment(delta)});
-
-    await batch.commit();
-    committed=true;
-    ledgerWriteBusy=false;
-
-    closeModal();
-    toast(t('Saved','सेव हो गया'),'success');
-
-    // Financial write is already committed. Public view/email are secondary;
-    // their failure must never make the user retry the ledger write.
+    commitP=batch.commit();   /* await nahi: local cache me turant lag chuka hai */
+  }catch(e){
+    console.error('saveTxn failed:',e);
+    toast('Error: '+(e.message||'Save failed'),'error');
+    return;
+  }
+  pendingLedgerWrites++;setSyncStatus(navigator.onLine!==false,false,true);
+  closeModal();                                                   /* form turant clear (modal dobara banta hai) */
+  toast(t('Entry Successful ✅','एंट्री सफल ✅'),'success');
+  const syncDone=ledgerSyncDone;
+  commitP.then(async()=>{
+    syncDone();
+    // Financial write server par commit ho gaya. Public view/email/SMS secondary hain;
+    // inka fail hona ledger write ko kabhi dobara karwane ka kaaran nahi banna chahiye.
     try{
       const freshParty=await partyRef.get();
       if(!freshParty.exists)throw new Error('Customer not found after save');
@@ -2819,16 +2885,13 @@ async function saveTxn(type){
     }catch(syncErr){
       console.warn('Post-commit sync failed after transaction save:',syncErr);
     }
-  }catch(e){
-    ledgerWriteBusy=false;
-    console.error('saveTxn failed:',e);
-    if(committed){
-      closeModal();
-      toast(t('Saved, but sync is pending','सेव हो गया, sync बाकी है'),'success');
-    }else{
-      toast('Error: '+(e.message||'Save failed'),'error');
-    }
-  }
+  },e=>{
+    syncDone();
+    console.error('saveTxn background sync failed:',e);
+    /* Server ne reject kiya: entry khoye nahi, "Needs review" list (Offline queue) me aati hai — wahan se Re-enter / Discard */
+    try{const ob=getOutbox();if(ob){ob.add({key:txnRef.id,customerId,type,amount:amt,note,date,time,dateTime});ob.mark(txnRef.id,'failed',String((e&&(e.message||e.code))||'error').slice(0,160));updateOutboxBanner()}}catch(obErr){console.warn('failed-entry list skipped:',obErr)}
+    toast(t('Entry could not sync — see "need review" banner','एंट्री sync नहीं हुई — "जाँच चाहिए" बैनर देखें')+': '+(e&&e.message||''),'error');
+  });
 }
 function rateUnitLabel(u){return u==='year'?t('yr','वर्ष'):(u==='halfyear'?t('6 mo','6 माह'):t('mo','माह'))}
 function openLoanModal(){
@@ -2905,21 +2968,27 @@ async function saveLoan(){
     if(_unit!=='month')loanData.rateUnit=_unit;
     if(_it==='compound'){loanData.interestType='compound';loanData.compoundFreq=document.getElementById('mFreq')?.value||'monthly'}else{loanData.simpleMethod='cal30'}
     if(_due)loanData.dueDate=_due;
-    await loanRef.set(loanData);
-    committed=true;
+    /* OPTIMISTIC UI: loan local cache me turant, server sync background me (saveTxn jaisa) */
+    const loanP=loanRef.set(loanData);
     ledgerWriteBusy=false;
-
+    pendingLedgerWrites++;setSyncStatus(navigator.onLine!==false,false,true);
     closeModal();
     toast(t('Loan created','लोन बनाया'),'success');
-
-    try{
-      if(c.viewToken){
-        await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+    loanP.then(async()=>{
+      ledgerSyncDone();
+      try{
+        if(c.viewToken){
+          await updatePublicView(currentCustomerId,c.viewToken,{name:c.name,phone:c.phone,balance:c.balance||0});
+        }
+        if(c.email)await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0);
+      }catch(syncErr){
+        console.warn('Post-commit sync failed after loan creation:',syncErr);
       }
-      if(c.email)await sendTransactionEmail(c,'byaj_loan',p,note,sd,c.balance||0);
-    }catch(syncErr){
-      console.warn('Post-commit sync failed after loan creation:',syncErr);
-    }
+    },e=>{
+      ledgerSyncDone();
+      console.error('saveLoan background sync failed:',e);
+      toast(t('Loan could not sync — please create it again: ','लोन sync नहीं हुआ — दोबारा बनाएँ: ')+(e&&e.message||''),'error');
+    });
   }catch(e){
     ledgerWriteBusy=false;
     console.error(e);
@@ -2958,7 +3027,7 @@ async function saveRepay(){
   if(amt>Number(loan.principal||0)-repaid)return toast(t('Exceeds principal','मूलधन से ज्यादा'),'error');
 
   if(!requireOnline())return;
-  ledgerWriteBusy=true;
+  ledgerWriteBusy=true;setSaveBusy(true);
   let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
@@ -3003,7 +3072,7 @@ async function saveRepay(){
       console.warn('Post-commit sync failed after loan repayment:',syncErr);
     }
   }catch(e){
-    ledgerWriteBusy=false;
+    ledgerWriteBusy=false;setSaveBusy(false);
     console.error(e);
     if(committed){
       closeModal();
@@ -3038,7 +3107,7 @@ async function saveIntPaid(){
   const loan=transactions.find(t2=>t2.id===id);if(!loan)return;
 
   if(!requireOnline())return;
-  ledgerWriteBusy=true;
+  ledgerWriteBusy=true;setSaveBusy(true);
   let committed=false;
   try{
     const txCol=db.collection('users').doc(currentUser.uid).collection('transactions');
@@ -3078,7 +3147,7 @@ async function saveIntPaid(){
       console.warn('Post-commit sync failed after interest payment:',syncErr);
     }
   }catch(e){
-    ledgerWriteBusy=false;
+    ledgerWriteBusy=false;setSaveBusy(false);
     console.error(e);
     if(committed){
       closeModal();
